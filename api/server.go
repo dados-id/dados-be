@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/dados-id/dados-be/config"
+	"github.com/dados-id/dados-be/exception"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,6 +41,14 @@ func (server *Server) setupRouter() {
 }
 
 // Start runs the HTTP server on a specific address.
-func (server *Server) Start(address string) error {
+func (server *Server) start(address string) error {
 	return server.router.Run(address)
+}
+
+func RunGinServer(configuration config.Config) {
+	server, err := NewServer(configuration)
+	exception.FatalIfNeeded(err, "cannot create server")
+
+	err = server.start(configuration.HTTPServerAddress)
+	exception.FatalIfNeeded(err, "cannot start server")
 }
