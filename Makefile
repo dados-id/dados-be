@@ -18,4 +18,13 @@ dropdb:
 server:
 	go run main.go
 
-.PHONY: postgres createdb dropdb db_docs db_schema server
+sqlc:
+	sqlc generate
+
+migrateup:
+	migrate -path db/migration -database "$(DB_URL)" -verbose up
+
+migratedown:
+	migrate -path db/migration -database "$(DB_URL)" -verbose down
+
+.PHONY: postgres createdb dropdb db_docs db_schema server sqlc migrateup migratedown
