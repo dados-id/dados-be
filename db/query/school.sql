@@ -2,7 +2,7 @@
 INSERT INTO schools (
   name,
   nick_name,
-  country,
+  city,
   province,
   website,
   email
@@ -39,7 +39,12 @@ LIMIT $1
 OFFSET $2;
 
 -- name: SearchSchoolsByNameOrNickName :many
-SELECT * FROM schools
+SELECT
+  id,
+  name,
+  city,
+  province
+FROM schools
 WHERE name LIKE $1 OR $1 LIKE ANY(nick_name)
 LIMIT 5;
 

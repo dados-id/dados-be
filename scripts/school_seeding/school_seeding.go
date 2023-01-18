@@ -36,7 +36,7 @@ func createSchool(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 		arg := sqlc.CreateSchoolParams{
 			Name:     school.Name,
 			NickName: school.NickName,
-			Country:  school.Country,
+			City:     school.City,
 			Province: school.Province,
 			Website:  school.Website,
 			Email:    school.Email,

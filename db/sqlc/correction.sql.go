@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createCorrection = `-- name: CreateCorrection :one
@@ -22,10 +21,10 @@ INSERT INTO correction_forms (
 `
 
 type CreateCorrectionParams struct {
-	Problem     sql.NullString `json:"problem"`
-	CorrectInfo sql.NullString `json:"correct_info"`
-	Email       sql.NullString `json:"email"`
-	UserID      int64          `json:"user_id"`
+	Problem     string `json:"problem"`
+	CorrectInfo string `json:"correct_info"`
+	Email       string `json:"email"`
+	UserID      int64  `json:"user_id"`
 }
 
 func (q *Queries) CreateCorrection(ctx context.Context, arg CreateCorrectionParams) (CorrectionForm, error) {

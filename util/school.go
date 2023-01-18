@@ -10,7 +10,7 @@ func GetValidSchool() (School db.School, password string) {
 	School = db.School{
 		Name:     randomName(),
 		NickName: []string{randomName(), randomName(), randomName()},
-		Country:  randomName(),
+		City:     randomName(),
 		Province: randomName(),
 		Website:  randomWebsite(),
 		Email:    randomEmail(),

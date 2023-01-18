@@ -442,33 +442,42 @@ func (q *Queries) ListTop5Tags(ctx context.Context, professorID int64) ([]string
 }
 
 const searchProfessorsByName = `-- name: SearchProfessorsByName :many
-SELECT id, first_name, last_name, rating, total_review, would_take_again, level_of_difficulty, created_at, status, verified_date, faculty_id, school_id FROM professors
-WHERE first_name LIKE $1 OR last_name LIKE $1 OR concat(first_name, ' ', last_name) LIKE $1
+SELECT
+  P.id,
+  P.first_name,
+  P.last_name,
+  F.name as faculty_name,
+  S.name as school_name
+FROM professors P
+  JOIN faculties F ON P.faculty_id = F.id
+  JOIN schools S ON P.school_id = S.id
+WHERE P.first_name LIKE $1 OR P.last_name LIKE $1 OR concat(P.first_name, ' ', P.last_name) LIKE $1
 LIMIT 5
 `
 
-func (q *Queries) SearchProfessorsByName(ctx context.Context, firstName string) ([]Professor, error) {
+type SearchProfessorsByNameRow struct {
+	ID          int64  `json:"id"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	FacultyName string `json:"faculty_name"`
+	SchoolName  string `json:"school_name"`
+}
+
+func (q *Queries) SearchProfessorsByName(ctx context.Context, firstName string) ([]SearchProfessorsByNameRow, error) {
 	rows, err := q.db.QueryContext(ctx, searchProfessorsByName, firstName)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Professor{}
+	items := []SearchProfessorsByNameRow{}
 	for rows.Next() {
-		var i Professor
+		var i SearchProfessorsByNameRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.FirstName,
 			&i.LastName,
-			&i.Rating,
-			&i.TotalReview,
-			&i.WouldTakeAgain,
-			&i.LevelOfDifficulty,
-			&i.CreatedAt,
-			&i.Status,
-			&i.VerifiedDate,
-			&i.FacultyID,
-			&i.SchoolID,
+			&i.FacultyName,
+			&i.SchoolName,
 		); err != nil {
 			return nil, err
 		}

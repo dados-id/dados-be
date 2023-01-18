@@ -30,4 +30,10 @@ migratedown:
 seeds:
 	go run scripts/user_seeding/user_seeding.go; go run scripts/school_seeding/school_seeding.go; go run scripts/school_rating_seeding/school_rating_seeding.go
 
-.PHONY: postgres createdb dropdb db_docs db_schema server sqlc migrateup migratedown seeds
+mock:
+	mockgen -package mockdb -destination db/mock/mock.go github.com/dados-id/dados-be/db/sqlc Querier
+
+test:
+	go test -v -cover ./...
+
+.PHONY: postgres createdb dropdb db_docs db_schema server sqlc migrateup migratedown seeds mock test
