@@ -27,4 +27,7 @@ migrateup:
 migratedown:
 	migrate -path db/migration -database "$(DB_URL)" -verbose down
 
-.PHONY: postgres createdb dropdb db_docs db_schema server sqlc migrateup migratedown
+seeds:
+	go run scripts/user_seeding/user_seeding.go; go run scripts/school_seeding/school_seeding.go; go run scripts/school_rating_seeding/school_rating_seeding.go
+
+.PHONY: postgres createdb dropdb db_docs db_schema server sqlc migrateup migratedown seeds
