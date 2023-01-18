@@ -9,8 +9,8 @@ import (
 	"google.golang.org/api/option"
 )
 
-func NewFireBase() *auth.Client {
-	opt := option.WithCredentialsFile("privateKey.json")
+func NewFireBase(path string) *auth.Client {
+	opt := option.WithCredentialsFile(path)
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	exception.FatalIfNeeded(err, "Error initializing app")
 

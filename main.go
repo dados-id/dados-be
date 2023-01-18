@@ -9,7 +9,7 @@ import (
 func main() {
 	configuration := config.LoadConfig(".")
 	database := config.NewPostgres(configuration.DBDriver, configuration.DBSource)
-	firebaseClient := config.NewFireBase()
+	firebaseClient := config.NewFireBase("privateKey.json")
 
 	config.RunDBMigration(configuration.MigrationURL, configuration.DBSource)
 

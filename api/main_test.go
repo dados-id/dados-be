@@ -18,7 +18,7 @@ func TestMain(m *testing.M) {
 
 func newTestServer(t *testing.T, store db.Querier) *Server {
 	configuration := config.Config{}
-	firebaseClient := config.NewFireBase()
+	firebaseClient := config.NewFireBase("../privateKey.json")
 
 	server, err := NewServer(configuration, store, *firebaseClient)
 	require.NoError(t, err)
