@@ -56,8 +56,16 @@ LIMIT $1
 OFFSET $2;
 
 -- name: SearchProfessorsByName :many
-SELECT * FROM professors
-WHERE first_name LIKE $1 OR last_name LIKE $1 OR concat(first_name, ' ', last_name) LIKE $1
+SELECT
+  P.id,
+  P.first_name,
+  P.last_name,
+  F.name as faculty_name,
+  S.name as school_name
+FROM professors P
+  JOIN faculties F ON P.faculty_id = F.id
+  JOIN schools S ON P.school_id = S.id
+WHERE P.first_name LIKE $1 OR P.last_name LIKE $1 OR concat(P.first_name, ' ', P.last_name) LIKE $1
 LIMIT 5;
 
 -- name: ListProfessorsBySchool :many

@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/dados-id/dados-be/config"
+	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
 	"github.com/gin-gonic/gin"
 )
@@ -9,13 +10,15 @@ import (
 // Server serves HTTP requests.
 type Server struct {
 	config config.Config
+	query  db.Querier
 	router *gin.Engine
 }
 
 // NewServer creates a new HTTP server and set up routing.
-func NewServer(config config.Config) (*Server, error) {
+func NewServer(configuration config.Config, query db.Querier) (*Server, error) {
 	server := &Server{
-		config: config,
+		config: configuration,
+		query:  query,
 	}
 
 	server.setupRouter()
@@ -37,6 +40,8 @@ func (server *Server) setupRouter() {
 		})
 	})
 
+	router.POST("/users", server.createUser)
+
 	server.router = router
 }
 
@@ -45,8 +50,8 @@ func (server *Server) start(address string) error {
 	return server.router.Run(address)
 }
 
-func RunGinServer(configuration config.Config) {
-	server, err := NewServer(configuration)
+func RunGinServer(configuration config.Config, query db.Querier) {
+	server, err := NewServer(configuration, query)
 	exception.FatalIfNeeded(err, "cannot create server")
 
 	err = server.start(configuration.HTTPServerAddress)

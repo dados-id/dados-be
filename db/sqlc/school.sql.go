@@ -26,19 +26,19 @@ const createSchool = `-- name: CreateSchool :one
 INSERT INTO schools (
   name,
   nick_name,
-  country,
+  city,
   province,
   website,
   email
 ) VALUES (
   $1, $2, $3, $4, $5, $6
-) RETURNING id, name, nick_name, country, province, website, email, status, verified_date
+) RETURNING id, name, nick_name, city, province, website, email, status, verified_date
 `
 
 type CreateSchoolParams struct {
 	Name     string   `json:"name"`
 	NickName []string `json:"nick_name"`
-	Country  string   `json:"country"`
+	City     string   `json:"city"`
 	Province string   `json:"province"`
 	Website  string   `json:"website"`
 	Email    string   `json:"email"`
@@ -48,7 +48,7 @@ func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (Sch
 	row := q.db.QueryRowContext(ctx, createSchool,
 		arg.Name,
 		pq.Array(arg.NickName),
-		arg.Country,
+		arg.City,
 		arg.Province,
 		arg.Website,
 		arg.Email,
@@ -58,7 +58,7 @@ func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (Sch
 		&i.ID,
 		&i.Name,
 		pq.Array(&i.NickName),
-		&i.Country,
+		&i.City,
 		&i.Province,
 		&i.Website,
 		&i.Email,
@@ -69,7 +69,7 @@ func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (Sch
 }
 
 const getSchool = `-- name: GetSchool :one
-SELECT id, name, nick_name, country, province, website, email, status, verified_date FROM schools
+SELECT id, name, nick_name, city, province, website, email, status, verified_date FROM schools
 WHERE id = $1
 `
 
@@ -80,7 +80,7 @@ func (q *Queries) GetSchool(ctx context.Context, id int64) (School, error) {
 		&i.ID,
 		&i.Name,
 		pq.Array(&i.NickName),
-		&i.Country,
+		&i.City,
 		&i.Province,
 		&i.Website,
 		&i.Email,
@@ -144,7 +144,7 @@ func (q *Queries) GetSchoolInfoAggregate(ctx context.Context, id int64) (GetScho
 }
 
 const listSchools = `-- name: ListSchools :many
-SELECT id, name, nick_name, country, province, website, email, status, verified_date FROM schools
+SELECT id, name, nick_name, city, province, website, email, status, verified_date FROM schools
 LIMIT $1
 OFFSET $2
 `
@@ -167,7 +167,7 @@ func (q *Queries) ListSchools(ctx context.Context, arg ListSchoolsParams) ([]Sch
 			&i.ID,
 			&i.Name,
 			pq.Array(&i.NickName),
-			&i.Country,
+			&i.City,
 			&i.Province,
 			&i.Website,
 			&i.Email,
@@ -188,30 +188,37 @@ func (q *Queries) ListSchools(ctx context.Context, arg ListSchoolsParams) ([]Sch
 }
 
 const searchSchoolsByNameOrNickName = `-- name: SearchSchoolsByNameOrNickName :many
-SELECT id, name, nick_name, country, province, website, email, status, verified_date FROM schools
+SELECT
+  id,
+  name,
+  city,
+  province
+FROM schools
 WHERE name LIKE $1 OR $1 LIKE ANY(nick_name)
 LIMIT 5
 `
 
-func (q *Queries) SearchSchoolsByNameOrNickName(ctx context.Context, name string) ([]School, error) {
+type SearchSchoolsByNameOrNickNameRow struct {
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	City     string `json:"city"`
+	Province string `json:"province"`
+}
+
+func (q *Queries) SearchSchoolsByNameOrNickName(ctx context.Context, name string) ([]SearchSchoolsByNameOrNickNameRow, error) {
 	rows, err := q.db.QueryContext(ctx, searchSchoolsByNameOrNickName, name)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []School{}
+	items := []SearchSchoolsByNameOrNickNameRow{}
 	for rows.Next() {
-		var i School
+		var i SearchSchoolsByNameOrNickNameRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			pq.Array(&i.NickName),
-			&i.Country,
+			&i.City,
 			&i.Province,
-			&i.Website,
-			&i.Email,
-			&i.Status,
-			&i.VerifiedDate,
 		); err != nil {
 			return nil, err
 		}
@@ -232,7 +239,7 @@ SET
   status = $1::text
 WHERE
   id = $2::bigint
-RETURNING id, name, nick_name, country, province, website, email, status, verified_date
+RETURNING id, name, nick_name, city, province, website, email, status, verified_date
 `
 
 type UpdateSchoolStatusRequestParams struct {
@@ -247,7 +254,7 @@ func (q *Queries) UpdateSchoolStatusRequest(ctx context.Context, arg UpdateSchoo
 		&i.ID,
 		&i.Name,
 		pq.Array(&i.NickName),
-		&i.Country,
+		&i.City,
 		&i.Province,
 		&i.Website,
 		&i.Email,

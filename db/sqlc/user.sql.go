@@ -37,11 +37,11 @@ INSERT INTO users (
 `
 
 type CreateUserParams struct {
-	FirstName                string         `json:"first_name"`
-	LastName                 string         `json:"last_name"`
-	School                   sql.NullString `json:"school"`
-	ExpectedYearOfGraduation sql.NullInt16  `json:"expected_year_of_graduation"`
-	Email                    string         `json:"email"`
+	FirstName                string `json:"first_name"`
+	LastName                 string `json:"last_name"`
+	School                   string `json:"school"`
+	ExpectedYearOfGraduation int16  `json:"expected_year_of_graduation"`
+	Email                    string `json:"email"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -197,21 +197,21 @@ type UserListProfessorRatingsParams struct {
 }
 
 type UserListProfessorRatingsRow struct {
-	ID                  int64          `json:"id"`
-	Quality             string         `json:"quality"`
-	Difficult           string         `json:"difficult"`
-	WouldTakeAgain      int16          `json:"would_take_again"`
-	TakenForCredit      sql.NullBool   `json:"taken_for_credit"`
-	UseTextbooks        sql.NullBool   `json:"use_textbooks"`
-	AttendanceMandatory int16          `json:"attendance_mandatory"`
-	Grade               sql.NullString `json:"grade"`
-	Tags                []string       `json:"tags"`
-	Review              string         `json:"review"`
-	CreatedAt           time.Time      `json:"created_at"`
-	ProfessorFirstName  string         `json:"professor_first_name"`
-	ProfessorLastName   string         `json:"professor_last_name"`
-	SchoolName          string         `json:"school_name"`
-	CourseName          string         `json:"course_name"`
+	ID                  int64     `json:"id"`
+	Quality             string    `json:"quality"`
+	Difficult           string    `json:"difficult"`
+	WouldTakeAgain      int16     `json:"would_take_again"`
+	TakenForCredit      bool      `json:"taken_for_credit"`
+	UseTextbooks        bool      `json:"use_textbooks"`
+	AttendanceMandatory int16     `json:"attendance_mandatory"`
+	Grade               string    `json:"grade"`
+	Tags                []string  `json:"tags"`
+	Review              string    `json:"review"`
+	CreatedAt           time.Time `json:"created_at"`
+	ProfessorFirstName  string    `json:"professor_first_name"`
+	ProfessorLastName   string    `json:"professor_last_name"`
+	SchoolName          string    `json:"school_name"`
+	CourseName          string    `json:"course_name"`
 }
 
 func (q *Queries) UserListProfessorRatings(ctx context.Context, arg UserListProfessorRatingsParams) ([]UserListProfessorRatingsRow, error) {

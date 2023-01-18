@@ -1,7 +1,6 @@
 package util
 
 import (
-	"database/sql"
 	"fmt"
 
 	db "github.com/dados-id/dados-be/db/sqlc"
@@ -9,16 +8,11 @@ import (
 
 func GetValidUser() (user db.User, password string) {
 	user = db.User{
-		FirstName: randomName(),
-		LastName:  randomName(),
-		School: sql.NullString{
-			String: randomSchool(),
-			Valid:  true,
-		},
-		ExpectedYearOfGraduation: sql.NullInt16{
-			Int16: int16(randomExpectedYearOfGraduation()),
-		},
-		Email: randomEmail(),
+		FirstName:                randomName(),
+		LastName:                 randomName(),
+		School:                   randomSchool(),
+		ExpectedYearOfGraduation: int16(randomExpectedYearOfGraduation()),
+		Email:                    randomEmail(),
 	}
 	return
 }
