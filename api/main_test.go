@@ -18,8 +18,9 @@ func TestMain(m *testing.M) {
 
 func newTestServer(t *testing.T, store db.Querier) *Server {
 	configuration := config.Config{}
+	firebaseClient := config.NewFireBase()
 
-	server, err := NewServer(configuration, store)
+	server, err := NewServer(configuration, store, *firebaseClient)
 	require.NoError(t, err)
 
 	return server

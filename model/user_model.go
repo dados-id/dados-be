@@ -1,5 +1,9 @@
 package model
 
+type LoginUserRequest struct {
+	IDToken string `json:"idToken" binding:"required"`
+}
+
 type CreateUserRequest struct {
 	FirstName                string `json:"firstName" binding:"required"`
 	LastName                 string `json:"lastName" binding:"required"`

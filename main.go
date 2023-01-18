@@ -9,9 +9,11 @@ import (
 func main() {
 	configuration := config.LoadConfig(".")
 	database := config.NewPostgres(configuration.DBDriver, configuration.DBSource)
+	firebaseClient := config.NewFireBase()
+
 	config.RunDBMigration(configuration.MigrationURL, configuration.DBSource)
 
 	query := db.New(database)
 
-	api.RunGinServer(configuration, query)
+	api.RunGinServer(configuration, query, *firebaseClient)
 }
