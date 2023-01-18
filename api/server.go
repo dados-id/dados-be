@@ -1,6 +1,7 @@
 package api
 
 import (
+	"firebase.google.com/go/auth"
 	"github.com/dados-id/dados-be/config"
 	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
@@ -9,16 +10,18 @@ import (
 
 // Server serves HTTP requests.
 type Server struct {
-	config config.Config
-	query  db.Querier
-	router *gin.Engine
+	config         config.Config
+	query          db.Querier
+	firebaseClient auth.Client
+	router         *gin.Engine
 }
 
 // NewServer creates a new HTTP server and set up routing.
-func NewServer(configuration config.Config, query db.Querier) (*Server, error) {
+func NewServer(configuration config.Config, query db.Querier, firebaseClient auth.Client) (*Server, error) {
 	server := &Server{
-		config: configuration,
-		query:  query,
+		config:         configuration,
+		query:          query,
+		firebaseClient: firebaseClient,
 	}
 
 	server.setupRouter()
@@ -40,16 +43,23 @@ func (server *Server) setupRouter() {
 		})
 	})
 
+	router.POST("/users/login", server.loginUser)
 	router.POST("/users", server.createUser)
-	router.GET("/users/:id", server.getUser)
-	router.PUT("/users/:id", server.updateUser)
 
-	router.GET("/users/:id/professor_ratings", server.userListProfessorRatings)
-	router.GET("/users/:id/school_ratings", server.userListSchoolRatings)
-	router.GET("/users/:id/saved_professors", server.userListSavedProfessors)
+	authRoutes := router.Group("/")
 
-	router.DELETE("/users/:user_id/professors/:professor_id", server.unsaveProfessor)
-	router.POST("/users/:user_id/professors/:professor_id", server.saveProfessor)
+	authRoutes.Use(authMiddleware())
+	{
+		authRoutes.GET("/users/:id", server.getUser)
+		authRoutes.PUT("/users/:id", server.updateUser)
+
+		authRoutes.GET("/users/:id/professor_ratings", server.userListProfessorRatings)
+		authRoutes.GET("/users/:id/school_ratings", server.userListSchoolRatings)
+		authRoutes.GET("/users/:id/saved_professors", server.userListSavedProfessors)
+
+		authRoutes.DELETE("/users/:user_id/professors/:professor_id", server.unsaveProfessor)
+		authRoutes.POST("/users/:user_id/professors/:professor_id", server.saveProfessor)
+	}
 
 	server.router = router
 }
@@ -59,8 +69,8 @@ func (server *Server) start(address string) error {
 	return server.router.Run(address)
 }
 
-func RunGinServer(configuration config.Config, query db.Querier) {
-	server, err := NewServer(configuration, query)
+func RunGinServer(configuration config.Config, query db.Querier, firebaseClient auth.Client) {
+	server, err := NewServer(configuration, query, firebaseClient)
 	exception.FatalIfNeeded(err, "cannot create server")
 
 	err = server.start(configuration.HTTPServerAddress)

@@ -46,5 +46,8 @@ jobs:
       - name: Run migrations
         run: make migrateup
 
+      - name: Create SA key
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > privateKey.json
+
       - name: Run tests
         run: make test
