@@ -1,0 +1,24 @@
+package util
+
+import (
+	"fmt"
+
+	db "github.com/dados-id/dados-be/db/sqlc"
+)
+
+func GetValidSchool() (School db.School, password string) {
+	School = db.School{
+		Name:     randomName(),
+		NickName: []string{randomName(), randomName(), randomName()},
+		Country:  randomName(),
+		Province: randomName(),
+		Website:  randomWebsite(),
+		Email:    randomEmail(),
+	}
+	return
+}
+
+// randomWebsite generates a random website of school
+func randomWebsite() string {
+	return fmt.Sprintf("www.%s.id", RandomString(20))
+}
