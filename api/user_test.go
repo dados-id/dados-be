@@ -48,11 +48,11 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "OK",
 			body: gin.H{
-				"first_name":                  user.FirstName,
-				"last_name":                   user.LastName,
-				"school":                      user.School,
-				"expected_year_of_graduation": user.ExpectedYearOfGraduation,
-				"email":                       user.Email,
+				"firstName":                user.FirstName,
+				"lastName":                 user.LastName,
+				"school":                   user.School,
+				"expectedYearOfGraduation": user.ExpectedYearOfGraduation,
+				"email":                    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockQuerier) {
 				store.EXPECT().
@@ -68,11 +68,11 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "InternalError",
 			body: gin.H{
-				"first_name":                  user.FirstName,
-				"last_name":                   user.LastName,
-				"school":                      user.School,
-				"expected_year_of_graduation": user.ExpectedYearOfGraduation,
-				"email":                       user.Email,
+				"firstName":                user.FirstName,
+				"lastName":                 user.LastName,
+				"school":                   user.School,
+				"expectedYearOfGraduation": user.ExpectedYearOfGraduation,
+				"email":                    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockQuerier) {
 				store.EXPECT().
@@ -87,11 +87,11 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "DuplicateEmail",
 			body: gin.H{
-				"first_name":                  user.FirstName,
-				"last_name":                   user.LastName,
-				"school":                      user.School,
-				"expected_year_of_graduation": user.ExpectedYearOfGraduation,
-				"email":                       user.Email,
+				"firstName":                user.FirstName,
+				"lastName":                 user.LastName,
+				"school":                   user.School,
+				"expectedYearOfGraduation": user.ExpectedYearOfGraduation,
+				"email":                    user.Email,
 			},
 			buildStubs: func(store *mockdb.MockQuerier) {
 				store.EXPECT().
@@ -106,11 +106,11 @@ func TestCreateUserAPI(t *testing.T) {
 		{
 			name: "InvalidEmail",
 			body: gin.H{
-				"first_name":                  user.FirstName,
-				"last_name":                   user.LastName,
-				"school":                      user.School,
-				"expected_year_of_graduation": user.ExpectedYearOfGraduation,
-				"email":                       "invalid-email",
+				"firstName":                user.FirstName,
+				"lastName":                 user.LastName,
+				"school":                   user.School,
+				"expectedYearOfGraduation": user.ExpectedYearOfGraduation,
+				"email":                    "invalid-email",
 			},
 			buildStubs: func(store *mockdb.MockQuerier) {
 				store.EXPECT().
