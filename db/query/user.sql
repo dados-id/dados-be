@@ -108,3 +108,6 @@ SET
 WHERE
   id = sqlc.arg(id)
 RETURNING *;
+
+-- name: CountUser :one
+SELECT COUNT(*) FROM users;

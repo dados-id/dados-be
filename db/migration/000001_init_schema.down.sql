@@ -1,3 +1,7 @@
+DROP TRIGGER IF EXISTS tr_insert_overall_rating ON school_ratings;
+
+DROP FUNCTION IF EXISTS update_overall_rating();
+
 DROP TABLE IF EXISTS users CASCADE;
 
 DROP TABLE IF EXISTS user_save_professors CASCADE;
@@ -25,3 +29,5 @@ DROP TABLE IF EXISTS school_ratings CASCADE;
 DROP TABLE IF EXISTS report_forms CASCADE;
 
 DROP TABLE IF EXISTS correction_forms CASCADE;
+
+DROP TYPE StatusRequest;

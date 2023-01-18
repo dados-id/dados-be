@@ -11,29 +11,43 @@ import (
 	"github.com/lib/pq"
 )
 
+const countSchool = `-- name: CountSchool :one
+SELECT COUNT(*) FROM schools
+`
+
+func (q *Queries) CountSchool(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countSchool)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createSchool = `-- name: CreateSchool :one
 INSERT INTO schools (
   name,
+  nick_name,
   country,
   province,
   website,
   email
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 ) RETURNING id, name, nick_name, country, province, website, email, status, verified_date
 `
 
 type CreateSchoolParams struct {
-	Name     string `json:"name"`
-	Country  string `json:"country"`
-	Province string `json:"province"`
-	Website  string `json:"website"`
-	Email    string `json:"email"`
+	Name     string   `json:"name"`
+	NickName []string `json:"nick_name"`
+	Country  string   `json:"country"`
+	Province string   `json:"province"`
+	Website  string   `json:"website"`
+	Email    string   `json:"email"`
 }
 
 func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (School, error) {
 	row := q.db.QueryRowContext(ctx, createSchool,
 		arg.Name,
+		pq.Array(arg.NickName),
 		arg.Country,
 		arg.Province,
 		arg.Website,
@@ -176,7 +190,7 @@ func (q *Queries) ListSchools(ctx context.Context, arg ListSchoolsParams) ([]Sch
 const searchSchoolsByNameOrNickName = `-- name: SearchSchoolsByNameOrNickName :many
 SELECT id, name, nick_name, country, province, website, email, status, verified_date FROM schools
 WHERE name LIKE $1 OR $1 LIKE ANY(nick_name)
-LIMIT 10
+LIMIT 5
 `
 
 func (q *Queries) SearchSchoolsByNameOrNickName(ctx context.Context, name string) ([]School, error) {

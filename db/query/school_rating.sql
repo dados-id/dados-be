@@ -1,5 +1,7 @@
 -- name: CreateSchoolRating :one
 INSERT INTO school_ratings (
+  user_id,
+  school_id,
   reputation,
   location,
   opportunities,
@@ -12,7 +14,7 @@ INSERT INTO school_ratings (
   safety,
   review
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 ) RETURNING *;
 
 -- name: GetSchoolRating :one
