@@ -65,43 +65,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
-const createUserSaveProfessor = `-- name: CreateUserSaveProfessor :exec
-INSERT INTO user_save_professors (
-  professor_id,
-  user_id
-) VALUES (
-  $1, $2
-)
-`
-
-type CreateUserSaveProfessorParams struct {
-	ProfessorID int64 `json:"professorID"`
-	UserID      int64 `json:"userID"`
-}
-
-func (q *Queries) CreateUserSaveProfessor(ctx context.Context, arg CreateUserSaveProfessorParams) error {
-	_, err := q.db.ExecContext(ctx, createUserSaveProfessor, arg.ProfessorID, arg.UserID)
-	return err
-}
-
-const deleteUserSaveProfessor = `-- name: DeleteUserSaveProfessor :exec
-DELETE FROM user_save_professors
-WHERE
-  professor_id = $1
-AND
-  user_id = $2
-`
-
-type DeleteUserSaveProfessorParams struct {
-	ProfessorID int64 `json:"professorID"`
-	UserID      int64 `json:"userID"`
-}
-
-func (q *Queries) DeleteUserSaveProfessor(ctx context.Context, arg DeleteUserSaveProfessorParams) error {
-	_, err := q.db.ExecContext(ctx, deleteUserSaveProfessor, arg.ProfessorID, arg.UserID)
-	return err
-}
-
 const getUser = `-- name: GetUser :one
 SELECT id, first_name, last_name, school, expected_year_of_graduation, email, created_at FROM users
 WHERE id = $1
@@ -120,6 +83,43 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const saveProfessor = `-- name: SaveProfessor :exec
+INSERT INTO user_save_professors (
+  professor_id,
+  user_id
+) VALUES (
+  $1, $2
+)
+`
+
+type SaveProfessorParams struct {
+	ProfessorID int64 `json:"professorID"`
+	UserID      int64 `json:"userID"`
+}
+
+func (q *Queries) SaveProfessor(ctx context.Context, arg SaveProfessorParams) error {
+	_, err := q.db.ExecContext(ctx, saveProfessor, arg.ProfessorID, arg.UserID)
+	return err
+}
+
+const unsaveProfessor = `-- name: UnsaveProfessor :exec
+DELETE FROM user_save_professors
+WHERE
+  professor_id = $1
+AND
+  user_id = $2
+`
+
+type UnsaveProfessorParams struct {
+	ProfessorID int64 `json:"professorID"`
+	UserID      int64 `json:"userID"`
+}
+
+func (q *Queries) UnsaveProfessor(ctx context.Context, arg UnsaveProfessorParams) error {
+	_, err := q.db.ExecContext(ctx, unsaveProfessor, arg.ProfessorID, arg.UserID)
+	return err
 }
 
 const updateUser = `-- name: UpdateUser :one
@@ -183,7 +183,7 @@ SELECT
 FROM professor_ratings PR
   JOIN professors P ON PR.professor_id = P.id
   JOIN schools S ON P.school_id = S.id
-  JOIN courses C ON C.course_code = PR.course_code
+  JOIN courses C ON C.code = PR.course_code
 WHERE
   PR.user_id = $1
 LIMIT $2

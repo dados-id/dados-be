@@ -41,6 +41,15 @@ func (server *Server) setupRouter() {
 	})
 
 	router.POST("/users", server.createUser)
+	router.GET("/users/:id", server.getUser)
+	router.PUT("/users/:id", server.updateUser)
+
+	router.GET("/users/:id/professor_ratings", server.userListProfessorRatings)
+	router.GET("/users/:id/school_ratings", server.userListSchoolRatings)
+	router.GET("/users/:id/saved_professors", server.userListSavedProfessors)
+
+	router.DELETE("/users/:user_id/professors/:professor_id", server.unsaveProfessor)
+	router.POST("/users/:user_id/professors/:professor_id", server.saveProfessor)
 
 	server.router = router
 }

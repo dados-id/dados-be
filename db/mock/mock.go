@@ -198,34 +198,6 @@ func (mr *MockQuerierMockRecorder) CreateUser(arg0, arg1 interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockQuerier)(nil).CreateUser), arg0, arg1)
 }
 
-// CreateUserSaveProfessor mocks base method.
-func (m *MockQuerier) CreateUserSaveProfessor(arg0 context.Context, arg1 db.CreateUserSaveProfessorParams) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUserSaveProfessor", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// CreateUserSaveProfessor indicates an expected call of CreateUserSaveProfessor.
-func (mr *MockQuerierMockRecorder) CreateUserSaveProfessor(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserSaveProfessor", reflect.TypeOf((*MockQuerier)(nil).CreateUserSaveProfessor), arg0, arg1)
-}
-
-// DeleteUserSaveProfessor mocks base method.
-func (m *MockQuerier) DeleteUserSaveProfessor(arg0 context.Context, arg1 db.DeleteUserSaveProfessorParams) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteUserSaveProfessor", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteUserSaveProfessor indicates an expected call of DeleteUserSaveProfessor.
-func (mr *MockQuerierMockRecorder) DeleteUserSaveProfessor(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserSaveProfessor", reflect.TypeOf((*MockQuerier)(nil).DeleteUserSaveProfessor), arg0, arg1)
-}
-
 // GetProfessor mocks base method.
 func (m *MockQuerier) GetProfessor(arg0 context.Context, arg1 int64) (db.Professor, error) {
 	m.ctrl.T.Helper()
@@ -511,6 +483,20 @@ func (mr *MockQuerierMockRecorder) ListTop5Tags(arg0, arg1 interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTop5Tags", reflect.TypeOf((*MockQuerier)(nil).ListTop5Tags), arg0, arg1)
 }
 
+// SaveProfessor mocks base method.
+func (m *MockQuerier) SaveProfessor(arg0 context.Context, arg1 db.SaveProfessorParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveProfessor", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveProfessor indicates an expected call of SaveProfessor.
+func (mr *MockQuerierMockRecorder) SaveProfessor(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveProfessor", reflect.TypeOf((*MockQuerier)(nil).SaveProfessor), arg0, arg1)
+}
+
 // SearchProfessorsByName mocks base method.
 func (m *MockQuerier) SearchProfessorsByName(arg0 context.Context, arg1 string) ([]db.SearchProfessorsByNameRow, error) {
 	m.ctrl.T.Helper()
@@ -539,6 +525,20 @@ func (m *MockQuerier) SearchSchoolsByNameOrNickName(arg0 context.Context, arg1 s
 func (mr *MockQuerierMockRecorder) SearchSchoolsByNameOrNickName(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchSchoolsByNameOrNickName", reflect.TypeOf((*MockQuerier)(nil).SearchSchoolsByNameOrNickName), arg0, arg1)
+}
+
+// UnsaveProfessor mocks base method.
+func (m *MockQuerier) UnsaveProfessor(arg0 context.Context, arg1 db.UnsaveProfessorParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UnsaveProfessor", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UnsaveProfessor indicates an expected call of UnsaveProfessor.
+func (mr *MockQuerierMockRecorder) UnsaveProfessor(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UnsaveProfessor", reflect.TypeOf((*MockQuerier)(nil).UnsaveProfessor), arg0, arg1)
 }
 
 // UpdateCorrection mocks base method.

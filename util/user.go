@@ -6,7 +6,7 @@ import (
 	db "github.com/dados-id/dados-be/db/sqlc"
 )
 
-func GetValidUser() (user db.User, password string) {
+func GetValidUser() (user db.User) {
 	user = db.User{
 		FirstName:                randomName(),
 		LastName:                 randomName(),
