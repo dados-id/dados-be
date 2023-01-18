@@ -11,47 +11,47 @@ import (
 	"time"
 )
 
-type StatusRequest string
+type Statusrequest string
 
 const (
-	StatusRequestPending  StatusRequest = "pending"
-	StatusRequestVerified StatusRequest = "verified"
-	StatusRequestRejected StatusRequest = "rejected"
+	StatusrequestPending  Statusrequest = "pending"
+	StatusrequestVerified Statusrequest = "verified"
+	StatusrequestRejected Statusrequest = "rejected"
 )
 
-func (e *StatusRequest) Scan(src interface{}) error {
+func (e *Statusrequest) Scan(src interface{}) error {
 	switch s := src.(type) {
 	case []byte:
-		*e = StatusRequest(s)
+		*e = Statusrequest(s)
 	case string:
-		*e = StatusRequest(s)
+		*e = Statusrequest(s)
 	default:
-		return fmt.Errorf("unsupported scan type for StatusRequest: %T", src)
+		return fmt.Errorf("unsupported scan type for Statusrequest: %T", src)
 	}
 	return nil
 }
 
-type NullStatusRequest struct {
-	StatusRequest StatusRequest
+type NullStatusrequest struct {
+	Statusrequest Statusrequest
 	Valid         bool // Valid is true if String is not NULL
 }
 
 // Scan implements the Scanner interface.
-func (ns *NullStatusRequest) Scan(value interface{}) error {
+func (ns *NullStatusrequest) Scan(value interface{}) error {
 	if value == nil {
-		ns.StatusRequest, ns.Valid = "", false
+		ns.Statusrequest, ns.Valid = "", false
 		return nil
 	}
 	ns.Valid = true
-	return ns.StatusRequest.Scan(value)
+	return ns.Statusrequest.Scan(value)
 }
 
 // Value implements the driver Valuer interface.
-func (ns NullStatusRequest) Value() (driver.Value, error) {
+func (ns NullStatusrequest) Value() (driver.Value, error) {
 	if !ns.Valid {
 		return nil, nil
 	}
-	return ns.StatusRequest, nil
+	return ns.Statusrequest, nil
 }
 
 type CorrectionForm struct {
@@ -59,7 +59,7 @@ type CorrectionForm struct {
 	Problem      sql.NullString `json:"problem"`
 	CorrectInfo  sql.NullString `json:"correct_info"`
 	Email        sql.NullString `json:"email"`
-	Status       interface{}    `json:"status"`
+	Status       Statusrequest  `json:"status"`
 	RequestDate  time.Time      `json:"request_date"`
 	VerifiedDate time.Time      `json:"verified_date"`
 	UserID       int64          `json:"user_id"`
@@ -81,18 +81,18 @@ type Faculty struct {
 //       2. 5 distribusi nilai (from quality)
 //
 type Professor struct {
-	ID                int64       `json:"id"`
-	FirstName         string      `json:"first_name"`
-	LastName          string      `json:"last_name"`
-	Rating            int16       `json:"rating"`
-	TotalReview       int32       `json:"total_review"`
-	WouldTakeAgain    int16       `json:"would_take_again"`
-	LevelOfDifficulty string      `json:"level_of_difficulty"`
-	CreatedAt         time.Time   `json:"created_at"`
-	Status            interface{} `json:"status"`
-	VerifiedDate      time.Time   `json:"verified_date"`
-	FacultyID         int64       `json:"faculty_id"`
-	SchoolID          int64       `json:"school_id"`
+	ID                int64         `json:"id"`
+	FirstName         string        `json:"first_name"`
+	LastName          string        `json:"last_name"`
+	Rating            int16         `json:"rating"`
+	TotalReview       int32         `json:"total_review"`
+	WouldTakeAgain    int16         `json:"would_take_again"`
+	LevelOfDifficulty string        `json:"level_of_difficulty"`
+	CreatedAt         time.Time     `json:"created_at"`
+	Status            Statusrequest `json:"status"`
+	VerifiedDate      time.Time     `json:"verified_date"`
+	FacultyID         int64         `json:"faculty_id"`
+	SchoolID          int64         `json:"school_id"`
 }
 
 type ProfessorCourseAssociation struct {
@@ -137,13 +137,13 @@ type ProfessorRatingTag struct {
 }
 
 type ReportForm struct {
-	ID                int64       `json:"id"`
-	Comment           string      `json:"comment"`
-	Status            interface{} `json:"status"`
-	RequestDate       time.Time   `json:"request_date"`
-	VerifiedDate      time.Time   `json:"verified_date"`
-	ProfessorRatingID int64       `json:"professor_rating_id"`
-	UserID            int64       `json:"user_id"`
+	ID                int64         `json:"id"`
+	Comment           string        `json:"comment"`
+	Status            Statusrequest `json:"status"`
+	RequestDate       time.Time     `json:"request_date"`
+	VerifiedDate      time.Time     `json:"verified_date"`
+	ProfessorRatingID int64         `json:"professor_rating_id"`
+	UserID            int64         `json:"user_id"`
 }
 
 //
@@ -152,15 +152,15 @@ type ReportForm struct {
 //       2. avg Overall Quality
 //
 type School struct {
-	ID           int64       `json:"id"`
-	Name         string      `json:"name"`
-	NickName     []string    `json:"nick_name"`
-	Country      string      `json:"country"`
-	Province     string      `json:"province"`
-	Website      string      `json:"website"`
-	Email        string      `json:"email"`
-	Status       interface{} `json:"status"`
-	VerifiedDate time.Time   `json:"verified_date"`
+	ID           int64         `json:"id"`
+	Name         string        `json:"name"`
+	NickName     []string      `json:"nick_name"`
+	Country      string        `json:"country"`
+	Province     string        `json:"province"`
+	Website      string        `json:"website"`
+	Email        string        `json:"email"`
+	Status       Statusrequest `json:"status"`
+	VerifiedDate time.Time     `json:"verified_date"`
 }
 
 type SchoolFacultyAssociation struct {
@@ -198,8 +198,8 @@ type Tag struct {
 
 type User struct {
 	ID                       int64          `json:"id"`
-	FirstName                sql.NullString `json:"first_name"`
-	LastName                 sql.NullString `json:"last_name"`
+	FirstName                string         `json:"first_name"`
+	LastName                 string         `json:"last_name"`
 	School                   sql.NullString `json:"school"`
 	ExpectedYearOfGraduation sql.NullInt16  `json:"expected_year_of_graduation"`
 	Email                    string         `json:"email"`

@@ -13,6 +13,17 @@ import (
 	"github.com/lib/pq"
 )
 
+const countUser = `-- name: CountUser :one
+SELECT COUNT(*) FROM users
+`
+
+func (q *Queries) CountUser(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUser)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
   first_name,
@@ -26,8 +37,8 @@ INSERT INTO users (
 `
 
 type CreateUserParams struct {
-	FirstName                sql.NullString `json:"first_name"`
-	LastName                 sql.NullString `json:"last_name"`
+	FirstName                string         `json:"first_name"`
+	LastName                 string         `json:"last_name"`
 	School                   sql.NullString `json:"school"`
 	ExpectedYearOfGraduation sql.NullInt16  `json:"expected_year_of_graduation"`
 	Email                    string         `json:"email"`

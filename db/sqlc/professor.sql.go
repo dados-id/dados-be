@@ -408,7 +408,7 @@ func (q *Queries) ListProfessorsBySchool(ctx context.Context, arg ListProfessors
 }
 
 const listTop5Tags = `-- name: ListTop5Tags :many
-SELECT T.name as tag_name FROM tags T
+SELECT T.name as tag_names FROM tags T
   JOIN professor_rating_tags PRT ON PRT.tag_id = T.id
   JOIN professor_ratings PR ON PRT.professor_id = PR.id
 WHERE
@@ -426,11 +426,11 @@ func (q *Queries) ListTop5Tags(ctx context.Context, professorID int64) ([]string
 	defer rows.Close()
 	items := []string{}
 	for rows.Next() {
-		var tag_name string
-		if err := rows.Scan(&tag_name); err != nil {
+		var tag_names string
+		if err := rows.Scan(&tag_names); err != nil {
 			return nil, err
 		}
-		items = append(items, tag_name)
+		items = append(items, tag_names)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err
@@ -444,7 +444,7 @@ func (q *Queries) ListTop5Tags(ctx context.Context, professorID int64) ([]string
 const searchProfessorsByName = `-- name: SearchProfessorsByName :many
 SELECT id, first_name, last_name, rating, total_review, would_take_again, level_of_difficulty, created_at, status, verified_date, faculty_id, school_id FROM professors
 WHERE first_name LIKE $1 OR last_name LIKE $1 OR concat(first_name, ' ', last_name) LIKE $1
-LIMIT 10
+LIMIT 5
 `
 
 func (q *Queries) SearchProfessorsByName(ctx context.Context, firstName string) ([]Professor, error) {

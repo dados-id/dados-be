@@ -32,6 +32,8 @@ func (q *Queries) CreateSchoolFacultyAssociation(ctx context.Context, arg Create
 
 const createSchoolRating = `-- name: CreateSchoolRating :one
 INSERT INTO school_ratings (
+  user_id,
+  school_id,
   reputation,
   location,
   opportunities,
@@ -44,11 +46,13 @@ INSERT INTO school_ratings (
   safety,
   review
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 ) RETURNING id, user_id, school_id, reputation, location, opportunities, facilities, internet, food, clubs, social, happiness, safety, review, up_vote, down_vote, overall_rating, created_at, edited_at, verified
 `
 
 type CreateSchoolRatingParams struct {
+	UserID        int64  `json:"user_id"`
+	SchoolID      int64  `json:"school_id"`
 	Reputation    int16  `json:"reputation"`
 	Location      int16  `json:"location"`
 	Opportunities int16  `json:"opportunities"`
@@ -64,6 +68,8 @@ type CreateSchoolRatingParams struct {
 
 func (q *Queries) CreateSchoolRating(ctx context.Context, arg CreateSchoolRatingParams) (SchoolRating, error) {
 	row := q.db.QueryRowContext(ctx, createSchoolRating,
+		arg.UserID,
+		arg.SchoolID,
 		arg.Reputation,
 		arg.Location,
 		arg.Opportunities,

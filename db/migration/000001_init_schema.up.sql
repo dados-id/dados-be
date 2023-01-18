@@ -2,7 +2,7 @@
 -- Database: PostgreSQL
 -- Generated at: 2023-01-17T15:02:43.271Z
 
-CREATE TYPE "StatusRequest" AS ENUM (
+CREATE TYPE StatusRequest AS ENUM (
   'pending',
   'verified',
   'rejected'
@@ -10,8 +10,8 @@ CREATE TYPE "StatusRequest" AS ENUM (
 
 CREATE TABLE "users" (
   "id" bigserial PRIMARY KEY,
-  "first_name" varchar,
-  "last_name" varchar,
+  "first_name" varchar NOT NULL,
+  "last_name" varchar NOT NULL,
   "school" varchar,
   "expected_year_of_graduation" smallint,
   "email" varchar UNIQUE NOT NULL,
@@ -225,3 +225,26 @@ ALTER TABLE "professors" ADD FOREIGN KEY ("school_id") REFERENCES "schools" ("id
 ALTER TABLE "professor_ratings" ADD FOREIGN KEY ("professor_id") REFERENCES "professors" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "school_ratings" ADD FOREIGN KEY ("school_id") REFERENCES "schools" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+CREATE OR REPLACE FUNCTION update_overall_rating() RETURNS TRIGGER AS $$
+BEGIN
+  NEW.overall_rating := (
+    NEW.reputation +
+    NEW.location +
+    NEW.opportunities +
+    NEW.facilities +
+    NEW.internet +
+    NEW.food +
+    NEW.clubs +
+    NEW.social +
+    NEW.happiness +
+    NEW.safety
+  ) / 10;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_insert_overall_rating
+BEFORE INSERT OR UPDATE ON school_ratings
+FOR EACH ROW
+EXECUTE FUNCTION update_overall_rating();

@@ -1,12 +1,13 @@
 -- name: CreateSchool :one
 INSERT INTO schools (
   name,
+  nick_name,
   country,
   province,
   website,
   email
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 
 -- name: GetSchool :one
@@ -49,3 +50,6 @@ SET
 WHERE
   id = @id::bigint
 RETURNING *;
+
+-- name: CountSchool :one
+SELECT COUNT(*) FROM schools;
