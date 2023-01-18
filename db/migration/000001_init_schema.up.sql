@@ -239,7 +239,7 @@ BEGIN
     NEW.social +
     NEW.happiness +
     NEW.safety
-  ) / 10;
+  ) * 1.0 / 10;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
