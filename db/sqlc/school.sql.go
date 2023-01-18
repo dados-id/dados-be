@@ -37,7 +37,7 @@ INSERT INTO schools (
 
 type CreateSchoolParams struct {
 	Name     string   `json:"name"`
-	NickName []string `json:"nick_name"`
+	NickName []string `json:"nickName"`
 	City     string   `json:"city"`
 	Province string   `json:"province"`
 	Website  string   `json:"website"`
@@ -121,7 +121,7 @@ type GetSchoolInfoAggregateRow struct {
 	Social        int16 `json:"social"`
 	Happiness     int16 `json:"happiness"`
 	Safety        int16 `json:"safety"`
-	OverallRating int16 `json:"overall_rating"`
+	OverallRating int16 `json:"overallRating"`
 }
 
 func (q *Queries) GetSchoolInfoAggregate(ctx context.Context, id int64) (GetSchoolInfoAggregateRow, error) {

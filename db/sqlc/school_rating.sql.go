@@ -21,8 +21,8 @@ INSERT INTO school_faculty_associations (
 `
 
 type CreateSchoolFacultyAssociationParams struct {
-	FacultyID int64 `json:"faculty_id"`
-	SchoolID  int64 `json:"school_id"`
+	FacultyID int64 `json:"facultyID"`
+	SchoolID  int64 `json:"schoolID"`
 }
 
 func (q *Queries) CreateSchoolFacultyAssociation(ctx context.Context, arg CreateSchoolFacultyAssociationParams) error {
@@ -51,8 +51,8 @@ INSERT INTO school_ratings (
 `
 
 type CreateSchoolRatingParams struct {
-	UserID        int64  `json:"user_id"`
-	SchoolID      int64  `json:"school_id"`
+	UserID        int64  `json:"userID"`
+	SchoolID      int64  `json:"schoolID"`
 	Reputation    int16  `json:"reputation"`
 	Location      int16  `json:"location"`
 	Opportunities int16  `json:"opportunities"`
@@ -129,8 +129,8 @@ WHERE S.id = $1::bigint AND SR.id = $2::bigint
 `
 
 type GetSchoolRatingParams struct {
-	SchoolID       int64 `json:"school_id"`
-	SchoolRatingID int64 `json:"school_rating_id"`
+	SchoolID       int64 `json:"schoolID"`
+	SchoolRatingID int64 `json:"schoolRatingID"`
 }
 
 type GetSchoolRatingRow struct {
@@ -146,7 +146,7 @@ type GetSchoolRatingRow struct {
 	Happiness     int16  `json:"happiness"`
 	Safety        int16  `json:"safety"`
 	Review        string `json:"review"`
-	SchoolName    string `json:"school_name"`
+	SchoolName    string `json:"schoolName"`
 }
 
 func (q *Queries) GetSchoolRating(ctx context.Context, arg GetSchoolRatingParams) (GetSchoolRatingRow, error) {
@@ -195,7 +195,7 @@ OFFSET $3
 `
 
 type ListSchoolRatingsParams struct {
-	SchoolID int64 `json:"school_id"`
+	SchoolID int64 `json:"schoolID"`
 	Limit    int32 `json:"limit"`
 	Offset   int32 `json:"offset"`
 }
@@ -213,10 +213,10 @@ type ListSchoolRatingsRow struct {
 	Happiness     int16     `json:"happiness"`
 	Safety        int16     `json:"safety"`
 	Review        string    `json:"review"`
-	UpVote        int32     `json:"up_vote"`
-	DownVote      int32     `json:"down_vote"`
-	OverallRating string    `json:"overall_rating"`
-	CreatedAt     time.Time `json:"created_at"`
+	UpVote        int32     `json:"upVote"`
+	DownVote      int32     `json:"downVote"`
+	OverallRating string    `json:"overallRating"`
+	CreatedAt     time.Time `json:"createdAt"`
 }
 
 func (q *Queries) ListSchoolRatings(ctx context.Context, arg ListSchoolRatingsParams) ([]ListSchoolRatingsRow, error) {
@@ -292,8 +292,8 @@ type UpdateSchoolRatingParams struct {
 	Happiness     sql.NullInt16  `json:"happiness"`
 	Safety        sql.NullInt16  `json:"safety"`
 	Review        sql.NullString `json:"review"`
-	UpVote        sql.NullInt32  `json:"up_vote"`
-	DownVote      sql.NullInt32  `json:"down_vote"`
+	UpVote        sql.NullInt32  `json:"upVote"`
+	DownVote      sql.NullInt32  `json:"downVote"`
 	ID            int64          `json:"id"`
 }
 

@@ -57,12 +57,12 @@ func (ns NullStatusrequest) Value() (driver.Value, error) {
 type CorrectionForm struct {
 	ID           int64         `json:"id"`
 	Problem      string        `json:"problem"`
-	CorrectInfo  string        `json:"correct_info"`
+	CorrectInfo  string        `json:"correctInfo"`
 	Email        string        `json:"email"`
 	Status       Statusrequest `json:"status"`
-	RequestDate  time.Time     `json:"request_date"`
-	VerifiedDate time.Time     `json:"verified_date"`
-	UserID       int64         `json:"user_id"`
+	RequestDate  time.Time     `json:"requestDate"`
+	VerifiedDate time.Time     `json:"verifiedDate"`
+	UserID       int64         `json:"userID"`
 }
 
 type Course struct {
@@ -82,22 +82,22 @@ type Faculty struct {
 //
 type Professor struct {
 	ID                int64         `json:"id"`
-	FirstName         string        `json:"first_name"`
-	LastName          string        `json:"last_name"`
+	FirstName         string        `json:"firstName"`
+	LastName          string        `json:"lastName"`
 	Rating            int16         `json:"rating"`
-	TotalReview       int32         `json:"total_review"`
-	WouldTakeAgain    int16         `json:"would_take_again"`
-	LevelOfDifficulty string        `json:"level_of_difficulty"`
-	CreatedAt         time.Time     `json:"created_at"`
+	TotalReview       int32         `json:"totalReview"`
+	WouldTakeAgain    int16         `json:"wouldTakeAgain"`
+	LevelOfDifficulty string        `json:"levelOfDifficulty"`
+	CreatedAt         time.Time     `json:"createdAt"`
 	Status            Statusrequest `json:"status"`
-	VerifiedDate      time.Time     `json:"verified_date"`
-	FacultyID         int64         `json:"faculty_id"`
-	SchoolID          int64         `json:"school_id"`
+	VerifiedDate      time.Time     `json:"verifiedDate"`
+	FacultyID         int64         `json:"facultyID"`
+	SchoolID          int64         `json:"schoolID"`
 }
 
 type ProfessorCourseAssociation struct {
-	ProfessorID int64  `json:"professor_id"`
-	CourseCode  string `json:"course_code"`
+	ProfessorID int64  `json:"professorID"`
+	CourseCode  string `json:"courseCode"`
 }
 
 //
@@ -114,36 +114,36 @@ type ProfessorRating struct {
 	ID                  int64        `json:"id"`
 	Quality             string       `json:"quality"`
 	Difficult           string       `json:"difficult"`
-	WouldTakeAgain      int16        `json:"would_take_again"`
-	TakenForCredit      bool         `json:"taken_for_credit"`
-	UseTextbooks        bool         `json:"use_textbooks"`
-	AttendanceMandatory int16        `json:"attendance_mandatory"`
+	WouldTakeAgain      int16        `json:"wouldTakeAgain"`
+	TakenForCredit      bool         `json:"takenForCredit"`
+	UseTextbooks        bool         `json:"useTextbooks"`
+	AttendanceMandatory int16        `json:"attendanceMandatory"`
 	Grade               string       `json:"grade"`
 	Tags                []string     `json:"tags"`
 	Review              string       `json:"review"`
-	UpVote              int32        `json:"up_vote"`
-	DownVote            int32        `json:"down_vote"`
-	CreatedAt           time.Time    `json:"created_at"`
-	EditedAt            time.Time    `json:"edited_at"`
-	ProfessorID         int64        `json:"professor_id"`
-	CourseCode          string       `json:"course_code"`
-	UserID              int64        `json:"user_id"`
+	UpVote              int32        `json:"upVote"`
+	DownVote            int32        `json:"downVote"`
+	CreatedAt           time.Time    `json:"createdAt"`
+	EditedAt            time.Time    `json:"editedAt"`
+	ProfessorID         int64        `json:"professorID"`
+	CourseCode          string       `json:"courseCode"`
+	UserID              int64        `json:"userID"`
 	Verified            sql.NullBool `json:"verified"`
 }
 
 type ProfessorRatingTag struct {
-	TagID       int64 `json:"tag_id"`
-	ProfessorID int64 `json:"professor_id"`
+	TagID       int64 `json:"tagID"`
+	ProfessorID int64 `json:"professorID"`
 }
 
 type ReportForm struct {
 	ID                int64         `json:"id"`
 	Comment           string        `json:"comment"`
 	Status            Statusrequest `json:"status"`
-	RequestDate       time.Time     `json:"request_date"`
-	VerifiedDate      time.Time     `json:"verified_date"`
-	ProfessorRatingID int64         `json:"professor_rating_id"`
-	UserID            int64         `json:"user_id"`
+	RequestDate       time.Time     `json:"requestDate"`
+	VerifiedDate      time.Time     `json:"verifiedDate"`
+	ProfessorRatingID int64         `json:"professorRatingID"`
+	UserID            int64         `json:"userID"`
 }
 
 //
@@ -154,24 +154,24 @@ type ReportForm struct {
 type School struct {
 	ID           int64         `json:"id"`
 	Name         string        `json:"name"`
-	NickName     []string      `json:"nick_name"`
+	NickName     []string      `json:"nickName"`
 	City         string        `json:"city"`
 	Province     string        `json:"province"`
 	Website      string        `json:"website"`
 	Email        string        `json:"email"`
 	Status       Statusrequest `json:"status"`
-	VerifiedDate time.Time     `json:"verified_date"`
+	VerifiedDate time.Time     `json:"verifiedDate"`
 }
 
 type SchoolFacultyAssociation struct {
-	FacultyID int64 `json:"faculty_id"`
-	SchoolID  int64 `json:"school_id"`
+	FacultyID int64 `json:"facultyID"`
+	SchoolID  int64 `json:"schoolID"`
 }
 
 type SchoolRating struct {
 	ID            int64        `json:"id"`
-	UserID        int64        `json:"user_id"`
-	SchoolID      int64        `json:"school_id"`
+	UserID        int64        `json:"userID"`
+	SchoolID      int64        `json:"schoolID"`
 	Reputation    int16        `json:"reputation"`
 	Location      int16        `json:"location"`
 	Opportunities int16        `json:"opportunities"`
@@ -183,11 +183,11 @@ type SchoolRating struct {
 	Happiness     int16        `json:"happiness"`
 	Safety        int16        `json:"safety"`
 	Review        string       `json:"review"`
-	UpVote        int32        `json:"up_vote"`
-	DownVote      int32        `json:"down_vote"`
-	OverallRating string       `json:"overall_rating"`
-	CreatedAt     time.Time    `json:"created_at"`
-	EditedAt      time.Time    `json:"edited_at"`
+	UpVote        int32        `json:"upVote"`
+	DownVote      int32        `json:"downVote"`
+	OverallRating string       `json:"overallRating"`
+	CreatedAt     time.Time    `json:"createdAt"`
+	EditedAt      time.Time    `json:"editedAt"`
 	Verified      sql.NullBool `json:"verified"`
 }
 
@@ -198,15 +198,15 @@ type Tag struct {
 
 type User struct {
 	ID                       int64     `json:"id"`
-	FirstName                string    `json:"first_name"`
-	LastName                 string    `json:"last_name"`
+	FirstName                string    `json:"firstName"`
+	LastName                 string    `json:"lastName"`
 	School                   string    `json:"school"`
-	ExpectedYearOfGraduation int16     `json:"expected_year_of_graduation"`
+	ExpectedYearOfGraduation int16     `json:"expectedYearOfGraduation"`
 	Email                    string    `json:"email"`
-	CreatedAt                time.Time `json:"created_at"`
+	CreatedAt                time.Time `json:"createdAt"`
 }
 
 type UserSaveProfessor struct {
-	ProfessorID int64 `json:"professor_id"`
-	UserID      int64 `json:"user_id"`
+	ProfessorID int64 `json:"professorID"`
+	UserID      int64 `json:"userID"`
 }

@@ -21,8 +21,8 @@ INSERT INTO report_forms (
 
 type CreateReportParams struct {
 	Comment           string `json:"comment"`
-	ProfessorRatingID int64  `json:"professor_rating_id"`
-	UserID            int64  `json:"user_id"`
+	ProfessorRatingID int64  `json:"professorRatingID"`
+	UserID            int64  `json:"userID"`
 }
 
 func (q *Queries) CreateReport(ctx context.Context, arg CreateReportParams) (ReportForm, error) {

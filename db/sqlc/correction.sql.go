@@ -22,9 +22,9 @@ INSERT INTO correction_forms (
 
 type CreateCorrectionParams struct {
 	Problem     string `json:"problem"`
-	CorrectInfo string `json:"correct_info"`
+	CorrectInfo string `json:"correctInfo"`
 	Email       string `json:"email"`
-	UserID      int64  `json:"user_id"`
+	UserID      int64  `json:"userID"`
 }
 
 func (q *Queries) CreateCorrection(ctx context.Context, arg CreateCorrectionParams) (CorrectionForm, error) {

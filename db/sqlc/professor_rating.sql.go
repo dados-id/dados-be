@@ -23,8 +23,8 @@ INSERT INTO professor_course_associations (
 `
 
 type CreateProfessorCourseAssociationParams struct {
-	CourseCode  string `json:"course_code"`
-	ProfessorID int64  `json:"professor_id"`
+	CourseCode  string `json:"courseCode"`
+	ProfessorID int64  `json:"professorID"`
 }
 
 func (q *Queries) CreateProfessorCourseAssociation(ctx context.Context, arg CreateProfessorCourseAssociationParams) error {
@@ -54,16 +54,16 @@ INSERT INTO professor_ratings (
 type CreateProfessorRatingParams struct {
 	Quality             string   `json:"quality"`
 	Difficult           string   `json:"difficult"`
-	WouldTakeAgain      int16    `json:"would_take_again"`
-	TakenForCredit      bool     `json:"taken_for_credit"`
-	UseTextbooks        bool     `json:"use_textbooks"`
-	AttendanceMandatory int16    `json:"attendance_mandatory"`
+	WouldTakeAgain      int16    `json:"wouldTakeAgain"`
+	TakenForCredit      bool     `json:"takenForCredit"`
+	UseTextbooks        bool     `json:"useTextbooks"`
+	AttendanceMandatory int16    `json:"attendanceMandatory"`
 	Grade               string   `json:"grade"`
 	Tags                []string `json:"tags"`
 	Review              string   `json:"review"`
-	ProfessorID         int64    `json:"professor_id"`
-	CourseCode          string   `json:"course_code"`
-	UserID              int64    `json:"user_id"`
+	ProfessorID         int64    `json:"professorID"`
+	CourseCode          string   `json:"courseCode"`
+	UserID              int64    `json:"userID"`
 }
 
 func (q *Queries) CreateProfessorRating(ctx context.Context, arg CreateProfessorRatingParams) (ProfessorRating, error) {
@@ -127,24 +127,24 @@ WHERE P.id = $1::bigint AND PR.id = $2::bigint
 `
 
 type GetProfessorRatingParams struct {
-	ProfessorID       int64 `json:"professor_id"`
-	ProfessorRatingID int64 `json:"professor_rating_id"`
+	ProfessorID       int64 `json:"professorID"`
+	ProfessorRatingID int64 `json:"professorRatingID"`
 }
 
 type GetProfessorRatingRow struct {
 	ID                  int64    `json:"id"`
 	Quality             string   `json:"quality"`
 	Difficult           string   `json:"difficult"`
-	WouldTakeAgain      int16    `json:"would_take_again"`
-	TakenForCredit      bool     `json:"taken_for_credit"`
-	UseTextbooks        bool     `json:"use_textbooks"`
-	AttendanceMandatory int16    `json:"attendance_mandatory"`
+	WouldTakeAgain      int16    `json:"wouldTakeAgain"`
+	TakenForCredit      bool     `json:"takenForCredit"`
+	UseTextbooks        bool     `json:"useTextbooks"`
+	AttendanceMandatory int16    `json:"attendanceMandatory"`
 	Grade               string   `json:"grade"`
 	Tags                []string `json:"tags"`
 	Review              string   `json:"review"`
-	ProfessorFirstName  string   `json:"professor_first_name"`
-	ProfessorLastName   string   `json:"professor_last_name"`
-	SchoolName          string   `json:"school_name"`
+	ProfessorFirstName  string   `json:"professorFirstName"`
+	ProfessorLastName   string   `json:"professorLastName"`
+	SchoolName          string   `json:"schoolName"`
 }
 
 func (q *Queries) GetProfessorRating(ctx context.Context, arg GetProfessorRatingParams) (GetProfessorRatingRow, error) {
@@ -190,7 +190,7 @@ OFFSET $3
 `
 
 type ListProfessorRatingsParams struct {
-	ProfessorID int64 `json:"professor_id"`
+	ProfessorID int64 `json:"professorID"`
 	Limit       int32 `json:"limit"`
 	Offset      int32 `json:"offset"`
 }
@@ -199,16 +199,16 @@ type ListProfessorRatingsRow struct {
 	ID                  int64     `json:"id"`
 	Quality             string    `json:"quality"`
 	Difficult           string    `json:"difficult"`
-	WouldTakeAgain      int16     `json:"would_take_again"`
-	TakenForCredit      bool      `json:"taken_for_credit"`
-	UseTextbooks        bool      `json:"use_textbooks"`
-	AttendanceMandatory int16     `json:"attendance_mandatory"`
+	WouldTakeAgain      int16     `json:"wouldTakeAgain"`
+	TakenForCredit      bool      `json:"takenForCredit"`
+	UseTextbooks        bool      `json:"useTextbooks"`
+	AttendanceMandatory int16     `json:"attendanceMandatory"`
 	Grade               string    `json:"grade"`
 	Tags                []string  `json:"tags"`
 	Review              string    `json:"review"`
-	UpVote              int32     `json:"up_vote"`
-	DownVote            int32     `json:"down_vote"`
-	CreatedAt           time.Time `json:"created_at"`
+	UpVote              int32     `json:"upVote"`
+	DownVote            int32     `json:"downVote"`
+	CreatedAt           time.Time `json:"createdAt"`
 }
 
 func (q *Queries) ListProfessorRatings(ctx context.Context, arg ListProfessorRatingsParams) ([]ListProfessorRatingsRow, error) {
@@ -270,8 +270,8 @@ OFFSET $4
 `
 
 type ListProfessorRatingsJoinProfessorFilterByCourseParams struct {
-	ProfessorID int64  `json:"professor_id"`
-	CourseCode  string `json:"course_code"`
+	ProfessorID int64  `json:"professorID"`
+	CourseCode  string `json:"courseCode"`
 	Limit       int32  `json:"limit"`
 	Offset      int32  `json:"offset"`
 }
@@ -280,16 +280,16 @@ type ListProfessorRatingsJoinProfessorFilterByCourseRow struct {
 	ID                  int64     `json:"id"`
 	Quality             string    `json:"quality"`
 	Difficult           string    `json:"difficult"`
-	WouldTakeAgain      int16     `json:"would_take_again"`
-	TakenForCredit      bool      `json:"taken_for_credit"`
-	UseTextbooks        bool      `json:"use_textbooks"`
-	AttendanceMandatory int16     `json:"attendance_mandatory"`
+	WouldTakeAgain      int16     `json:"wouldTakeAgain"`
+	TakenForCredit      bool      `json:"takenForCredit"`
+	UseTextbooks        bool      `json:"useTextbooks"`
+	AttendanceMandatory int16     `json:"attendanceMandatory"`
 	Grade               string    `json:"grade"`
 	Tags                []string  `json:"tags"`
 	Review              string    `json:"review"`
-	UpVote              int32     `json:"up_vote"`
-	DownVote            int32     `json:"down_vote"`
-	CreatedAt           time.Time `json:"created_at"`
+	UpVote              int32     `json:"upVote"`
+	DownVote            int32     `json:"downVote"`
+	CreatedAt           time.Time `json:"createdAt"`
 }
 
 func (q *Queries) ListProfessorRatingsJoinProfessorFilterByCourse(ctx context.Context, arg ListProfessorRatingsJoinProfessorFilterByCourseParams) ([]ListProfessorRatingsJoinProfessorFilterByCourseRow, error) {
@@ -356,7 +356,7 @@ OFFSET $4
 `
 
 type ListProfessorRatingsJoinProfessorFilterByRatingParams struct {
-	ProfessorID int64  `json:"professor_id"`
+	ProfessorID int64  `json:"professorID"`
 	Quality     string `json:"quality"`
 	Limit       int32  `json:"limit"`
 	Offset      int32  `json:"offset"`
@@ -366,16 +366,16 @@ type ListProfessorRatingsJoinProfessorFilterByRatingRow struct {
 	ID                  int64     `json:"id"`
 	Quality             string    `json:"quality"`
 	Difficult           string    `json:"difficult"`
-	WouldTakeAgain      int16     `json:"would_take_again"`
-	TakenForCredit      bool      `json:"taken_for_credit"`
-	UseTextbooks        bool      `json:"use_textbooks"`
-	AttendanceMandatory int16     `json:"attendance_mandatory"`
+	WouldTakeAgain      int16     `json:"wouldTakeAgain"`
+	TakenForCredit      bool      `json:"takenForCredit"`
+	UseTextbooks        bool      `json:"useTextbooks"`
+	AttendanceMandatory int16     `json:"attendanceMandatory"`
 	Grade               string    `json:"grade"`
 	Tags                []string  `json:"tags"`
 	Review              string    `json:"review"`
-	UpVote              int32     `json:"up_vote"`
-	DownVote            int32     `json:"down_vote"`
-	CreatedAt           time.Time `json:"created_at"`
+	UpVote              int32     `json:"upVote"`
+	DownVote            int32     `json:"downVote"`
+	CreatedAt           time.Time `json:"createdAt"`
 }
 
 func (q *Queries) ListProfessorRatingsJoinProfessorFilterByRating(ctx context.Context, arg ListProfessorRatingsJoinProfessorFilterByRatingParams) ([]ListProfessorRatingsJoinProfessorFilterByRatingRow, error) {
@@ -443,16 +443,16 @@ RETURNING id, quality, difficult, would_take_again, taken_for_credit, use_textbo
 type UpdateProfessorRatingParams struct {
 	Quality             sql.NullString `json:"quality"`
 	Difficult           sql.NullString `json:"difficult"`
-	WouldTakeAgain      sql.NullInt16  `json:"would_take_again"`
-	TakenForCredit      sql.NullBool   `json:"taken_for_credit"`
-	UseTextbooks        sql.NullBool   `json:"use_textbooks"`
-	AttendanceMandatory sql.NullInt16  `json:"attendance_mandatory"`
+	WouldTakeAgain      sql.NullInt16  `json:"wouldTakeAgain"`
+	TakenForCredit      sql.NullBool   `json:"takenForCredit"`
+	UseTextbooks        sql.NullBool   `json:"useTextbooks"`
+	AttendanceMandatory sql.NullInt16  `json:"attendanceMandatory"`
 	Grade               sql.NullString `json:"grade"`
 	Tags                []string       `json:"tags"`
 	Review              sql.NullString `json:"review"`
-	UpVote              sql.NullInt32  `json:"up_vote"`
-	DownVote            sql.NullInt32  `json:"down_vote"`
-	CourseCode          sql.NullString `json:"course_code"`
+	UpVote              sql.NullInt32  `json:"upVote"`
+	DownVote            sql.NullInt32  `json:"downVote"`
+	CourseCode          sql.NullString `json:"courseCode"`
 	ID                  int64          `json:"id"`
 }
 

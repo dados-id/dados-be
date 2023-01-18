@@ -21,10 +21,10 @@ INSERT INTO professors (
 `
 
 type CreateProfessorParams struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	FacultyID int64  `json:"faculty_id"`
-	SchoolID  int64  `json:"school_id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	FacultyID int64  `json:"facultyID"`
+	SchoolID  int64  `json:"schoolID"`
 }
 
 func (q *Queries) CreateProfessor(ctx context.Context, arg CreateProfessorParams) (Professor, error) {
@@ -95,10 +95,10 @@ GROUP BY P.id
 `
 
 type GetProfessorInfoAggregateRow struct {
-	TotalReview       int32  `json:"total_review"`
+	TotalReview       int32  `json:"totalReview"`
 	Rating            int16  `json:"rating"`
-	WouldTakeAgain    int16  `json:"would_take_again"`
-	LevelOfDifficulty string `json:"level_of_difficulty"`
+	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
+	LevelOfDifficulty string `json:"levelOfDifficulty"`
 	Awful             int32  `json:"awful"`
 	Ok                int32  `json:"ok"`
 	Good              int32  `json:"good"`
@@ -148,14 +148,14 @@ type ListProfessorsParams struct {
 
 type ListProfessorsRow struct {
 	ID                int64  `json:"id"`
-	FirstName         string `json:"first_name"`
-	LastName          string `json:"last_name"`
+	FirstName         string `json:"firstName"`
+	LastName          string `json:"lastName"`
 	Rating            int16  `json:"rating"`
-	TotalReview       int32  `json:"total_review"`
-	WouldTakeAgain    int16  `json:"would_take_again"`
-	LevelOfDifficulty string `json:"level_of_difficulty"`
-	FacultyName       string `json:"faculty_name"`
-	SchoolName        string `json:"school_name"`
+	TotalReview       int32  `json:"totalReview"`
+	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
+	LevelOfDifficulty string `json:"levelOfDifficulty"`
+	FacultyName       string `json:"facultyName"`
+	SchoolName        string `json:"schoolName"`
 }
 
 func (q *Queries) ListProfessors(ctx context.Context, arg ListProfessorsParams) ([]ListProfessorsRow, error) {
@@ -211,21 +211,21 @@ OFFSET $3
 `
 
 type ListProfessorsByFacultyParams struct {
-	FacultyID int64 `json:"faculty_id"`
+	FacultyID int64 `json:"facultyID"`
 	Limit     int32 `json:"limit"`
 	Offset    int32 `json:"offset"`
 }
 
 type ListProfessorsByFacultyRow struct {
 	ID                int64  `json:"id"`
-	FirstName         string `json:"first_name"`
-	LastName          string `json:"last_name"`
+	FirstName         string `json:"firstName"`
+	LastName          string `json:"lastName"`
 	Rating            int16  `json:"rating"`
-	TotalReview       int32  `json:"total_review"`
-	WouldTakeAgain    int16  `json:"would_take_again"`
-	LevelOfDifficulty string `json:"level_of_difficulty"`
-	FacultyName       string `json:"faculty_name"`
-	SchoolName        string `json:"school_name"`
+	TotalReview       int32  `json:"totalReview"`
+	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
+	LevelOfDifficulty string `json:"levelOfDifficulty"`
+	FacultyName       string `json:"facultyName"`
+	SchoolName        string `json:"schoolName"`
 }
 
 func (q *Queries) ListProfessorsByFaculty(ctx context.Context, arg ListProfessorsByFacultyParams) ([]ListProfessorsByFacultyRow, error) {
@@ -281,22 +281,22 @@ OFFSET $4
 `
 
 type ListProfessorsByFacultyAndSchoolParams struct {
-	FacultyID int64 `json:"faculty_id"`
-	SchoolID  int64 `json:"school_id"`
+	FacultyID int64 `json:"facultyID"`
+	SchoolID  int64 `json:"schoolID"`
 	Limit     int32 `json:"limit"`
 	Offset    int32 `json:"offset"`
 }
 
 type ListProfessorsByFacultyAndSchoolRow struct {
 	ID                int64  `json:"id"`
-	FirstName         string `json:"first_name"`
-	LastName          string `json:"last_name"`
+	FirstName         string `json:"firstName"`
+	LastName          string `json:"lastName"`
 	Rating            int16  `json:"rating"`
-	TotalReview       int32  `json:"total_review"`
-	WouldTakeAgain    int16  `json:"would_take_again"`
-	LevelOfDifficulty string `json:"level_of_difficulty"`
-	FacultyName       string `json:"faculty_name"`
-	SchoolName        string `json:"school_name"`
+	TotalReview       int32  `json:"totalReview"`
+	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
+	LevelOfDifficulty string `json:"levelOfDifficulty"`
+	FacultyName       string `json:"facultyName"`
+	SchoolName        string `json:"schoolName"`
 }
 
 func (q *Queries) ListProfessorsByFacultyAndSchool(ctx context.Context, arg ListProfessorsByFacultyAndSchoolParams) ([]ListProfessorsByFacultyAndSchoolRow, error) {
@@ -357,21 +357,21 @@ OFFSET $3
 `
 
 type ListProfessorsBySchoolParams struct {
-	SchoolID int64 `json:"school_id"`
+	SchoolID int64 `json:"schoolID"`
 	Limit    int32 `json:"limit"`
 	Offset   int32 `json:"offset"`
 }
 
 type ListProfessorsBySchoolRow struct {
 	ID                int64  `json:"id"`
-	FirstName         string `json:"first_name"`
-	LastName          string `json:"last_name"`
+	FirstName         string `json:"firstName"`
+	LastName          string `json:"lastName"`
 	Rating            int16  `json:"rating"`
-	TotalReview       int32  `json:"total_review"`
-	WouldTakeAgain    int16  `json:"would_take_again"`
-	LevelOfDifficulty string `json:"level_of_difficulty"`
-	FacultyName       string `json:"faculty_name"`
-	SchoolName        string `json:"school_name"`
+	TotalReview       int32  `json:"totalReview"`
+	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
+	LevelOfDifficulty string `json:"levelOfDifficulty"`
+	FacultyName       string `json:"facultyName"`
+	SchoolName        string `json:"schoolName"`
 }
 
 func (q *Queries) ListProfessorsBySchool(ctx context.Context, arg ListProfessorsBySchoolParams) ([]ListProfessorsBySchoolRow, error) {
@@ -457,10 +457,10 @@ LIMIT 5
 
 type SearchProfessorsByNameRow struct {
 	ID          int64  `json:"id"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	FacultyName string `json:"faculty_name"`
-	SchoolName  string `json:"school_name"`
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	FacultyName string `json:"facultyName"`
+	SchoolName  string `json:"schoolName"`
 }
 
 func (q *Queries) SearchProfessorsByName(ctx context.Context, firstName string) ([]SearchProfessorsByNameRow, error) {

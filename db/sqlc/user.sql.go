@@ -37,10 +37,10 @@ INSERT INTO users (
 `
 
 type CreateUserParams struct {
-	FirstName                string `json:"first_name"`
-	LastName                 string `json:"last_name"`
+	FirstName                string `json:"firstName"`
+	LastName                 string `json:"lastName"`
 	School                   string `json:"school"`
-	ExpectedYearOfGraduation int16  `json:"expected_year_of_graduation"`
+	ExpectedYearOfGraduation int16  `json:"expectedYearOfGraduation"`
 	Email                    string `json:"email"`
 }
 
@@ -75,8 +75,8 @@ INSERT INTO user_save_professors (
 `
 
 type CreateUserSaveProfessorParams struct {
-	ProfessorID int64 `json:"professor_id"`
-	UserID      int64 `json:"user_id"`
+	ProfessorID int64 `json:"professorID"`
+	UserID      int64 `json:"userID"`
 }
 
 func (q *Queries) CreateUserSaveProfessor(ctx context.Context, arg CreateUserSaveProfessorParams) error {
@@ -93,8 +93,8 @@ AND
 `
 
 type DeleteUserSaveProfessorParams struct {
-	ProfessorID int64 `json:"professor_id"`
-	UserID      int64 `json:"user_id"`
+	ProfessorID int64 `json:"professorID"`
+	UserID      int64 `json:"userID"`
 }
 
 func (q *Queries) DeleteUserSaveProfessor(ctx context.Context, arg DeleteUserSaveProfessorParams) error {
@@ -135,10 +135,10 @@ RETURNING id, first_name, last_name, school, expected_year_of_graduation, email,
 `
 
 type UpdateUserParams struct {
-	FirstName                sql.NullString `json:"first_name"`
-	LastName                 sql.NullString `json:"last_name"`
+	FirstName                sql.NullString `json:"firstName"`
+	LastName                 sql.NullString `json:"lastName"`
 	School                   sql.NullString `json:"school"`
-	ExpectedYearOfGraduation sql.NullInt16  `json:"expected_year_of_graduation"`
+	ExpectedYearOfGraduation sql.NullInt16  `json:"expectedYearOfGraduation"`
 	ID                       int64          `json:"id"`
 }
 
@@ -191,7 +191,7 @@ OFFSET $3
 `
 
 type UserListProfessorRatingsParams struct {
-	UserID int64 `json:"user_id"`
+	UserID int64 `json:"userID"`
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
@@ -200,18 +200,18 @@ type UserListProfessorRatingsRow struct {
 	ID                  int64     `json:"id"`
 	Quality             string    `json:"quality"`
 	Difficult           string    `json:"difficult"`
-	WouldTakeAgain      int16     `json:"would_take_again"`
-	TakenForCredit      bool      `json:"taken_for_credit"`
-	UseTextbooks        bool      `json:"use_textbooks"`
-	AttendanceMandatory int16     `json:"attendance_mandatory"`
+	WouldTakeAgain      int16     `json:"wouldTakeAgain"`
+	TakenForCredit      bool      `json:"takenForCredit"`
+	UseTextbooks        bool      `json:"useTextbooks"`
+	AttendanceMandatory int16     `json:"attendanceMandatory"`
 	Grade               string    `json:"grade"`
 	Tags                []string  `json:"tags"`
 	Review              string    `json:"review"`
-	CreatedAt           time.Time `json:"created_at"`
-	ProfessorFirstName  string    `json:"professor_first_name"`
-	ProfessorLastName   string    `json:"professor_last_name"`
-	SchoolName          string    `json:"school_name"`
-	CourseName          string    `json:"course_name"`
+	CreatedAt           time.Time `json:"createdAt"`
+	ProfessorFirstName  string    `json:"professorFirstName"`
+	ProfessorLastName   string    `json:"professorLastName"`
+	SchoolName          string    `json:"schoolName"`
+	CourseName          string    `json:"courseName"`
 }
 
 func (q *Queries) UserListProfessorRatings(ctx context.Context, arg UserListProfessorRatingsParams) ([]UserListProfessorRatingsRow, error) {
@@ -275,21 +275,21 @@ OFFSET $3
 `
 
 type UserListSavedProfessorsParams struct {
-	UserID int64 `json:"user_id"`
+	UserID int64 `json:"userID"`
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
 type UserListSavedProfessorsRow struct {
 	ID                int64  `json:"id"`
-	FirstName         string `json:"first_name"`
-	LastName          string `json:"last_name"`
+	FirstName         string `json:"firstName"`
+	LastName          string `json:"lastName"`
 	Rating            int16  `json:"rating"`
-	TotalReview       int32  `json:"total_review"`
-	WouldTakeAgain    int16  `json:"would_take_again"`
-	LevelOfDifficulty string `json:"level_of_difficulty"`
-	FacultyName       string `json:"faculty_name"`
-	SchoolName        string `json:"school_name"`
+	TotalReview       int32  `json:"totalReview"`
+	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
+	LevelOfDifficulty string `json:"levelOfDifficulty"`
+	FacultyName       string `json:"facultyName"`
+	SchoolName        string `json:"schoolName"`
 }
 
 func (q *Queries) UserListSavedProfessors(ctx context.Context, arg UserListSavedProfessorsParams) ([]UserListSavedProfessorsRow, error) {
@@ -351,7 +351,7 @@ OFFSET $3
 `
 
 type UserListSchoolRatingsParams struct {
-	UserID int64 `json:"user_id"`
+	UserID int64 `json:"userID"`
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
@@ -369,9 +369,9 @@ type UserListSchoolRatingsRow struct {
 	Happiness     int16     `json:"happiness"`
 	Safety        int16     `json:"safety"`
 	Review        string    `json:"review"`
-	OverallRating string    `json:"overall_rating"`
-	CreatedAt     time.Time `json:"created_at"`
-	SchoolName    string    `json:"school_name"`
+	OverallRating string    `json:"overallRating"`
+	CreatedAt     time.Time `json:"createdAt"`
+	SchoolName    string    `json:"schoolName"`
 }
 
 func (q *Queries) UserListSchoolRatings(ctx context.Context, arg UserListSchoolRatingsParams) ([]UserListSchoolRatingsRow, error) {
