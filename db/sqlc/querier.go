@@ -20,8 +20,6 @@ type Querier interface {
 	CreateSchoolFacultyAssociation(ctx context.Context, arg CreateSchoolFacultyAssociationParams) error
 	CreateSchoolRating(ctx context.Context, arg CreateSchoolRatingParams) (SchoolRating, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
-	CreateUserSaveProfessor(ctx context.Context, arg CreateUserSaveProfessorParams) error
-	DeleteUserSaveProfessor(ctx context.Context, arg DeleteUserSaveProfessorParams) error
 	GetProfessor(ctx context.Context, id int64) (Professor, error)
 	GetProfessorInfoAggregate(ctx context.Context, id int64) (GetProfessorInfoAggregateRow, error)
 	GetProfessorRating(ctx context.Context, arg GetProfessorRatingParams) (GetProfessorRatingRow, error)
@@ -41,8 +39,10 @@ type Querier interface {
 	ListSchoolRatings(ctx context.Context, arg ListSchoolRatingsParams) ([]ListSchoolRatingsRow, error)
 	ListSchools(ctx context.Context, arg ListSchoolsParams) ([]School, error)
 	ListTop5Tags(ctx context.Context, professorID int64) ([]string, error)
+	SaveProfessor(ctx context.Context, arg SaveProfessorParams) error
 	SearchProfessorsByName(ctx context.Context, firstName string) ([]SearchProfessorsByNameRow, error)
 	SearchSchoolsByNameOrNickName(ctx context.Context, name string) ([]SearchSchoolsByNameOrNickNameRow, error)
+	UnsaveProfessor(ctx context.Context, arg UnsaveProfessorParams) error
 	UpdateCorrection(ctx context.Context, arg UpdateCorrectionParams) (CorrectionForm, error)
 	UpdateProfessorRating(ctx context.Context, arg UpdateProfessorRatingParams) (ProfessorRating, error)
 	UpdateProfessorStatusRequest(ctx context.Context, arg UpdateProfessorStatusRequestParams) (Professor, error)

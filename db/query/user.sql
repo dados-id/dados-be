@@ -9,7 +9,7 @@ INSERT INTO users (
   $1, $2, $3, $4, $5
 ) RETURNING *;
 
--- name: CreateUserSaveProfessor :exec
+-- name: SaveProfessor :exec
 INSERT INTO user_save_professors (
   professor_id,
   user_id
@@ -17,7 +17,7 @@ INSERT INTO user_save_professors (
   $1, $2
 );
 
--- name: DeleteUserSaveProfessor :exec
+-- name: UnsaveProfessor :exec
 DELETE FROM user_save_professors
 WHERE
   professor_id = $1
@@ -48,7 +48,7 @@ SELECT
 FROM professor_ratings PR
   JOIN professors P ON PR.professor_id = P.id
   JOIN schools S ON P.school_id = S.id
-  JOIN courses C ON C.course_code = PR.course_code
+  JOIN courses C ON C.code = PR.course_code
 WHERE
   PR.user_id = $1
 LIMIT $2

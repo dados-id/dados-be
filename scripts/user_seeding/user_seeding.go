@@ -32,7 +32,7 @@ func createUser(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for i := 1; i <= NDATA; i++ {
-		user, _ := util.GetValidUser()
+		user := util.GetValidUser()
 		arg := sqlc.CreateUserParams{
 			FirstName:                user.FirstName,
 			LastName:                 user.LastName,
