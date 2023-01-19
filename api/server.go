@@ -65,6 +65,12 @@ func (server *Server) setupRouter() {
 		schoolRoutes.GET("/schools/:school_id", server.getSchoolInfoAggregate)
 		schoolRoutes.GET("/schools", server.listSchools)
 		schoolRoutes.PUT("/schools/:school_id", server.updateSchoolStatusRequest)
+
+		schoolRatingRoutes := authRoutes.Group("/")
+		schoolRatingRoutes.GET("/schools/:school_id/ratings/:school_rating_id", server.getSchoolRating)
+		schoolRatingRoutes.GET("schools/:school_id/ratings", server.listSchoolRatings)
+		schoolRatingRoutes.POST("schools/:school_id/ratings", server.createSchoolRating)
+		schoolRatingRoutes.PUT("schools/:school_id/ratings/:school_rating_id", server.updateSchoolRating)
 	}
 
 	server.router = router

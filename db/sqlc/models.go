@@ -5,7 +5,6 @@
 package db
 
 import (
-	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"time"
@@ -111,24 +110,25 @@ type ProfessorCourseAssociation struct {
 //       1. true
 //
 type ProfessorRating struct {
-	ID                  int64        `json:"id"`
-	Quality             string       `json:"quality"`
-	Difficult           string       `json:"difficult"`
-	WouldTakeAgain      int16        `json:"wouldTakeAgain"`
-	TakenForCredit      bool         `json:"takenForCredit"`
-	UseTextbooks        bool         `json:"useTextbooks"`
-	AttendanceMandatory int16        `json:"attendanceMandatory"`
-	Grade               string       `json:"grade"`
-	Tags                []string     `json:"tags"`
-	Review              string       `json:"review"`
-	UpVote              int32        `json:"upVote"`
-	DownVote            int32        `json:"downVote"`
-	CreatedAt           time.Time    `json:"createdAt"`
-	EditedAt            time.Time    `json:"editedAt"`
-	ProfessorID         int64        `json:"professorID"`
-	CourseCode          string       `json:"courseCode"`
-	UserID              int64        `json:"userID"`
-	Verified            sql.NullBool `json:"verified"`
+	ID                  int64         `json:"id"`
+	Quality             string        `json:"quality"`
+	Difficult           string        `json:"difficult"`
+	WouldTakeAgain      int16         `json:"wouldTakeAgain"`
+	TakenForCredit      bool          `json:"takenForCredit"`
+	UseTextbooks        bool          `json:"useTextbooks"`
+	AttendanceMandatory int16         `json:"attendanceMandatory"`
+	Grade               string        `json:"grade"`
+	Tags                []string      `json:"tags"`
+	Review              string        `json:"review"`
+	UpVote              int32         `json:"upVote"`
+	DownVote            int32         `json:"downVote"`
+	CreatedAt           time.Time     `json:"createdAt"`
+	EditedAt            time.Time     `json:"editedAt"`
+	ProfessorID         int64         `json:"professorID"`
+	CourseCode          string        `json:"courseCode"`
+	UserID              int64         `json:"userID"`
+	Status              Statusrequest `json:"status"`
+	VerifiedDate        time.Time     `json:"verifiedDate"`
 }
 
 type ProfessorRatingTag struct {
@@ -169,26 +169,27 @@ type SchoolFacultyAssociation struct {
 }
 
 type SchoolRating struct {
-	ID            int64        `json:"id"`
-	UserID        int64        `json:"userID"`
-	SchoolID      int64        `json:"schoolID"`
-	Reputation    int16        `json:"reputation"`
-	Location      int16        `json:"location"`
-	Opportunities int16        `json:"opportunities"`
-	Facilities    int16        `json:"facilities"`
-	Internet      int16        `json:"internet"`
-	Food          int16        `json:"food"`
-	Clubs         int16        `json:"clubs"`
-	Social        int16        `json:"social"`
-	Happiness     int16        `json:"happiness"`
-	Safety        int16        `json:"safety"`
-	Review        string       `json:"review"`
-	UpVote        int32        `json:"upVote"`
-	DownVote      int32        `json:"downVote"`
-	OverallRating string       `json:"overallRating"`
-	CreatedAt     time.Time    `json:"createdAt"`
-	EditedAt      time.Time    `json:"editedAt"`
-	Verified      sql.NullBool `json:"verified"`
+	ID            int64         `json:"id"`
+	UserID        int64         `json:"userID"`
+	SchoolID      int64         `json:"schoolID"`
+	Reputation    int16         `json:"reputation"`
+	Location      int16         `json:"location"`
+	Opportunities int16         `json:"opportunities"`
+	Facilities    int16         `json:"facilities"`
+	Internet      int16         `json:"internet"`
+	Food          int16         `json:"food"`
+	Clubs         int16         `json:"clubs"`
+	Social        int16         `json:"social"`
+	Happiness     int16         `json:"happiness"`
+	Safety        int16         `json:"safety"`
+	Review        string        `json:"review"`
+	UpVote        int32         `json:"upVote"`
+	DownVote      int32         `json:"downVote"`
+	OverallRating string        `json:"overallRating"`
+	CreatedAt     time.Time     `json:"createdAt"`
+	EditedAt      time.Time     `json:"editedAt"`
+	Status        Statusrequest `json:"status"`
+	VerifiedDate  time.Time     `json:"verifiedDate"`
 }
 
 type Tag struct {
