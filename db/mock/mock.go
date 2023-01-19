@@ -454,10 +454,10 @@ func (mr *MockQuerierMockRecorder) ListSchoolRatings(arg0, arg1 interface{}) *go
 }
 
 // ListSchools mocks base method.
-func (m *MockQuerier) ListSchools(arg0 context.Context, arg1 db.ListSchoolsParams) ([]db.School, error) {
+func (m *MockQuerier) ListSchools(arg0 context.Context, arg1 db.ListSchoolsParams) ([]db.ListSchoolsRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListSchools", arg0, arg1)
-	ret0, _ := ret[0].([]db.School)
+	ret0, _ := ret[0].([]db.ListSchoolsRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
