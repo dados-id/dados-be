@@ -63,7 +63,8 @@ CREATE TABLE "professor_ratings" (
   "professor_id" bigint NOT NULL,
   "course_code" varchar NOT NULL,
   "user_id" bigint NOT NULL,
-  "verified" boolean DEFAULT false
+  "status" StatusRequest NOT NULL DEFAULT 'pending',
+  "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'
 );
 
 CREATE TABLE "professor_rating_tags" (
@@ -125,7 +126,8 @@ CREATE TABLE "school_ratings" (
   "overall_rating" decimal(2,1) NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "edited_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
-  "verified" boolean DEFAULT false
+  "status" StatusRequest NOT NULL DEFAULT 'pending',
+  "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'
 );
 
 CREATE TABLE "report_forms" (

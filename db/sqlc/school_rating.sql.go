@@ -47,7 +47,7 @@ INSERT INTO school_ratings (
   review
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
-) RETURNING id, user_id, school_id, reputation, location, opportunities, facilities, internet, food, clubs, social, happiness, safety, review, up_vote, down_vote, overall_rating, created_at, edited_at, verified
+) RETURNING id, user_id, school_id, reputation, location, opportunities, facilities, internet, food, clubs, social, happiness, safety, review, up_vote, down_vote, overall_rating, created_at, edited_at, status, verified_date
 `
 
 type CreateSchoolRatingParams struct {
@@ -103,7 +103,8 @@ func (q *Queries) CreateSchoolRating(ctx context.Context, arg CreateSchoolRating
 		&i.OverallRating,
 		&i.CreatedAt,
 		&i.EditedAt,
-		&i.Verified,
+		&i.Status,
+		&i.VerifiedDate,
 	)
 	return i, err
 }
@@ -276,25 +277,26 @@ SET
   up_vote = COALESCE($12, up_vote),
   down_vote = COALESCE($13, down_vote)
 WHERE
-  id = $14
-RETURNING id, user_id, school_id, reputation, location, opportunities, facilities, internet, food, clubs, social, happiness, safety, review, up_vote, down_vote, overall_rating, created_at, edited_at, verified
+  id = $14 AND school_id = $15
+RETURNING id, user_id, school_id, reputation, location, opportunities, facilities, internet, food, clubs, social, happiness, safety, review, up_vote, down_vote, overall_rating, created_at, edited_at, status, verified_date
 `
 
 type UpdateSchoolRatingParams struct {
-	Reputation    sql.NullInt16  `json:"reputation"`
-	Location      sql.NullInt16  `json:"location"`
-	Opportunities sql.NullInt16  `json:"opportunities"`
-	Facilities    sql.NullInt16  `json:"facilities"`
-	Internet      sql.NullInt16  `json:"internet"`
-	Food          sql.NullInt16  `json:"food"`
-	Clubs         sql.NullInt16  `json:"clubs"`
-	Social        sql.NullInt16  `json:"social"`
-	Happiness     sql.NullInt16  `json:"happiness"`
-	Safety        sql.NullInt16  `json:"safety"`
-	Review        sql.NullString `json:"review"`
-	UpVote        sql.NullInt32  `json:"upVote"`
-	DownVote      sql.NullInt32  `json:"downVote"`
-	ID            int64          `json:"id"`
+	Reputation     sql.NullInt16  `json:"reputation"`
+	Location       sql.NullInt16  `json:"location"`
+	Opportunities  sql.NullInt16  `json:"opportunities"`
+	Facilities     sql.NullInt16  `json:"facilities"`
+	Internet       sql.NullInt16  `json:"internet"`
+	Food           sql.NullInt16  `json:"food"`
+	Clubs          sql.NullInt16  `json:"clubs"`
+	Social         sql.NullInt16  `json:"social"`
+	Happiness      sql.NullInt16  `json:"happiness"`
+	Safety         sql.NullInt16  `json:"safety"`
+	Review         sql.NullString `json:"review"`
+	UpVote         sql.NullInt32  `json:"upVote"`
+	DownVote       sql.NullInt32  `json:"downVote"`
+	SchoolRatingID int64          `json:"schoolRatingID"`
+	SchoolID       int64          `json:"schoolID"`
 }
 
 func (q *Queries) UpdateSchoolRating(ctx context.Context, arg UpdateSchoolRatingParams) (SchoolRating, error) {
@@ -312,7 +314,8 @@ func (q *Queries) UpdateSchoolRating(ctx context.Context, arg UpdateSchoolRating
 		arg.Review,
 		arg.UpVote,
 		arg.DownVote,
-		arg.ID,
+		arg.SchoolRatingID,
+		arg.SchoolID,
 	)
 	var i SchoolRating
 	err := row.Scan(
@@ -335,7 +338,8 @@ func (q *Queries) UpdateSchoolRating(ctx context.Context, arg UpdateSchoolRating
 		&i.OverallRating,
 		&i.CreatedAt,
 		&i.EditedAt,
-		&i.Verified,
+		&i.Status,
+		&i.VerifiedDate,
 	)
 	return i, err
 }

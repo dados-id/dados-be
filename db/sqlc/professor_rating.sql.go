@@ -48,7 +48,7 @@ INSERT INTO professor_ratings (
   user_id
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
-) RETURNING id, quality, difficult, would_take_again, taken_for_credit, use_textbooks, attendance_mandatory, grade, tags, review, up_vote, down_vote, created_at, edited_at, professor_id, course_code, user_id, verified
+) RETURNING id, quality, difficult, would_take_again, taken_for_credit, use_textbooks, attendance_mandatory, grade, tags, review, up_vote, down_vote, created_at, edited_at, professor_id, course_code, user_id, status, verified_date
 `
 
 type CreateProfessorRatingParams struct {
@@ -100,7 +100,8 @@ func (q *Queries) CreateProfessorRating(ctx context.Context, arg CreateProfessor
 		&i.ProfessorID,
 		&i.CourseCode,
 		&i.UserID,
-		&i.Verified,
+		&i.Status,
+		&i.VerifiedDate,
 	)
 	return i, err
 }
@@ -437,7 +438,7 @@ SET
   course_code = COALESCE($12, course_code)
 WHERE
   id = $13
-RETURNING id, quality, difficult, would_take_again, taken_for_credit, use_textbooks, attendance_mandatory, grade, tags, review, up_vote, down_vote, created_at, edited_at, professor_id, course_code, user_id, verified
+RETURNING id, quality, difficult, would_take_again, taken_for_credit, use_textbooks, attendance_mandatory, grade, tags, review, up_vote, down_vote, created_at, edited_at, professor_id, course_code, user_id, status, verified_date
 `
 
 type UpdateProfessorRatingParams struct {
@@ -491,7 +492,8 @@ func (q *Queries) UpdateProfessorRating(ctx context.Context, arg UpdateProfessor
 		&i.ProfessorID,
 		&i.CourseCode,
 		&i.UserID,
-		&i.Verified,
+		&i.Status,
+		&i.VerifiedDate,
 	)
 	return i, err
 }

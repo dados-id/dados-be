@@ -84,5 +84,5 @@ SET
   up_vote = COALESCE(sqlc.narg(up_vote), up_vote),
   down_vote = COALESCE(sqlc.narg(down_vote), down_vote)
 WHERE
-  id = sqlc.arg(id)
+  id = @school_rating_id AND school_id = sqlc.arg(school_id)
 RETURNING *;
