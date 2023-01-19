@@ -5,11 +5,11 @@ type LoginUserRequest struct {
 }
 
 type CreateUserRequest struct {
-	FirstName                string `json:"firstName" binding:"required"`
-	LastName                 string `json:"lastName" binding:"required"`
-	School                   string `json:"school" binding:"required"`
-	ExpectedYearOfGraduation int16  `json:"expectedYearOfGraduation" binding:"required"`
-	Email                    string `json:"email" binding:"required,email"`
+	FirstName                string `json:"firstName"`
+	LastName                 string `json:"lastName"`
+	School                   string `json:"school"`
+	ExpectedYearOfGraduation int16  `json:"expectedYearOfGraduation"`
+	Email                    string `json:"email"`
 }
 
 type GetUserRequest struct {

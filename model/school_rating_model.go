@@ -20,30 +20,30 @@ type CreateSchoolRatingURIRequest struct {
 
 type CreateSchoolRatingJSONRequest struct {
 	UserID        int64  `json:"userID" binding:"required"`
-	Reputation    int16  `json:"reputation" binding:"required,min=1,max=5"`
-	Location      int16  `json:"location" binding:"required,min=1,max=5"`
-	Opportunities int16  `json:"opportunities" binding:"required,min=1,max=5"`
-	Facilities    int16  `json:"facilities" binding:"required,min=1,max=5"`
-	Internet      int16  `json:"internet" binding:"required,min=1,max=5"`
-	Food          int16  `json:"food" binding:"required,min=1,max=5"`
-	Clubs         int16  `json:"clubs" binding:"required,min=1,max=5"`
-	Social        int16  `json:"social" binding:"required,min=1,max=5"`
-	Happiness     int16  `json:"happiness" binding:"required,min=1,max=5"`
-	Safety        int16  `json:"safety" binding:"required,min=1,max=5"`
-	Review        string `json:"review" binding:"required"`
+	Reputation    int16  `json:"reputation"`
+	Location      int16  `json:"location"`
+	Opportunities int16  `json:"opportunities"`
+	Facilities    int16  `json:"facilities"`
+	Internet      int16  `json:"internet"`
+	Food          int16  `json:"food"`
+	Clubs         int16  `json:"clubs"`
+	Social        int16  `json:"social"`
+	Happiness     int16  `json:"happiness"`
+	Safety        int16  `json:"safety"`
+	Review        string `json:"review"`
 }
 
 type UpdateSchoolRatingJSONRequest struct {
-	Reputation    *int16  `json:"reputation" binding:"max=5"`
-	Location      *int16  `json:"location" binding:"max=5"`
-	Opportunities *int16  `json:"opportunities" binding:"max=5"`
-	Facilities    *int16  `json:"facilities" binding:"max=5"`
-	Internet      *int16  `json:"internet" binding:"max=5"`
-	Food          *int16  `json:"food" binding:"max=5"`
-	Clubs         *int16  `json:"clubs" binding:"max=5"`
-	Social        *int16  `json:"social" binding:"max=5"`
-	Happiness     *int16  `json:"happiness" binding:"max=5"`
-	Safety        *int16  `json:"safety" binding:"max=5"`
+	Reputation    *int16  `json:"reputation"`
+	Location      *int16  `json:"location"`
+	Opportunities *int16  `json:"opportunities"`
+	Facilities    *int16  `json:"facilities"`
+	Internet      *int16  `json:"internet"`
+	Food          *int16  `json:"food"`
+	Clubs         *int16  `json:"clubs"`
+	Social        *int16  `json:"social"`
+	Happiness     *int16  `json:"happiness"`
+	Safety        *int16  `json:"safety"`
 	Review        *string `json:"review"`
 	UpVote        *int32  `json:"upVote"`
 	DownVote      *int32  `json:"downVote"`
