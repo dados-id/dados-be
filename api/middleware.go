@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"firebase.google.com/go/auth"
 	"github.com/dados-id/dados-be/exception"
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +17,7 @@ const (
 	authorizationPayloadKey = "authorization_payload"
 )
 
-func authMiddleware() gin.HandlerFunc {
+func authMiddleware(firebaseClient auth.Client) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
 		if len(authorizationHeader) == 0 {
@@ -39,15 +40,13 @@ func authMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// accessToken := fields[1]
-		// TODO: verify accessToken
-		// payload, err := tokenMaker.VerifyToken(accessToken)
-		// if err != nil {
-		// 	ctx.AbortWithStatusJSON(http.StatusUnauthorized, exception.ErrorResponse(err))
-		// 	return
-		// }
+		accessToken := fields[1]
+		_, err := firebaseClient.VerifyIDToken(ctx, accessToken)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, exception.ErrorResponse(err))
+			return
+		}
 
-		// ctx.Set(authorizationPayloadKey, payload)
 		ctx.Next()
 	}
 }

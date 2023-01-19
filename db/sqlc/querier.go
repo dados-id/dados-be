@@ -37,7 +37,7 @@ type Querier interface {
 	ListProfessorsBySchool(ctx context.Context, arg ListProfessorsBySchoolParams) ([]ListProfessorsBySchoolRow, error)
 	ListReport(ctx context.Context, arg ListReportParams) ([]ReportForm, error)
 	ListSchoolRatings(ctx context.Context, arg ListSchoolRatingsParams) ([]ListSchoolRatingsRow, error)
-	ListSchools(ctx context.Context, arg ListSchoolsParams) ([]School, error)
+	ListSchools(ctx context.Context, arg ListSchoolsParams) ([]ListSchoolsRow, error)
 	ListTop5Tags(ctx context.Context, professorID int64) ([]string, error)
 	SaveProfessor(ctx context.Context, arg SaveProfessorParams) error
 	SearchProfessorsByName(ctx context.Context, firstName string) ([]SearchProfessorsByNameRow, error)

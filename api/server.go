@@ -47,18 +47,24 @@ func (server *Server) setupRouter() {
 	router.POST("/users", server.createUser)
 
 	authRoutes := router.Group("/")
-
-	authRoutes.Use(authMiddleware())
+	authRoutes.Use()
 	{
-		authRoutes.GET("/users/:id", server.getUser)
-		authRoutes.PUT("/users/:id", server.updateUser)
+		userRoutes := authRoutes.Group("/")
+		userRoutes.GET("/users/:id", server.getUser)
+		userRoutes.PUT("/users/:id", server.updateUser)
 
-		authRoutes.GET("/users/:id/professor_ratings", server.userListProfessorRatings)
-		authRoutes.GET("/users/:id/school_ratings", server.userListSchoolRatings)
-		authRoutes.GET("/users/:id/saved_professors", server.userListSavedProfessors)
+		userRoutes.GET("/users/:id/professor_ratings", server.userListProfessorRatings)
+		userRoutes.GET("/users/:id/school_ratings", server.userListSchoolRatings)
+		userRoutes.GET("/users/:id/saved_professors", server.userListSavedProfessors)
 
-		authRoutes.DELETE("/users/:user_id/professors/:professor_id", server.unsaveProfessor)
-		authRoutes.POST("/users/:user_id/professors/:professor_id", server.saveProfessor)
+		userRoutes.DELETE("/users/:user_id/professors/:professor_id", server.unsaveProfessor)
+		userRoutes.POST("/users/:user_id/professors/:professor_id", server.saveProfessor)
+
+		schoolRoutes := authRoutes.Group("/")
+		schoolRoutes.POST("/schools", server.createSchool)
+		schoolRoutes.GET("/schools/:school_id", server.getSchoolInfoAggregate)
+		schoolRoutes.GET("/schools", server.listSchools)
+		schoolRoutes.PUT("/schools/:school_id", server.updateSchoolStatusRequest)
 	}
 
 	server.router = router

@@ -34,7 +34,10 @@ WHERE
 GROUP BY S.id;
 
 -- name: ListSchools :many
-SELECT * FROM schools
+SELECT
+  S.id,
+  S.name
+FROM schools S
 LIMIT $1
 OFFSET $2;
 
@@ -51,7 +54,7 @@ LIMIT 5;
 -- name: UpdateSchoolStatusRequest :one
 UPDATE schools
 SET
-  status = @status::text
+  status = @status
 WHERE
   id = @id::bigint
 RETURNING *;

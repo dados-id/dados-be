@@ -144,7 +144,10 @@ func (q *Queries) GetSchoolInfoAggregate(ctx context.Context, id int64) (GetScho
 }
 
 const listSchools = `-- name: ListSchools :many
-SELECT id, name, nick_name, city, province, website, email, status, verified_date FROM schools
+SELECT
+  S.id,
+  S.name
+FROM schools S
 LIMIT $1
 OFFSET $2
 `
@@ -154,26 +157,21 @@ type ListSchoolsParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListSchools(ctx context.Context, arg ListSchoolsParams) ([]School, error) {
+type ListSchoolsRow struct {
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+func (q *Queries) ListSchools(ctx context.Context, arg ListSchoolsParams) ([]ListSchoolsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listSchools, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []School{}
+	items := []ListSchoolsRow{}
 	for rows.Next() {
-		var i School
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			pq.Array(&i.NickName),
-			&i.City,
-			&i.Province,
-			&i.Website,
-			&i.Email,
-			&i.Status,
-			&i.VerifiedDate,
-		); err != nil {
+		var i ListSchoolsRow
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -236,15 +234,15 @@ func (q *Queries) SearchSchoolsByNameOrNickName(ctx context.Context, name string
 const updateSchoolStatusRequest = `-- name: UpdateSchoolStatusRequest :one
 UPDATE schools
 SET
-  status = $1::text
+  status = $1
 WHERE
   id = $2::bigint
 RETURNING id, name, nick_name, city, province, website, email, status, verified_date
 `
 
 type UpdateSchoolStatusRequestParams struct {
-	Status string `json:"status"`
-	ID     int64  `json:"id"`
+	Status Statusrequest `json:"status"`
+	ID     int64         `json:"id"`
 }
 
 func (q *Queries) UpdateSchoolStatusRequest(ctx context.Context, arg UpdateSchoolStatusRequestParams) (School, error) {
