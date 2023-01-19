@@ -7,6 +7,7 @@ import (
 	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
 	"github.com/dados-id/dados-be/model"
+	"github.com/dados-id/dados-be/validation"
 	"github.com/gin-gonic/gin"
 )
 
@@ -80,6 +81,12 @@ func (server *Server) createSchoolRating(ctx *gin.Context) {
 		return
 	}
 
+	violations := validation.ValidateCreateSchoolRatingRequest(&reqJSON)
+	if violations != nil {
+		ctx.JSON(http.StatusBadRequest, exception.ViolationsFieldValidation(violations))
+		return
+	}
+
 	arg := db.CreateSchoolRatingParams{
 		UserID:        reqJSON.UserID,
 		SchoolID:      reqURI.SchoolID,
@@ -116,6 +123,12 @@ func (server *Server) updateSchoolRating(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&reqJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
+		return
+	}
+
+	violations := validation.ValidateUpdateSchoolRatingRequest(&reqJSON)
+	if violations != nil {
+		ctx.JSON(http.StatusBadRequest, exception.ViolationsFieldValidation(violations))
 		return
 	}
 

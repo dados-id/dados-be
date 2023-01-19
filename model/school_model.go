@@ -1,14 +1,12 @@
 package model
 
-import db "github.com/dados-id/dados-be/db/sqlc"
-
 type CreateSchoolRequest struct {
-	Name     string   `json:"name" binding:"required"`
-	NickName []string `json:"nickName" binding:"required"`
-	City     string   `json:"city" binding:"required"`
-	Province string   `json:"province" binding:"required"`
-	Website  string   `json:"website" binding:"required"`
-	Email    string   `json:"email" binding:"required,email"`
+	Name     string   `json:"name"`
+	NickName []string `json:"nickName"`
+	City     string   `json:"city"`
+	Province string   `json:"province"`
+	Website  string   `json:"website"`
+	Email    string   `json:"email"`
 }
 
 type GetSchoolRequest struct {
@@ -25,5 +23,5 @@ type SearchSchoolByNameOrNicknameQueryRequest struct {
 }
 
 type UpdateSchoolStatusRequest struct {
-	Status db.Statusrequest `json:"status" binding:"required"`
+	Status string `json:"status"`
 }

@@ -7,19 +7,19 @@ import (
 	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
 	"github.com/dados-id/dados-be/model"
+	"github.com/dados-id/dados-be/validation"
 	"github.com/gin-gonic/gin"
-	"github.com/lib/pq"
 )
 
 func (server *Server) getSchoolInfoAggregate(ctx *gin.Context) {
-	var req model.GetSchoolRequest
+	var reqURI model.GetSchoolRequest
 
-	if err := ctx.ShouldBindUri(&req); err != nil {
+	if err := ctx.ShouldBindUri(&reqURI); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
-	schoolInfo, err := server.query.GetSchoolInfoAggregate(ctx, req.SchoolID)
+	schoolInfo, err := server.query.GetSchoolInfoAggregate(ctx, reqURI.SchoolID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, exception.ErrorResponse(err))
@@ -70,33 +70,36 @@ func (server *Server) listSchools(ctx *gin.Context) {
 }
 
 func (server *Server) createSchool(ctx *gin.Context) {
-	var req model.CreateSchoolRequest
+	var reqJSON model.CreateSchoolRequest
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBindJSON(&reqJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
+	violations := validation.ValidateCreateSchoolRequest(&reqJSON)
+	if violations != nil {
+		ctx.JSON(http.StatusBadRequest, exception.ViolationsFieldValidation(violations))
+		return
+	}
+
 	arg := db.CreateSchoolParams{
-		Name:     req.Name,
-		NickName: req.NickName,
-		City:     req.City,
-		Province: req.Province,
-		Website:  req.Website,
-		Email:    req.Email,
+		Name:     reqJSON.Name,
+		NickName: reqJSON.NickName,
+		City:     reqJSON.City,
+		Province: reqJSON.Province,
+		Website:  reqJSON.Website,
+		Email:    reqJSON.Email,
 	}
 
 	school, err := server.query.CreateSchool(ctx, arg)
 	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok {
-			switch pqErr.Code.Name() {
-			case "unique_violation":
-				ctx.JSON(http.StatusForbidden, exception.ErrorResponse(err))
-				return
-			}
+		if errorConstraint, ok := exception.IsUniqueViolation(err); ok {
+			ctx.JSON(http.StatusForbidden, exception.ViolationUniqueConstraint(errorConstraint))
+			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -117,8 +120,14 @@ func (server *Server) updateSchoolStatusRequest(ctx *gin.Context) {
 		return
 	}
 
+	violations := validation.ValidateUpdateSchoolRequest(&reqJSON)
+	if violations != nil {
+		ctx.JSON(http.StatusBadRequest, exception.ViolationsFieldValidation(violations))
+		return
+	}
+
 	arg := db.UpdateSchoolStatusRequestParams{
-		Status: reqJSON.Status,
+		Status: db.Statusrequest(reqJSON.Status),
 		ID:     reqURI.SchoolID,
 	}
 

@@ -8,20 +8,20 @@ import (
 	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
 	"github.com/dados-id/dados-be/model"
+	"github.com/dados-id/dados-be/validation"
 	"github.com/gin-gonic/gin"
-	"github.com/lib/pq"
 )
 
 func (server *Server) loginUser(ctx *gin.Context) {
-	var req model.LoginUserRequest
+	var reqJSON model.LoginUserRequest
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBindJSON(&reqJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
 	// Verify the ID token passed by the client
-	token := req.IDToken
+	token := reqJSON.IDToken
 	tokenInfo, err := server.firebaseClient.VerifyIDToken(ctx, token)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, exception.ErrorResponse(err))
@@ -46,15 +46,12 @@ func (server *Server) loginUser(ctx *gin.Context) {
 
 	user, err := server.query.CreateUser(ctx, arg)
 	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok {
-			switch pqErr.Code.Name() {
-			case "unique_violation":
-				ctx.JSON(http.StatusForbidden, exception.ErrorResponse(err))
-				return
-			}
+		if errorConstraint, ok := exception.IsUniqueViolation(err); ok {
+			ctx.JSON(http.StatusForbidden, exception.ViolationUniqueConstraint(errorConstraint))
+			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -62,14 +59,14 @@ func (server *Server) loginUser(ctx *gin.Context) {
 }
 
 func (server *Server) getUser(ctx *gin.Context) {
-	var req model.GetUserRequest
+	var reqURI model.GetUserRequest
 
-	if err := ctx.ShouldBindUri(&req); err != nil {
+	if err := ctx.ShouldBindUri(&reqURI); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
-	User, err := server.query.GetUser(ctx, req.ID)
+	User, err := server.query.GetUser(ctx, reqURI.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, exception.ErrorResponse(err))
@@ -84,32 +81,35 @@ func (server *Server) getUser(ctx *gin.Context) {
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
-	var req model.CreateUserRequest
+	var reqJSON model.CreateUserRequest
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBindJSON(&reqJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
+	violations := validation.ValidateCreateUserRequest(&reqJSON)
+	if violations != nil {
+		ctx.JSON(http.StatusBadRequest, exception.ViolationsFieldValidation(violations))
+		return
+	}
+
 	arg := db.CreateUserParams{
-		FirstName:                req.FirstName,
-		LastName:                 req.LastName,
-		School:                   req.School,
-		ExpectedYearOfGraduation: req.ExpectedYearOfGraduation,
-		Email:                    req.Email,
+		FirstName:                reqJSON.FirstName,
+		LastName:                 reqJSON.LastName,
+		School:                   reqJSON.School,
+		ExpectedYearOfGraduation: reqJSON.ExpectedYearOfGraduation,
+		Email:                    reqJSON.Email,
 	}
 
 	user, err := server.query.CreateUser(ctx, arg)
 	if err != nil {
-		if pqErr, ok := err.(*pq.Error); ok {
-			switch pqErr.Code.Name() {
-			case "unique_violation":
-				ctx.JSON(http.StatusForbidden, exception.ErrorResponse(err))
-				return
-			}
+		if errorConstraint, ok := exception.IsUniqueViolation(err); ok {
+			ctx.JSON(http.StatusForbidden, exception.ViolationUniqueConstraint(errorConstraint))
+			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -127,6 +127,12 @@ func (server *Server) updateUser(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindJSON(&reqJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
+		return
+	}
+
+	violations := validation.ValidateUpdateUserRequest(&reqJSON)
+	if violations != nil {
+		ctx.JSON(http.StatusBadRequest, exception.ViolationsFieldValidation(violations))
 		return
 	}
 
@@ -247,15 +253,15 @@ func (server *Server) userListSavedProfessors(ctx *gin.Context) {
 }
 
 func (server *Server) saveProfessor(ctx *gin.Context) {
-	var req model.SaveProfessorURIRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
+	var reqURI model.SaveProfessorURIRequest
+	if err := ctx.ShouldBindUri(&reqURI); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
 	arg := db.SaveProfessorParams{
-		UserID:      req.UserID,
-		ProfessorID: req.ProfessorID,
+		UserID:      reqURI.UserID,
+		ProfessorID: reqURI.ProfessorID,
 	}
 
 	if err := server.query.SaveProfessor(ctx, arg); err != nil {
@@ -267,15 +273,15 @@ func (server *Server) saveProfessor(ctx *gin.Context) {
 }
 
 func (server *Server) unsaveProfessor(ctx *gin.Context) {
-	var req model.UnsaveProfessorURIRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
+	var reqURI model.UnsaveProfessorURIRequest
+	if err := ctx.ShouldBindUri(&reqURI); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
 	arg := db.UnsaveProfessorParams{
-		UserID:      req.UserID,
-		ProfessorID: req.ProfessorID,
+		UserID:      reqURI.UserID,
+		ProfessorID: reqURI.ProfessorID,
 	}
 
 	if err := server.query.UnsaveProfessor(ctx, arg); err != nil {
