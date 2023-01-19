@@ -12,6 +12,7 @@ type Querier interface {
 	CountSchool(ctx context.Context) (int64, error)
 	CountUser(ctx context.Context) (int64, error)
 	CreateCorrection(ctx context.Context, arg CreateCorrectionParams) (CorrectionForm, error)
+	CreateFaculty(ctx context.Context, name string) (Faculty, error)
 	CreateProfessor(ctx context.Context, arg CreateProfessorParams) (Professor, error)
 	CreateProfessorCourseAssociation(ctx context.Context, arg CreateProfessorCourseAssociationParams) error
 	CreateProfessorRating(ctx context.Context, arg CreateProfessorRatingParams) (ProfessorRating, error)

@@ -80,6 +80,21 @@ func (mr *MockQuerierMockRecorder) CreateCorrection(arg0, arg1 interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCorrection", reflect.TypeOf((*MockQuerier)(nil).CreateCorrection), arg0, arg1)
 }
 
+// CreateFaculty mocks base method.
+func (m *MockQuerier) CreateFaculty(arg0 context.Context, arg1 string) (db.Faculty, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateFaculty", arg0, arg1)
+	ret0, _ := ret[0].(db.Faculty)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateFaculty indicates an expected call of CreateFaculty.
+func (mr *MockQuerierMockRecorder) CreateFaculty(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateFaculty", reflect.TypeOf((*MockQuerier)(nil).CreateFaculty), arg0, arg1)
+}
+
 // CreateProfessor mocks base method.
 func (m *MockQuerier) CreateProfessor(arg0 context.Context, arg1 db.CreateProfessorParams) (db.Professor, error) {
 	m.ctrl.T.Helper()
