@@ -1,6 +1,10 @@
-DROP TRIGGER IF EXISTS tr_insert_overall_rating ON school_ratings;
+DROP TRIGGER IF EXISTS tr_insert_update_overall_rating ON school_ratings;
 
 DROP FUNCTION IF EXISTS update_overall_rating();
+
+DROP TRIGGER IF EXISTS tr_insert_update_professor_field ON professor_ratings;
+
+DROP FUNCTION IF EXISTS update_professor_field();
 
 DROP TABLE IF EXISTS users CASCADE;
 

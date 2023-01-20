@@ -48,7 +48,7 @@ SELECT
   city,
   province
 FROM schools
-WHERE name LIKE $1 OR $1 LIKE ANY(nick_name)
+WHERE name ILIKE $1 OR $1 ILIKE ANY(nick_name)
 LIMIT 5;
 
 -- name: UpdateSchoolStatusRequest :one

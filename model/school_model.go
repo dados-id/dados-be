@@ -19,7 +19,7 @@ type ListSchoolsRequest struct {
 }
 
 type SearchSchoolByNameOrNicknameQueryRequest struct {
-	Name string `form:"name" binding:"required,alpha"`
+	Name string `form:"name" binding:"required"`
 }
 
 type UpdateSchoolStatusRequest struct {

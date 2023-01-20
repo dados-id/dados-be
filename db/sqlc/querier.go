@@ -9,9 +9,13 @@ import (
 )
 
 type Querier interface {
+	CountCourse(ctx context.Context) (int64, error)
+	CountFaculty(ctx context.Context) (int64, error)
+	CountProfessor(ctx context.Context) (int64, error)
 	CountSchool(ctx context.Context) (int64, error)
 	CountUser(ctx context.Context) (int64, error)
 	CreateCorrection(ctx context.Context, arg CreateCorrectionParams) (CorrectionForm, error)
+	CreateCourse(ctx context.Context, arg CreateCourseParams) (Course, error)
 	CreateFaculty(ctx context.Context, name string) (Faculty, error)
 	CreateProfessor(ctx context.Context, arg CreateProfessorParams) (Professor, error)
 	CreateProfessorCourseAssociation(ctx context.Context, arg CreateProfessorCourseAssociationParams) error

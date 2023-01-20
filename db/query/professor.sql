@@ -34,7 +34,7 @@ SELECT T.name as tag_names FROM tags T
   JOIN professor_ratings PR ON PRT.professor_id = PR.id
 WHERE
   PR.professor_id = $1
-GROUP BY PR.professor_id
+GROUP BY PR.professor_id, T.name
 ORDER BY COUNT(*)
 LIMIT 5;
 
@@ -65,7 +65,7 @@ SELECT
 FROM professors P
   JOIN faculties F ON P.faculty_id = F.id
   JOIN schools S ON P.school_id = S.id
-WHERE P.first_name LIKE $1 OR P.last_name LIKE $1 OR concat(P.first_name, ' ', P.last_name) LIKE $1
+WHERE P.first_name ILIKE $1 OR P.last_name ILIKE $1 OR concat(P.first_name, ' ', P.last_name) ILIKE $1
 LIMIT 5;
 
 -- name: ListProfessorsBySchool :many
@@ -125,7 +125,10 @@ OFFSET $4;
 -- name: UpdateProfessorStatusRequest :one
 UPDATE professors
 SET
-  status = @status::text
+  status = @status
 WHERE
   id = @id::bigint
 RETURNING *;
+
+-- name: CountProfessor :one
+SELECT COUNT(*) FROM professors;

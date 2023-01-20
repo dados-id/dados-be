@@ -71,6 +71,12 @@ func (server *Server) setupRouter() {
 		schoolRatingRoutes.GET("schools/:school_id/ratings", server.listSchoolRatings)
 		schoolRatingRoutes.POST("schools/:school_id/ratings", server.createSchoolRating)
 		schoolRatingRoutes.PUT("schools/:school_id/ratings/:school_rating_id", server.updateSchoolRating)
+
+		professorRoutes := authRoutes.Group("/")
+		professorRoutes.POST("/professors", server.createProfessor)
+		professorRoutes.GET("/professors/:professor_id", server.getProfessorInfoAggregate)
+		professorRoutes.GET("/professors", server.listProfessors)
+		professorRoutes.PUT("/professors/:professor_id", server.updateProfessorStatusRequest)
 	}
 
 	server.router = router

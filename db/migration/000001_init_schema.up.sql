@@ -28,10 +28,10 @@ CREATE TABLE "professors" (
   "id" bigserial PRIMARY KEY,
   "first_name" varchar NOT NULL,
   "last_name" varchar NOT NULL,
-  "rating" smallint NOT NULL,
-  "total_review" int NOT NULL,
-  "would_take_again" smallint NOT NULL,
-  "level_of_difficulty" decimal(2,1) NOT NULL,
+  "rating" decimal(2,1) NOT NULL DEFAULT 0 CHECK (rating >= 0),
+  "total_review" int NOT NULL DEFAULT 0 CHECK (total_review >= 0),
+  "would_take_again" smallint NOT NULL DEFAULT 0 CHECK (would_take_again >= 0),
+  "level_of_difficulty" decimal(2,1) NOT NULL DEFAULT 0 CHECK (level_of_difficulty >= 0.0),
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "status" StatusRequest NOT NULL DEFAULT 'pending',
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
@@ -47,9 +47,9 @@ CREATE TABLE "professor_course_associations" (
 
 CREATE TABLE "professor_ratings" (
   "id" bigserial PRIMARY KEY,
-  "quality" decimal(2,1) NOT NULL,
-  "difficult" decimal(2,1) NOT NULL,
-  "would_take_again" smallint NOT NULL,
+  "quality" decimal(2,1) NOT NULL CHECK (quality >= 0.0),
+  "difficult" decimal(2,1) NOT NULL CHECK (difficult >= 0.0),
+  "would_take_again" smallint NOT NULL CHECK (would_take_again >= 0),
   "taken_for_credit" boolean NOT NULL,
   "use_textbooks" boolean NOT NULL,
   "attendance_mandatory" smallint NOT NULL,
@@ -110,20 +110,20 @@ CREATE TABLE "school_ratings" (
   "id" bigserial PRIMARY KEY,
   "user_id" bigint NOT NULL,
   "school_id" bigint NOT NULL,
-  "reputation" smallint NOT NULL,
-  "location" smallint NOT NULL,
-  "opportunities" smallint NOT NULL,
-  "facilities" smallint NOT NULL,
-  "internet" smallint NOT NULL,
-  "food" smallint NOT NULL,
-  "clubs" smallint NOT NULL,
-  "social" smallint NOT NULL,
-  "happiness" smallint NOT NULL,
-  "safety" smallint NOT NULL,
+  "reputation" smallint NOT NULL CHECK (reputation >= 1 AND reputation <= 5),
+  "location" smallint NOT NULL CHECK (location >= 1 AND location <= 5),
+  "opportunities" smallint NOT NULL CHECK (opportunities >= 1 AND opportunities <= 5),
+  "facilities" smallint NOT NULL CHECK (facilities >= 1 AND facilities <= 5),
+  "internet" smallint NOT NULL CHECK (internet >= 1 AND internet <= 5),
+  "food" smallint NOT NULL CHECK (food >= 1 AND food <= 5),
+  "clubs" smallint NOT NULL CHECK (clubs >= 1 AND clubs <= 5),
+  "social" smallint NOT NULL CHECK (social >= 1 AND social <= 5),
+  "happiness" smallint NOT NULL CHECK (happiness>= 1 AND happiness <= 5),
+  "safety" smallint NOT NULL CHECK (safety >= 1 AND safety <= 5),
   "review" varchar NOT NULL,
   "up_vote" int NOT NULL DEFAULT 0,
   "down_vote" int NOT NULL DEFAULT 0,
-  "overall_rating" decimal(2,1) NOT NULL,
+  "overall_rating" decimal(2,1) NOT NULL CHECK (overall_rating >= 0.0),
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "edited_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
   "status" StatusRequest NOT NULL DEFAULT 'pending',
@@ -192,6 +192,8 @@ COMMENT ON TABLE "schools" IS '
       2. avg Overall Quality
     ';
 
+ALTER TABLE "professors" ADD UNIQUE ("first_name", "last_name");
+
 ALTER TABLE "user_save_professors" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "user_save_professors" ADD FOREIGN KEY ("professor_id") REFERENCES "professors" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -228,7 +230,9 @@ ALTER TABLE "professor_ratings" ADD FOREIGN KEY ("professor_id") REFERENCES "pro
 
 ALTER TABLE "school_ratings" ADD FOREIGN KEY ("school_id") REFERENCES "schools" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-CREATE OR REPLACE FUNCTION update_overall_rating() RETURNS TRIGGER AS $$
+-- Trigger School Rating
+CREATE OR REPLACE FUNCTION update_overall_rating()
+RETURNS TRIGGER AS $$
 BEGIN
   NEW.overall_rating := (
     NEW.reputation +
@@ -246,7 +250,49 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tr_insert_overall_rating
+CREATE TRIGGER tr_insert_update_overall_rating
 BEFORE INSERT OR UPDATE ON school_ratings
 FOR EACH ROW
 EXECUTE FUNCTION update_overall_rating();
+
+-- Trigger Professor Field
+CREATE OR REPLACE FUNCTION update_professor_field()
+RETURNS TRIGGER AS $$
+DECLARE
+  avg_rating DECIMAL(2, 1);
+  avg_level_of_difficulty DECIMAL(2, 1);
+  avg_would_take_again INTEGER;
+  avg_total_review INTEGER;
+BEGIN
+
+  SELECT
+    AVG(PR.quality) * 1.0,
+    AVG(PR.difficult) * 1.0,
+    AVG(PR.would_take_again),
+    COUNT(*)
+  INTO
+    avg_rating,
+    avg_level_of_difficulty,
+    avg_would_take_again,
+    avg_total_review
+  FROM professor_ratings PR
+    WHERE PR.professor_id = NEW.professor_id
+  GROUP BY PR.id;
+
+  UPDATE professors
+  SET
+    rating = avg_rating,
+    total_review = avg_total_review,
+    would_take_again = avg_would_take_again,
+    level_of_difficulty = avg_level_of_difficulty
+  WHERE
+    id = NEW.professor_id;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_insert_update_professor_field
+BEFORE INSERT OR UPDATE OR DELETE ON professor_ratings
+FOR EACH ROW
+EXECUTE FUNCTION update_professor_field();
