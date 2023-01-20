@@ -39,7 +39,7 @@ func createSchoolRating(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 	exception.FatalIfNeeded(err, "Error Count User")
 
 	for i := 1; i <= NDATA; i++ {
-		schoolRating, _ := util.GetValidSchoolRating(totalRowUser, totalRowSchool)
+		schoolRating := util.GetValidSchoolRating(totalRowUser, totalRowSchool)
 		arg := sqlc.CreateSchoolRatingParams{
 			UserID:        schoolRating.UserID,
 			SchoolID:      schoolRating.SchoolID,

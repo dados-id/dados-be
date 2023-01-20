@@ -21,28 +21,20 @@ func main() {
 	NDATA := 500
 	for i := 1; i <= 5; i++ {
 		wg.Add(1)
-		go createSchool(NDATA, *queries, &wg)
+		go createFaculty(NDATA, *queries, &wg)
 	}
 	wg.Wait()
 
-	fmt.Printf("Successfully added %d data School to database\n", NDATA)
+	fmt.Printf("Successfully added %d data Faculty to database\n", NDATA)
 }
 
-func createSchool(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
+func createFaculty(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for i := 1; i <= NDATA; i++ {
-		school := util.GetValidSchool()
-		arg := sqlc.CreateSchoolParams{
-			Name:     school.Name,
-			NickName: school.NickName,
-			City:     school.City,
-			Province: school.Province,
-			Website:  school.Website,
-			Email:    school.Email,
-		}
+		faculty := util.GetValidFaculty()
 
-		_, err := queries.CreateSchool(context.Background(), arg)
+		_, err := queries.CreateFaculty(context.Background(), faculty.Name)
 		if err != nil {
 			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
 			continue
