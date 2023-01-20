@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/mail"
 	"regexp"
+
+	"github.com/dados-id/dados-be/util"
 )
 
 var (
@@ -40,6 +42,13 @@ func validateIntNull(value int) error {
 	return nil
 }
 
+func validateInt64Null(value int64) error {
+	if value == 0 {
+		return fmt.Errorf("must not null value")
+	}
+	return nil
+}
+
 func validateString(value string, minLength, maxLength int) error {
 	if err := validateStringNull(value); err != nil {
 		return err
@@ -61,12 +70,32 @@ func validateInt(value int, minValue, maxValue int) error {
 	return nil
 }
 
+func validateInt64(value int64, minValue, maxValue int64) error {
+	if err := validateInt64Null(value); err != nil {
+		return err
+	}
+	if value < minValue || value > maxValue {
+		return fmt.Errorf("value must between %d to %d", minValue, maxValue)
+	}
+	return nil
+}
+
 func validateEmail(value string) error {
 	if err := validateString(value, 6, 30); err != nil {
 		return err
 	}
 	if _, err := mail.ParseAddress(value); err != nil {
 		return fmt.Errorf("is not a valid email address")
+	}
+	return nil
+}
+
+func validateStatusRequest(value string) error {
+	if err := validateStringNull(value); err != nil {
+		return err
+	}
+	if ok := util.IsSupportedStatusRequest(value); !ok {
+		return fmt.Errorf("not supported statusRequest: %s", value)
 	}
 	return nil
 }

@@ -5,7 +5,6 @@ import (
 	"net/url"
 
 	"github.com/dados-id/dados-be/model"
-	"github.com/dados-id/dados-be/util"
 )
 
 func ValidateCreateSchoolRequest(req *model.CreateSchoolRequest) (violations []BadRequest_FieldViolation) {
@@ -42,13 +41,6 @@ func ValidateUpdateSchoolRequest(req *model.UpdateSchoolStatusRequest) (violatio
 	}
 
 	return violations
-}
-
-func validateStatusRequest(value string) error {
-	if ok := util.IsSupportedStatusRequest(value); !ok {
-		return fmt.Errorf("not supported statusRequest: %s", value)
-	}
-	return nil
 }
 
 func validateNameSchool(value string) error {

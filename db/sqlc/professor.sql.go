@@ -9,6 +9,17 @@ import (
 	"context"
 )
 
+const countProfessor = `-- name: CountProfessor :one
+SELECT COUNT(*) FROM professors
+`
+
+func (q *Queries) CountProfessor(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countProfessor)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createProfessor = `-- name: CreateProfessor :one
 INSERT INTO professors (
   first_name,
@@ -96,7 +107,7 @@ GROUP BY P.id
 
 type GetProfessorInfoAggregateRow struct {
 	TotalReview       int32  `json:"totalReview"`
-	Rating            int16  `json:"rating"`
+	Rating            string `json:"rating"`
 	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
 	LevelOfDifficulty string `json:"levelOfDifficulty"`
 	Awful             int32  `json:"awful"`
@@ -150,7 +161,7 @@ type ListProfessorsRow struct {
 	ID                int64  `json:"id"`
 	FirstName         string `json:"firstName"`
 	LastName          string `json:"lastName"`
-	Rating            int16  `json:"rating"`
+	Rating            string `json:"rating"`
 	TotalReview       int32  `json:"totalReview"`
 	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
 	LevelOfDifficulty string `json:"levelOfDifficulty"`
@@ -220,7 +231,7 @@ type ListProfessorsByFacultyRow struct {
 	ID                int64  `json:"id"`
 	FirstName         string `json:"firstName"`
 	LastName          string `json:"lastName"`
-	Rating            int16  `json:"rating"`
+	Rating            string `json:"rating"`
 	TotalReview       int32  `json:"totalReview"`
 	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
 	LevelOfDifficulty string `json:"levelOfDifficulty"`
@@ -291,7 +302,7 @@ type ListProfessorsByFacultyAndSchoolRow struct {
 	ID                int64  `json:"id"`
 	FirstName         string `json:"firstName"`
 	LastName          string `json:"lastName"`
-	Rating            int16  `json:"rating"`
+	Rating            string `json:"rating"`
 	TotalReview       int32  `json:"totalReview"`
 	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
 	LevelOfDifficulty string `json:"levelOfDifficulty"`
@@ -366,7 +377,7 @@ type ListProfessorsBySchoolRow struct {
 	ID                int64  `json:"id"`
 	FirstName         string `json:"firstName"`
 	LastName          string `json:"lastName"`
-	Rating            int16  `json:"rating"`
+	Rating            string `json:"rating"`
 	TotalReview       int32  `json:"totalReview"`
 	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
 	LevelOfDifficulty string `json:"levelOfDifficulty"`
@@ -413,7 +424,7 @@ SELECT T.name as tag_names FROM tags T
   JOIN professor_ratings PR ON PRT.professor_id = PR.id
 WHERE
   PR.professor_id = $1
-GROUP BY PR.professor_id
+GROUP BY PR.professor_id, T.name
 ORDER BY COUNT(*)
 LIMIT 5
 `
@@ -451,7 +462,7 @@ SELECT
 FROM professors P
   JOIN faculties F ON P.faculty_id = F.id
   JOIN schools S ON P.school_id = S.id
-WHERE P.first_name LIKE $1 OR P.last_name LIKE $1 OR concat(P.first_name, ' ', P.last_name) LIKE $1
+WHERE P.first_name ILIKE $1 OR P.last_name ILIKE $1 OR concat(P.first_name, ' ', P.last_name) ILIKE $1
 LIMIT 5
 `
 
@@ -495,15 +506,15 @@ func (q *Queries) SearchProfessorsByName(ctx context.Context, firstName string) 
 const updateProfessorStatusRequest = `-- name: UpdateProfessorStatusRequest :one
 UPDATE professors
 SET
-  status = $1::text
+  status = $1
 WHERE
   id = $2::bigint
 RETURNING id, first_name, last_name, rating, total_review, would_take_again, level_of_difficulty, created_at, status, verified_date, faculty_id, school_id
 `
 
 type UpdateProfessorStatusRequestParams struct {
-	Status string `json:"status"`
-	ID     int64  `json:"id"`
+	Status Statusrequest `json:"status"`
+	ID     int64         `json:"id"`
 }
 
 func (q *Queries) UpdateProfessorStatusRequest(ctx context.Context, arg UpdateProfessorStatusRequestParams) (Professor, error) {

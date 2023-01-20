@@ -284,7 +284,7 @@ type UserListSavedProfessorsRow struct {
 	ID                int64  `json:"id"`
 	FirstName         string `json:"firstName"`
 	LastName          string `json:"lastName"`
-	Rating            int16  `json:"rating"`
+	Rating            string `json:"rating"`
 	TotalReview       int32  `json:"totalReview"`
 	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
 	LevelOfDifficulty string `json:"levelOfDifficulty"`

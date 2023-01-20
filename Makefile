@@ -28,7 +28,11 @@ migratedown:
 	migrate -path db/migration -database "$(DB_URL)" -verbose down
 
 seeds:
-	go run scripts/user_seeding/user_seeding.go; go run scripts/school_seeding/school_seeding.go; go run scripts/school_rating_seeding/school_rating_seeding.go
+	go run scripts/user_seeding/user_seeding.go;
+	go run scripts/faculty_seeding/faculty_seeding.go;
+	go run scripts/school_seeding/school_seeding.go;
+	go run scripts/school_rating_seeding/school_rating_seeding.go;
+	go run scripts/professor_seeding/professor_seeding.go;
 
 mock:
 	mockgen -package mockdb -destination db/mock/mock.go github.com/dados-id/dados-be/db/sqlc Querier
@@ -36,4 +40,8 @@ mock:
 test:
 	go test -v -cover ./...
 
-.PHONY: postgres createdb dropdb db_docs db_schema server sqlc migrateup migratedown seeds mock test
+refresh_db:
+	docker exec -it dados-container dropdb dados;
+	docker exec -it dados-container createdb --username=root --owner=root dados;
+
+.PHONY: postgres createdb dropdb db_docs db_schema server sqlc migrateup migratedown seeds mock test refresh_db

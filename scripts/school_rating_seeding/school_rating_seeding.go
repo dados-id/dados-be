@@ -36,7 +36,7 @@ func createSchoolRating(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 	exception.FatalIfNeeded(err, "Error Count User")
 
 	totalRowSchool, err := queries.CountSchool(context.Background())
-	exception.FatalIfNeeded(err, "Error Count User")
+	exception.FatalIfNeeded(err, "Error Count School")
 
 	for i := 1; i <= NDATA; i++ {
 		schoolRating := util.GetValidSchoolRating(totalRowUser, totalRowSchool)
