@@ -94,15 +94,15 @@ func (q *Queries) ListCorrection(ctx context.Context, arg ListCorrectionParams) 
 const updateCorrection = `-- name: UpdateCorrection :one
 UPDATE correction_forms
 SET
-  status = $1::text
+  status = $1
 WHERE
   id = $2::bigint
 RETURNING id, problem, correct_info, email, status, request_date, verified_date, user_id
 `
 
 type UpdateCorrectionParams struct {
-	Status string `json:"status"`
-	ID     int64  `json:"id"`
+	Status Statusrequest `json:"status"`
+	ID     int64         `json:"id"`
 }
 
 func (q *Queries) UpdateCorrection(ctx context.Context, arg UpdateCorrectionParams) (CorrectionForm, error) {

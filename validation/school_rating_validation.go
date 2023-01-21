@@ -119,10 +119,9 @@ func ValidateUpdateSchoolRatingRequest(req *model.UpdateSchoolRatingJSONRequest)
 	return violations
 }
 
-func validateReview(value string) error {
-	return validateString(value, 1, 256)
-}
-
 func validateSchoolRatingField(value int16) error {
+	if err := validateIntNull(int(value)); err != nil {
+		return err
+	}
 	return validateInt(int(value), 1, 5)
 }

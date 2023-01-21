@@ -7,19 +7,27 @@ INSERT INTO professor_ratings (
   use_textbooks,
   attendance_mandatory,
   grade,
-  tags,
+  -- tags,
   review,
   professor_id,
   course_code,
   user_id
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
 ) RETURNING *;
 
 -- name: CreateProfessorCourseAssociation :exec
 INSERT INTO professor_course_associations (
   course_code,
   professor_id
+) VALUES (
+  $1, $2
+);
+
+-- name: CreateProfessorRatingTags :exec
+INSERT INTO professor_rating_tags (
+  tag_name,
+  professor_rating_id
 ) VALUES (
   $1, $2
 );
@@ -34,7 +42,7 @@ SELECT
   PR.use_textbooks,
   PR.attendance_mandatory,
   PR.grade,
-  PR.tags,
+  -- PR.tags,
   PR.review,
   P.first_name as professor_first_name,
   P.last_name as professor_last_name,
@@ -54,17 +62,21 @@ SELECT
   PR.use_textbooks,
   PR.attendance_mandatory,
   PR.grade,
-  PR.tags,
   PR.review,
   PR.up_vote ,
   PR.down_vote ,
-  PR.created_at
+  PR.created_at,
+  array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
-WHERE PR.professor_id = $1
+  JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
+WHERE
+  PR.professor_id = $1
+GROUP BY
+  PR.id
 LIMIT $2
 OFFSET $3;
 
--- name: ListProfessorRatingsJoinProfessorFilterByCourse :many
+-- name: ListProfessorRatingsFilterByCourse :many
 SELECT
   PR.id,
   PR.quality,
@@ -74,17 +86,21 @@ SELECT
   PR.use_textbooks,
   PR.attendance_mandatory,
   PR.grade,
-  PR.tags,
   PR.review,
   PR.up_vote ,
   PR.down_vote ,
-  PR.created_at
+  PR.created_at,
+  array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
-WHERE PR.professor_id = $1 AND PR.course_code = $2
+  JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
+WHERE
+  PR.professor_id = $1 AND PR.course_code = $2
+GROUP BY
+  PR.id
 LIMIT $3
 OFFSET $4;
 
--- name: ListProfessorRatingsJoinProfessorFilterByRating :many
+-- name: ListProfessorRatingsFilterByRating :many
 SELECT
   PR.id,
   PR.quality,
@@ -94,7 +110,7 @@ SELECT
   PR.use_textbooks,
   PR.attendance_mandatory,
   PR.grade,
-  PR.tags,
+  -- PR.tags,
   PR.review,
   PR.up_vote ,
   PR.down_vote ,
@@ -114,11 +130,10 @@ SET
   use_textbooks = COALESCE(sqlc.narg(use_textbooks), use_textbooks),
   attendance_mandatory = COALESCE(sqlc.narg(attendance_mandatory), attendance_mandatory),
   grade = COALESCE(sqlc.narg(grade), grade),
-  tags = COALESCE(sqlc.narg(tags), tags),
   review = COALESCE(sqlc.narg(review), review),
   up_vote = COALESCE(sqlc.narg(up_vote), up_vote),
   down_vote = COALESCE(sqlc.narg(down_vote), down_vote),
   course_code = COALESCE(sqlc.narg(course_code), course_code)
 WHERE
-  id = sqlc.arg(id)
+  id = @professor_id
 RETURNING *;

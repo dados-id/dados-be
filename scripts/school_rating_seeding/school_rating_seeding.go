@@ -17,26 +17,26 @@ func main() {
 	database := config.NewPostgres(configuration.DBDriver, configuration.DBSource)
 	queries := sqlc.New(database)
 
+	totalRowUser, err := queries.CountUser(context.Background())
+	exception.FatalIfNeeded(err, "Error Count User")
+
+	totalRowSchool, err := queries.CountSchool(context.Background())
+	exception.FatalIfNeeded(err, "Error Count School")
+
 	var wg sync.WaitGroup
 
 	NDATA := 500
 	for i := 1; i <= 5; i++ {
 		wg.Add(1)
-		go createSchoolRating(NDATA, *queries, &wg)
+		go createSchoolRating(NDATA, *queries, &wg, totalRowUser, totalRowSchool)
 	}
 	wg.Wait()
 
 	fmt.Printf("Successfully added %d data SchoolRating to database\n", NDATA)
 }
 
-func createSchoolRating(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
+func createSchoolRating(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup, totalRowUser, totalRowSchool int64) {
 	defer wg.Done()
-
-	totalRowUser, err := queries.CountUser(context.Background())
-	exception.FatalIfNeeded(err, "Error Count User")
-
-	totalRowSchool, err := queries.CountSchool(context.Background())
-	exception.FatalIfNeeded(err, "Error Count School")
 
 	for i := 1; i <= NDATA; i++ {
 		schoolRating := util.GetValidSchoolRating(totalRowUser, totalRowSchool)

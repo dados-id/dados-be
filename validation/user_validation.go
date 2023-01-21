@@ -59,6 +59,9 @@ func validateName(value string) error {
 }
 
 func validateExpectedYearOfGraduation(value int) error {
+	if err := validateIntNull(value); err != nil {
+		return err
+	}
 	return validateInt(value, 2023, 9999)
 }
 

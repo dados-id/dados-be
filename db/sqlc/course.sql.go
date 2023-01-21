@@ -9,17 +9,6 @@ import (
 	"context"
 )
 
-const countCourse = `-- name: CountCourse :one
-SELECT COUNT(*) FROM courses
-`
-
-func (q *Queries) CountCourse(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countCourse)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
 const createCourse = `-- name: CreateCourse :one
 INSERT INTO courses (
   code,
@@ -39,4 +28,46 @@ func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) (Cou
 	var i Course
 	err := row.Scan(&i.Code, &i.Name)
 	return i, err
+}
+
+const getCourseByProfessor = `-- name: GetCourseByProfessor :many
+SELECT c.code, c.name FROM professor_course_associations PCA
+  JOIN courses C ON PCA.course_code = C.code
+WHERE PCA.professor_id = $1
+`
+
+func (q *Queries) GetCourseByProfessor(ctx context.Context, professorID int64) ([]Course, error) {
+	rows, err := q.db.QueryContext(ctx, getCourseByProfessor, professorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Course{}
+	for rows.Next() {
+		var i Course
+		if err := rows.Scan(&i.Code, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const randomCourseCode = `-- name: RandomCourseCode :one
+SELECT code FROM courses
+ORDER BY RANDOM()
+LIMIT 1
+`
+
+func (q *Queries) RandomCourseCode(ctx context.Context) (string, error) {
+	row := q.db.QueryRowContext(ctx, randomCourseCode)
+	var code string
+	err := row.Scan(&code)
+	return code, err
 }

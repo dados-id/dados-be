@@ -25,17 +25,17 @@ SELECT
   SUM(CASE PR.quality when 5 then 1 else 0 end)::int as awesome
 FROM professors P
   JOIN professor_ratings PR ON P.id = PR.professor_id
-WHERE P.id = $1
+WHERE
+  P.id = $1
 GROUP BY P.id;
 
 -- name: ListTop5Tags :many
-SELECT T.name as tag_names FROM tags T
-  JOIN professor_rating_tags PRT ON PRT.tag_id = T.id
-  JOIN professor_ratings PR ON PRT.professor_id = PR.id
+SELECT PRT.tag_name as tag_names FROM professor_rating_tags PRT
+  JOIN professor_ratings PR ON PRT.professor_rating_id = PR.id
 WHERE
   PR.professor_id = $1
-GROUP BY PR.professor_id, T.name
-ORDER BY COUNT(*)
+GROUP BY PRT.tag_name
+ORDER BY COUNT(PRT.tag_name) DESC
 LIMIT 5;
 
 -- name: ListProfessors :many
@@ -65,7 +65,7 @@ SELECT
 FROM professors P
   JOIN faculties F ON P.faculty_id = F.id
   JOIN schools S ON P.school_id = S.id
-WHERE P.first_name ILIKE $1 OR P.last_name ILIKE $1 OR concat(P.first_name, ' ', P.last_name) ILIKE $1
+WHERE LOWER(P.first_name) LIKE LOWER(@name::text) OR LOWER(P.last_name) LIKE LOWER(@name::text) OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER(@name::text)
 LIMIT 5;
 
 -- name: ListProfessorsBySchool :many

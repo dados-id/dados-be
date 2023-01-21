@@ -30,7 +30,10 @@ migratedown:
 seeds:
 	go run scripts/user_seeding/user_seeding.go;
 	go run scripts/faculty_seeding/faculty_seeding.go;
+	go run scripts/course_seeding/course_seeding.go;
+	go run scripts/tag_seeding/tag_seeding.go;
 	go run scripts/school_seeding/school_seeding.go;
+
 	go run scripts/school_rating_seeding/school_rating_seeding.go;
 	go run scripts/professor_seeding/professor_seeding.go;
 
@@ -43,5 +46,6 @@ test:
 refresh_db:
 	docker exec -it dados-container dropdb dados;
 	docker exec -it dados-container createdb --username=root --owner=root dados;
+	migrate -path db/migration -database "$(DB_URL)" -verbose up;
 
 .PHONY: postgres createdb dropdb db_docs db_schema server sqlc migrateup migratedown seeds mock test refresh_db

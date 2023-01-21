@@ -9,8 +9,6 @@ import (
 	"context"
 	"database/sql"
 	"time"
-
-	"github.com/lib/pq"
 )
 
 const countUser = `-- name: CountUser :one
@@ -173,7 +171,7 @@ SELECT
   PR.use_textbooks,
   PR.attendance_mandatory,
   PR.grade,
-  PR.tags,
+  -- PR.tags,
   PR.review,
   PR.created_at,
   P.first_name as professor_first_name,
@@ -201,11 +199,10 @@ type UserListProfessorRatingsRow struct {
 	Quality             string    `json:"quality"`
 	Difficult           string    `json:"difficult"`
 	WouldTakeAgain      int16     `json:"wouldTakeAgain"`
-	TakenForCredit      bool      `json:"takenForCredit"`
-	UseTextbooks        bool      `json:"useTextbooks"`
+	TakenForCredit      int16     `json:"takenForCredit"`
+	UseTextbooks        int16     `json:"useTextbooks"`
 	AttendanceMandatory int16     `json:"attendanceMandatory"`
 	Grade               string    `json:"grade"`
-	Tags                []string  `json:"tags"`
 	Review              string    `json:"review"`
 	CreatedAt           time.Time `json:"createdAt"`
 	ProfessorFirstName  string    `json:"professorFirstName"`
@@ -232,7 +229,6 @@ func (q *Queries) UserListProfessorRatings(ctx context.Context, arg UserListProf
 			&i.UseTextbooks,
 			&i.AttendanceMandatory,
 			&i.Grade,
-			pq.Array(&i.Tags),
 			&i.Review,
 			&i.CreatedAt,
 			&i.ProfessorFirstName,

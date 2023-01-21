@@ -38,7 +38,7 @@ SELECT
   PR.use_textbooks,
   PR.attendance_mandatory,
   PR.grade,
-  PR.tags,
+  -- PR.tags,
   PR.review,
   PR.created_at,
   P.first_name as professor_first_name,

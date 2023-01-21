@@ -61,9 +61,6 @@ func validateString(value string, minLength, maxLength int) error {
 }
 
 func validateInt(value int, minValue, maxValue int) error {
-	if err := validateIntNull(value); err != nil {
-		return err
-	}
 	if value < minValue || value > maxValue {
 		return fmt.Errorf("value must between %d to %d", minValue, maxValue)
 	}
@@ -98,4 +95,8 @@ func validateStatusRequest(value string) error {
 		return fmt.Errorf("not supported statusRequest: %s", value)
 	}
 	return nil
+}
+
+func validateReview(value string) error {
+	return validateString(value, 1, 256)
 }

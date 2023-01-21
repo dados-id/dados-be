@@ -77,6 +77,12 @@ func (server *Server) setupRouter() {
 		professorRoutes.GET("/professors/:professor_id", server.getProfessorInfoAggregate)
 		professorRoutes.GET("/professors", server.listProfessors)
 		professorRoutes.PUT("/professors/:professor_id", server.updateProfessorStatusRequest)
+
+		professorRatingRoutes := authRoutes.Group("/")
+		professorRatingRoutes.GET("/professors/:professor_id/ratings/:professor_rating_id", server.getProfessorRating)
+		professorRatingRoutes.GET("professors/:professor_id/ratings", server.listProfessorRatings)
+		professorRatingRoutes.POST("professors/:professor_id/ratings", server.createProfessorRating)
+		professorRatingRoutes.PUT("professors/:professor_id/ratings/:professor_rating_id", server.updateProfessorRating)
 	}
 
 	server.router = router
