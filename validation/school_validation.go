@@ -55,11 +55,8 @@ func validateNameSchool(value string) error {
 
 func validateNicknameSchool(value []string) error {
 	for _, val := range value {
-		if err := validateString(val, 1, 64); err != nil {
+		if err := validateNameSchool(val); err != nil {
 			return err
-		}
-		if !isValidSchool(val) {
-			return fmt.Errorf("must contain only letters or spaces")
 		}
 	}
 	return nil

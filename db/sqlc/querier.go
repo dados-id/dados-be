@@ -9,7 +9,6 @@ import (
 )
 
 type Querier interface {
-	CountCourse(ctx context.Context) (int64, error)
 	CountFaculty(ctx context.Context) (int64, error)
 	CountProfessor(ctx context.Context) (int64, error)
 	CountSchool(ctx context.Context) (int64, error)
@@ -20,11 +19,14 @@ type Querier interface {
 	CreateProfessor(ctx context.Context, arg CreateProfessorParams) (Professor, error)
 	CreateProfessorCourseAssociation(ctx context.Context, arg CreateProfessorCourseAssociationParams) error
 	CreateProfessorRating(ctx context.Context, arg CreateProfessorRatingParams) (ProfessorRating, error)
+	CreateProfessorRatingTags(ctx context.Context, arg CreateProfessorRatingTagsParams) error
 	CreateReport(ctx context.Context, arg CreateReportParams) (ReportForm, error)
 	CreateSchool(ctx context.Context, arg CreateSchoolParams) (School, error)
 	CreateSchoolFacultyAssociation(ctx context.Context, arg CreateSchoolFacultyAssociationParams) error
 	CreateSchoolRating(ctx context.Context, arg CreateSchoolRatingParams) (SchoolRating, error)
+	CreateTag(ctx context.Context, name string) (string, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	GetCourseByProfessor(ctx context.Context, professorID int64) ([]Course, error)
 	GetProfessor(ctx context.Context, id int64) (Professor, error)
 	GetProfessorInfoAggregate(ctx context.Context, id int64) (GetProfessorInfoAggregateRow, error)
 	GetProfessorRating(ctx context.Context, arg GetProfessorRatingParams) (GetProfessorRatingRow, error)
@@ -34,8 +36,8 @@ type Querier interface {
 	GetUser(ctx context.Context, id int64) (User, error)
 	ListCorrection(ctx context.Context, arg ListCorrectionParams) ([]CorrectionForm, error)
 	ListProfessorRatings(ctx context.Context, arg ListProfessorRatingsParams) ([]ListProfessorRatingsRow, error)
-	ListProfessorRatingsJoinProfessorFilterByCourse(ctx context.Context, arg ListProfessorRatingsJoinProfessorFilterByCourseParams) ([]ListProfessorRatingsJoinProfessorFilterByCourseRow, error)
-	ListProfessorRatingsJoinProfessorFilterByRating(ctx context.Context, arg ListProfessorRatingsJoinProfessorFilterByRatingParams) ([]ListProfessorRatingsJoinProfessorFilterByRatingRow, error)
+	ListProfessorRatingsFilterByCourse(ctx context.Context, arg ListProfessorRatingsFilterByCourseParams) ([]ListProfessorRatingsFilterByCourseRow, error)
+	ListProfessorRatingsFilterByRating(ctx context.Context, arg ListProfessorRatingsFilterByRatingParams) ([]ListProfessorRatingsFilterByRatingRow, error)
 	ListProfessors(ctx context.Context, arg ListProfessorsParams) ([]ListProfessorsRow, error)
 	ListProfessorsByFaculty(ctx context.Context, arg ListProfessorsByFacultyParams) ([]ListProfessorsByFacultyRow, error)
 	ListProfessorsByFacultyAndSchool(ctx context.Context, arg ListProfessorsByFacultyAndSchoolParams) ([]ListProfessorsByFacultyAndSchoolRow, error)
@@ -43,9 +45,12 @@ type Querier interface {
 	ListReport(ctx context.Context, arg ListReportParams) ([]ReportForm, error)
 	ListSchoolRatings(ctx context.Context, arg ListSchoolRatingsParams) ([]ListSchoolRatingsRow, error)
 	ListSchools(ctx context.Context, arg ListSchoolsParams) ([]ListSchoolsRow, error)
+	ListTagsByProfessorRatingId(ctx context.Context, id int64) ([]string, error)
 	ListTop5Tags(ctx context.Context, professorID int64) ([]string, error)
+	RandomCourseCode(ctx context.Context) (string, error)
+	RandomTag(ctx context.Context) (string, error)
 	SaveProfessor(ctx context.Context, arg SaveProfessorParams) error
-	SearchProfessorsByName(ctx context.Context, firstName string) ([]SearchProfessorsByNameRow, error)
+	SearchProfessorsByName(ctx context.Context, name string) ([]SearchProfessorsByNameRow, error)
 	SearchSchoolsByNameOrNickName(ctx context.Context, name string) ([]SearchSchoolsByNameOrNickNameRow, error)
 	UnsaveProfessor(ctx context.Context, arg UnsaveProfessorParams) error
 	UpdateCorrection(ctx context.Context, arg UpdateCorrectionParams) (CorrectionForm, error)

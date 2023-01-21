@@ -47,7 +47,7 @@ INSERT INTO school_ratings (
   review
 ) VALUES (
   $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
-) RETURNING id, user_id, school_id, reputation, location, opportunities, facilities, internet, food, clubs, social, happiness, safety, review, up_vote, down_vote, overall_rating, created_at, edited_at, status, verified_date
+) RETURNING id, reputation, location, opportunities, facilities, internet, food, clubs, social, happiness, safety, review, up_vote, down_vote, overall_rating, created_at, edited_at, status, verified_date, user_id, school_id
 `
 
 type CreateSchoolRatingParams struct {
@@ -85,8 +85,6 @@ func (q *Queries) CreateSchoolRating(ctx context.Context, arg CreateSchoolRating
 	var i SchoolRating
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
-		&i.SchoolID,
 		&i.Reputation,
 		&i.Location,
 		&i.Opportunities,
@@ -105,6 +103,8 @@ func (q *Queries) CreateSchoolRating(ctx context.Context, arg CreateSchoolRating
 		&i.EditedAt,
 		&i.Status,
 		&i.VerifiedDate,
+		&i.UserID,
+		&i.SchoolID,
 	)
 	return i, err
 }
@@ -278,7 +278,7 @@ SET
   down_vote = COALESCE($13, down_vote)
 WHERE
   id = $14 AND school_id = $15
-RETURNING id, user_id, school_id, reputation, location, opportunities, facilities, internet, food, clubs, social, happiness, safety, review, up_vote, down_vote, overall_rating, created_at, edited_at, status, verified_date
+RETURNING id, reputation, location, opportunities, facilities, internet, food, clubs, social, happiness, safety, review, up_vote, down_vote, overall_rating, created_at, edited_at, status, verified_date, user_id, school_id
 `
 
 type UpdateSchoolRatingParams struct {
@@ -320,8 +320,6 @@ func (q *Queries) UpdateSchoolRating(ctx context.Context, arg UpdateSchoolRating
 	var i SchoolRating
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
-		&i.SchoolID,
 		&i.Reputation,
 		&i.Location,
 		&i.Opportunities,
@@ -340,6 +338,8 @@ func (q *Queries) UpdateSchoolRating(ctx context.Context, arg UpdateSchoolRating
 		&i.EditedAt,
 		&i.Status,
 		&i.VerifiedDate,
+		&i.UserID,
+		&i.SchoolID,
 	)
 	return i, err
 }

@@ -76,8 +76,7 @@ type Faculty struct {
 
 //
 //       List of derived attribute:
-//       1. top tags
-//       2. 5 distribusi nilai (from quality)
+//       1. 5 distribusi nilai (from quality)
 //
 type Professor struct {
 	ID                int64         `json:"id"`
@@ -100,40 +99,49 @@ type ProfessorCourseAssociation struct {
 }
 
 //
-//       attendance_mandatory:
-//       1. true
-//       2. false
-//       3. unknown
+//       taken_for_credit (int):
+//       0 -> unknown
+//       1 -> false
+//       2 -> true
 //
-//       would_take_again:
-//       0. false
-//       1. true
+//       use_textbooks (int):
+//       0 -> unknown
+//       1 -> false
+//       2 -> true
+//
+//       attendance_mandatory (int):
+//       0 -> unknown
+//       1 -> false
+//       2 -> true
+//
+//       would_take_again (int):
+//       0 -> false
+//       1 -> true
 //
 type ProfessorRating struct {
 	ID                  int64         `json:"id"`
 	Quality             string        `json:"quality"`
 	Difficult           string        `json:"difficult"`
 	WouldTakeAgain      int16         `json:"wouldTakeAgain"`
-	TakenForCredit      bool          `json:"takenForCredit"`
-	UseTextbooks        bool          `json:"useTextbooks"`
+	TakenForCredit      int16         `json:"takenForCredit"`
+	UseTextbooks        int16         `json:"useTextbooks"`
 	AttendanceMandatory int16         `json:"attendanceMandatory"`
 	Grade               string        `json:"grade"`
-	Tags                []string      `json:"tags"`
 	Review              string        `json:"review"`
 	UpVote              int32         `json:"upVote"`
 	DownVote            int32         `json:"downVote"`
 	CreatedAt           time.Time     `json:"createdAt"`
 	EditedAt            time.Time     `json:"editedAt"`
+	Status              Statusrequest `json:"status"`
+	VerifiedDate        time.Time     `json:"verifiedDate"`
 	ProfessorID         int64         `json:"professorID"`
 	CourseCode          string        `json:"courseCode"`
 	UserID              int64         `json:"userID"`
-	Status              Statusrequest `json:"status"`
-	VerifiedDate        time.Time     `json:"verifiedDate"`
 }
 
 type ProfessorRatingTag struct {
-	TagID       int64 `json:"tagID"`
-	ProfessorID int64 `json:"professorID"`
+	TagName           string `json:"tagName"`
+	ProfessorRatingID int64  `json:"professorRatingID"`
 }
 
 type ReportForm struct {
@@ -149,7 +157,7 @@ type ReportForm struct {
 //
 //       List of derived attribute:
 //       1. 10 avg field school rating
-//       2. avg Overall Quality
+//       2. avg overall quality
 //
 type School struct {
 	ID           int64         `json:"id"`
@@ -170,8 +178,6 @@ type SchoolFacultyAssociation struct {
 
 type SchoolRating struct {
 	ID            int64         `json:"id"`
-	UserID        int64         `json:"userID"`
-	SchoolID      int64         `json:"schoolID"`
 	Reputation    int16         `json:"reputation"`
 	Location      int16         `json:"location"`
 	Opportunities int16         `json:"opportunities"`
@@ -190,10 +196,11 @@ type SchoolRating struct {
 	EditedAt      time.Time     `json:"editedAt"`
 	Status        Statusrequest `json:"status"`
 	VerifiedDate  time.Time     `json:"verifiedDate"`
+	UserID        int64         `json:"userID"`
+	SchoolID      int64         `json:"schoolID"`
 }
 
 type Tag struct {
-	ID   int64  `json:"id"`
 	Name string `json:"name"`
 }
 

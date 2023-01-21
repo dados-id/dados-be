@@ -35,6 +35,7 @@ CREATE TABLE "professors" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "status" StatusRequest NOT NULL DEFAULT 'pending',
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
+
   "faculty_id" bigint NOT NULL,
   "school_id" bigint NOT NULL
 );
@@ -47,35 +48,35 @@ CREATE TABLE "professor_course_associations" (
 
 CREATE TABLE "professor_ratings" (
   "id" bigserial PRIMARY KEY,
-  "quality" decimal(2,1) NOT NULL CHECK (quality >= 0.0),
-  "difficult" decimal(2,1) NOT NULL CHECK (difficult >= 0.0),
-  "would_take_again" smallint NOT NULL CHECK (would_take_again >= 0),
-  "taken_for_credit" boolean NOT NULL,
-  "use_textbooks" boolean NOT NULL,
-  "attendance_mandatory" smallint NOT NULL,
+  "quality" decimal(2,1) NOT NULL CHECK (quality >= 0.0 AND quality <= 5.0),
+  "difficult" decimal(2,1) NOT NULL CHECK (difficult >= 0.0 AND difficult <= 5.0),
+  "would_take_again" smallint NOT NULL CHECK (would_take_again >= 0 AND would_take_again <= 1),
+  "taken_for_credit" smallint NOT NULL CHECK (taken_for_credit >= 0 AND taken_for_credit <= 2),
+  "use_textbooks" smallint NOT NULL CHECK (would_take_again >= 0 AND would_take_again <= 2),
+  "attendance_mandatory" smallint NOT NULL CHECK (attendance_mandatory >= 0 AND attendance_mandatory <= 2),
   "grade" varchar NOT NULL,
-  "tags" varchar[] NOT NULL,
+  -- "tags" varchar[] NOT NULL,
   "review" varchar NOT NULL,
   "up_vote" int NOT NULL DEFAULT 0,
   "down_vote" int NOT NULL DEFAULT 0,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "edited_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
+  "status" StatusRequest NOT NULL DEFAULT 'pending',
+  "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
+
   "professor_id" bigint NOT NULL,
   "course_code" varchar NOT NULL,
-  "user_id" bigint NOT NULL,
-  "status" StatusRequest NOT NULL DEFAULT 'pending',
-  "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'
+  "user_id" bigint NOT NULL
 );
 
 CREATE TABLE "professor_rating_tags" (
-  "tag_id" bigint,
-  "professor_id" bigint,
-  PRIMARY KEY ("tag_id", "professor_id")
+  "tag_name" varchar,
+  "professor_rating_id" bigint,
+  PRIMARY KEY ("tag_name", "professor_rating_id")
 );
 
 CREATE TABLE "tags" (
-  "id" bigserial PRIMARY KEY,
-  "name" varchar NOT NULL
+  "name" varchar PRIMARY KEY
 );
 
 CREATE TABLE "courses" (
@@ -108,8 +109,6 @@ CREATE TABLE "schools" (
 
 CREATE TABLE "school_ratings" (
   "id" bigserial PRIMARY KEY,
-  "user_id" bigint NOT NULL,
-  "school_id" bigint NOT NULL,
   "reputation" smallint NOT NULL CHECK (reputation >= 1 AND reputation <= 5),
   "location" smallint NOT NULL CHECK (location >= 1 AND location <= 5),
   "opportunities" smallint NOT NULL CHECK (opportunities >= 1 AND opportunities <= 5),
@@ -127,7 +126,10 @@ CREATE TABLE "school_ratings" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "edited_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
   "status" StatusRequest NOT NULL DEFAULT 'pending',
-  "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'
+  "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
+
+  "user_id" bigint NOT NULL,
+  "school_id" bigint NOT NULL
 );
 
 CREATE TABLE "report_forms" (
@@ -136,6 +138,7 @@ CREATE TABLE "report_forms" (
   "status" StatusRequest NOT NULL DEFAULT 'pending',
   "request_date" timestamptz NOT NULL DEFAULT (now()),
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
+
   "professor_rating_id" bigserial NOT NULL,
   "user_id" bigint NOT NULL
 );
@@ -148,6 +151,7 @@ CREATE TABLE "correction_forms" (
   "status" StatusRequest NOT NULL DEFAULT 'pending',
   "request_date" timestamptz NOT NULL DEFAULT (now()),
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
+
   "user_id" bigint NOT NULL
 );
 
@@ -171,25 +175,34 @@ CREATE INDEX ON "school_ratings" ("school_id");
 
 COMMENT ON TABLE "professors" IS '
       List of derived attribute:
-      1. top tags
-      2. 5 distribusi nilai (from quality)
+      1. 5 distribusi nilai (from quality)
     ';
 
 COMMENT ON TABLE "professor_ratings" IS '
-      attendance_mandatory:
-      1. true
-      2. false
-      3. unknown
+      taken_for_credit (int):
+      0 -> unknown
+      1 -> false
+      2 -> true
 
-      would_take_again:
-      0. false
-      1. true
+      use_textbooks (int):
+      0 -> unknown
+      1 -> false
+      2 -> true
+
+      attendance_mandatory (int):
+      0 -> unknown
+      1 -> false
+      2 -> true
+
+      would_take_again (int):
+      0 -> false
+      1 -> true
     ';
 
 COMMENT ON TABLE "schools" IS '
       List of derived attribute:
       1. 10 avg field school rating
-      2. avg Overall Quality
+      2. avg overall quality
     ';
 
 ALTER TABLE "professors" ADD UNIQUE ("first_name", "last_name");
@@ -202,9 +215,9 @@ ALTER TABLE "professor_course_associations" ADD FOREIGN KEY ("professor_id") REF
 
 ALTER TABLE "professor_course_associations" ADD FOREIGN KEY ("course_code") REFERENCES "courses" ("code") ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE "professor_rating_tags" ADD FOREIGN KEY ("professor_id") REFERENCES "professor_ratings" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "professor_rating_tags" ADD FOREIGN KEY ("professor_rating_id") REFERENCES "professor_ratings" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE "professor_rating_tags" ADD FOREIGN KEY ("tag_id") REFERENCES "tags" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "professor_rating_tags" ADD FOREIGN KEY ("tag_name") REFERENCES "tags" ("name") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "school_faculty_associations" ADD FOREIGN KEY ("faculty_id") REFERENCES "faculties" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -266,10 +279,10 @@ DECLARE
 BEGIN
 
   SELECT
-    AVG(PR.quality) * 1.0,
-    AVG(PR.difficult) * 1.0,
-    AVG(PR.would_take_again),
-    COUNT(*)
+    AVG(PR.quality),
+    AVG(PR.difficult),
+    AVG(PR.would_take_again)*100,
+    COUNT(PR.id)
   INTO
     avg_rating,
     avg_level_of_difficulty,
@@ -277,7 +290,7 @@ BEGIN
     avg_total_review
   FROM professor_ratings PR
     WHERE PR.professor_id = NEW.professor_id
-  GROUP BY PR.id;
+  GROUP BY PR.professor_id;
 
   UPDATE professors
   SET
@@ -293,6 +306,11 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER tr_insert_update_professor_field
-BEFORE INSERT OR UPDATE OR DELETE ON professor_ratings
+AFTER INSERT OR UPDATE ON professor_ratings
+FOR EACH ROW
+EXECUTE FUNCTION update_professor_field();
+
+CREATE TRIGGER tr_delete_professor_field
+AFTER DELETE ON professor_ratings
 FOR EACH ROW
 EXECUTE FUNCTION update_professor_field();

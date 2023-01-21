@@ -84,14 +84,16 @@ func (q *Queries) ListReport(ctx context.Context, arg ListReportParams) ([]Repor
 
 const updateReport = `-- name: UpdateReport :one
 UPDATE report_forms
-SET status = $1::text
-WHERE id = $2::bigint
+SET
+  status = $1
+WHERE
+  id = $2::bigint
 RETURNING id, comment, status, request_date, verified_date, professor_rating_id, user_id
 `
 
 type UpdateReportParams struct {
-	Status string `json:"status"`
-	ID     int64  `json:"id"`
+	Status Statusrequest `json:"status"`
+	ID     int64         `json:"id"`
 }
 
 func (q *Queries) UpdateReport(ctx context.Context, arg UpdateReportParams) (ReportForm, error) {

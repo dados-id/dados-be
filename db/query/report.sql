@@ -14,6 +14,8 @@ OFFSET $2;
 
 -- name: UpdateReport :one
 UPDATE report_forms
-SET status = @status::text
-WHERE id = @id::bigint
+SET
+  status = @status
+WHERE
+  id = @id::bigint
 RETURNING *;

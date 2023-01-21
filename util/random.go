@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+
+	"strconv"
 )
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -24,8 +26,8 @@ func RandomInt(min, max int64) int64 {
 }
 
 // RandomFlaot generates a random integer between min and max
-func RandomFloat(min, max float64) float64 {
-	return min + rand.Float64()*(max-min)
+func RandomFloat(min, max float64) int {
+	return int((min+rand.Float64()*(max-min))*10) / 10
 }
 
 // RandomString generates a random alphabet string of length n
@@ -40,6 +42,10 @@ func RandomString(n int) string {
 	return sb.String()
 }
 
+func RandomBool() bool {
+	return RandomInt(0, 1) == 1
+}
+
 // randomName generates a random firstname or lastname of school
 func randomName() string {
 	return RandomString(15)
@@ -48,4 +54,8 @@ func randomName() string {
 // randomEmail generates a random email
 func randomEmail() string {
 	return fmt.Sprintf("%s@email.com", RandomString(20))
+}
+
+func convertIntToStr(num int) string {
+	return strconv.Itoa(num)
 }

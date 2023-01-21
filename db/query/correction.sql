@@ -16,7 +16,7 @@ OFFSET $2;
 -- name: UpdateCorrection :one
 UPDATE correction_forms
 SET
-  status = @status::text
+  status = @status
 WHERE
   id = @id::bigint
 RETURNING *;

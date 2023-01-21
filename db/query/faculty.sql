@@ -5,6 +5,5 @@ INSERT INTO faculties (
   $1
 ) RETURNING *;
 
-
 -- name: CountFaculty :one
 SELECT COUNT(*) FROM faculties;
