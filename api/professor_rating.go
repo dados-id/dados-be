@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 
 	db "github.com/dados-id/dados-be/db/sqlc"
@@ -52,7 +51,6 @@ func (server *Server) listProfessorRatings(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
-	fmt.Println(reqQueryParams.CourseCode, reqQueryParams.Rating)
 
 	// Filter By CourseCode
 	if reqQueryParams.CourseCode != nil {

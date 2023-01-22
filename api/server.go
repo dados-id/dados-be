@@ -52,11 +52,9 @@ func (server *Server) setupRouter() {
 		userRoutes := authRoutes.Group("/")
 		userRoutes.GET("/users/:id", server.getUser)
 		userRoutes.PUT("/users/:id", server.updateUser)
-
 		userRoutes.GET("/users/:id/professor_ratings", server.userListProfessorRatings)
 		userRoutes.GET("/users/:id/school_ratings", server.userListSchoolRatings)
 		userRoutes.GET("/users/:id/saved_professors", server.userListSavedProfessors)
-
 		userRoutes.DELETE("/users/:user_id/professors/:professor_id", server.unsaveProfessor)
 		userRoutes.POST("/users/:user_id/professors/:professor_id", server.saveProfessor)
 
@@ -76,6 +74,8 @@ func (server *Server) setupRouter() {
 		professorRoutes.POST("/professors", server.createProfessor)
 		professorRoutes.GET("/professors/:professor_id", server.getProfessorInfoAggregate)
 		professorRoutes.GET("/professors", server.listProfessors)
+		professorRoutes.GET("schools/:school_id/professors", server.listProfessorsBySchool)
+		professorRoutes.GET("faculties/:faculty_id/professors", server.listProfessorsByFaculty)
 		professorRoutes.PUT("/professors/:professor_id", server.updateProfessorStatusRequest)
 
 		professorRatingRoutes := authRoutes.Group("/")

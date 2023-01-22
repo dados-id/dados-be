@@ -34,23 +34,21 @@ func (server *Server) getSchoolInfoAggregate(ctx *gin.Context) {
 }
 
 func (server *Server) listSchools(ctx *gin.Context) {
-	var reqQueryParams1 model.ListSchoolsRequest
-	var reqQueryParams2 model.SearchSchoolByNameOrNicknameQueryRequest
+	var reqQueryParams model.ListSchoolsQueryRequest
 
-	err1 := ctx.ShouldBindQuery(&reqQueryParams1)
-	err2 := ctx.ShouldBindQuery(&reqQueryParams2)
-	if err1 != nil && err2 != nil {
-		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err2))
+	if err := ctx.ShouldBindQuery(&reqQueryParams); err != nil {
+		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
-	if err1 == nil {
-		arg := db.ListSchoolsParams{
-			Limit:  reqQueryParams1.PageSize,
-			Offset: (reqQueryParams1.PageID - 1) * reqQueryParams1.PageSize,
+	// Search By Name
+	if reqQueryParams.Name != nil {
+		arg := db.SearchSchoolsByNameOrNickNameParams{
+			NameArr: reqQueryParams.GetName(),
+			Name:    "%" + reqQueryParams.GetName() + "%",
 		}
 
-		schools, err := server.query.ListSchools(ctx, arg)
+		schools, err := server.query.SearchSchoolsByNameOrNickName(ctx, arg)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 			return
@@ -60,12 +58,12 @@ func (server *Server) listSchools(ctx *gin.Context) {
 		return
 	}
 
-	arg := db.SearchSchoolsByNameOrNickNameParams{
-		NameArr: reqQueryParams2.Name,
-		Name:    "%" + reqQueryParams2.Name + "%",
+	arg := db.ListSchoolsParams{
+		Limit:  reqQueryParams.PageSize,
+		Offset: (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
 	}
 
-	schools, err := server.query.SearchSchoolsByNameOrNickName(ctx, arg)
+	schools, err := server.query.ListSchools(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
