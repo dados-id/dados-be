@@ -10,8 +10,24 @@ type ListProfessorRatingURIRequest struct {
 }
 
 type ListProfessorRatingQueryRequest struct {
-	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5"`
+	PageID     int32   `form:"page_id" binding:"required,min=1"`
+	PageSize   int32   `form:"page_size" binding:"required,min=5"`
+	CourseCode *string `form:"course_code"`
+	Rating     *int16  `form:"rating"`
+}
+
+func (x *ListProfessorRatingQueryRequest) GetCourseCode() string {
+	if x != nil && x.CourseCode != nil {
+		return *x.CourseCode
+	}
+	return ""
+}
+
+func (x *ListProfessorRatingQueryRequest) GetRating() int16 {
+	if x != nil && x.Rating != nil {
+		return *x.Rating
+	}
+	return 0
 }
 
 type CreateProfessorRatingURIRequest struct {

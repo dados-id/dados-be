@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	isValidSchool = regexp.MustCompile(`^[a-zA-z\s]+$"`).MatchString
+	isValidSchool = regexp.MustCompile(`^[a-zA-Z\s]+$`).MatchString
 )
 
 type BadRequest_FieldViolation struct {

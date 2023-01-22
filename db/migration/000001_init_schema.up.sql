@@ -55,7 +55,6 @@ CREATE TABLE "professor_ratings" (
   "use_textbooks" smallint NOT NULL CHECK (would_take_again >= 0 AND would_take_again <= 2),
   "attendance_mandatory" smallint NOT NULL CHECK (attendance_mandatory >= 0 AND attendance_mandatory <= 2),
   "grade" varchar NOT NULL,
-  -- "tags" varchar[] NOT NULL,
   "review" varchar NOT NULL,
   "up_vote" int NOT NULL DEFAULT 0,
   "down_vote" int NOT NULL DEFAULT 0,

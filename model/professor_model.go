@@ -19,14 +19,37 @@ type GetProfessorRequest struct {
 
 type GetProfessorInfoResponse struct {
 	db.GetProfessorInfoAggregateRow
-	Tags []string `json:"tags"`
+	Top5Tags []string `json:"top5Tags"`
+	Courses  []string `json:"courses"`
 }
 
-type ListProfessorsRequest struct {
+type ListProfessorsQueryRequest struct {
+	PageID   int32   `form:"page_id" binding:"required,min=1"`
+	PageSize int32   `form:"page_size" binding:"required,min=5"`
+	Name     *string `form:"name"`
+}
+
+func (x *ListProfessorsQueryRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+type ListProfessorsQueryBySchoolRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
 	PageSize int32 `form:"page_size" binding:"required,min=5"`
 }
 
-type SearchProfessorByNameQueryRequest struct {
-	Name string `form:"name" binding:"required"`
+type ListProfessorsURIBySchoolRequest struct {
+	SchoolID int64 `uri:"school_id" binding:"required,min=1"`
+}
+
+type ListProfessorsQueryByFacultyRequest struct {
+	PageID   int32 `form:"page_id" binding:"required,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,min=5"`
+}
+
+type ListProfessorsURIByFacultyRequest struct {
+	FacultyID int64 `uri:"faculty_id" binding:"required,min=1"`
 }

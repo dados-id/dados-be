@@ -63,31 +63,6 @@ func (q *Queries) CreateProfessor(ctx context.Context, arg CreateProfessorParams
 	return i, err
 }
 
-const getProfessor = `-- name: GetProfessor :one
-SELECT id, first_name, last_name, rating, total_review, would_take_again, level_of_difficulty, created_at, status, verified_date, faculty_id, school_id FROM professors
-WHERE id = $1
-`
-
-func (q *Queries) GetProfessor(ctx context.Context, id int64) (Professor, error) {
-	row := q.db.QueryRowContext(ctx, getProfessor, id)
-	var i Professor
-	err := row.Scan(
-		&i.ID,
-		&i.FirstName,
-		&i.LastName,
-		&i.Rating,
-		&i.TotalReview,
-		&i.WouldTakeAgain,
-		&i.LevelOfDifficulty,
-		&i.CreatedAt,
-		&i.Status,
-		&i.VerifiedDate,
-		&i.FacultyID,
-		&i.SchoolID,
-	)
-	return i, err
-}
-
 const getProfessorInfoAggregate = `-- name: GetProfessorInfoAggregate :one
 SELECT
   P.total_review,
@@ -217,7 +192,7 @@ SELECT
 FROM professors P
   JOIN faculties F ON P.faculty_id = F.id
   JOIN schools S ON P.school_id = S.id
-WHERE faculty_id = $1
+WHERE P.faculty_id = $1
 LIMIT $2
 OFFSET $3
 `
@@ -287,7 +262,7 @@ SELECT
 FROM professors P
   JOIN faculties F ON P.faculty_id = F.id
   JOIN schools S ON P.school_id = S.id
-WHERE faculty_id = $1 AND school_id = $2
+WHERE P.faculty_id = $1 AND P.school_id = $2
 LIMIT $3
 OFFSET $4
 `
@@ -363,7 +338,7 @@ SELECT
 FROM professors P
   JOIN faculties F ON P.faculty_id = F.id
   JOIN schools S ON P.school_id = S.id
-WHERE school_id = $1
+WHERE P.school_id = $1
 LIMIT $2
 OFFSET $3
 `

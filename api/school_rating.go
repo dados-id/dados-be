@@ -31,7 +31,7 @@ func (server *Server) getSchoolRating(ctx *gin.Context) {
 			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -60,7 +60,7 @@ func (server *Server) listSchoolRatings(ctx *gin.Context) {
 
 	schoolRatings, err := server.query.ListSchoolRatings(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -105,7 +105,7 @@ func (server *Server) createSchoolRating(ctx *gin.Context) {
 
 	schoolRating, err := server.query.CreateSchoolRating(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -152,7 +152,7 @@ func (server *Server) updateSchoolRating(ctx *gin.Context) {
 
 	SchoolRating, err := server.query.UpdateSchoolRating(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 

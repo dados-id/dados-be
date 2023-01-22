@@ -38,19 +38,22 @@ SELECT
   PR.use_textbooks,
   PR.attendance_mandatory,
   PR.grade,
-  -- PR.tags,
   PR.review,
   PR.created_at,
   P.first_name as professor_first_name,
   P.last_name as professor_last_name,
   S.name as school_name,
-  C.name as course_name
+  C.name as course_name,
+  array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
   JOIN professors P ON PR.professor_id = P.id
   JOIN schools S ON P.school_id = S.id
   JOIN courses C ON C.code = PR.course_code
+  JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
 WHERE
   PR.user_id = $1
+GROUP BY
+  PR.id, P.id, S.id, C.code
 LIMIT $2
 OFFSET $3;
 

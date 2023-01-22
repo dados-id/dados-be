@@ -73,7 +73,7 @@ func (server *Server) getUser(ctx *gin.Context) {
 			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -158,7 +158,7 @@ func (server *Server) updateUser(ctx *gin.Context) {
 
 	user, err := server.query.UpdateUser(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -187,7 +187,7 @@ func (server *Server) userListProfessorRatings(ctx *gin.Context) {
 
 	users, err := server.query.UserListProfessorRatings(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -216,7 +216,7 @@ func (server *Server) userListSchoolRatings(ctx *gin.Context) {
 
 	users, err := server.query.UserListSchoolRatings(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -245,7 +245,7 @@ func (server *Server) userListSavedProfessors(ctx *gin.Context) {
 
 	users, err := server.query.UserListSavedProfessors(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -265,7 +265,12 @@ func (server *Server) saveProfessor(ctx *gin.Context) {
 	}
 
 	if err := server.query.SaveProfessor(ctx, arg); err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		if errorConstraint, ok := exception.IsUniqueViolation(err); ok {
+			ctx.JSON(http.StatusForbidden, exception.ViolationUniqueConstraint(errorConstraint))
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -285,7 +290,7 @@ func (server *Server) unsaveProfessor(ctx *gin.Context) {
 	}
 
 	if err := server.query.UnsaveProfessor(ctx, arg); err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 

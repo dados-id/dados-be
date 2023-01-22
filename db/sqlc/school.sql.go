@@ -68,66 +68,47 @@ func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (Sch
 	return i, err
 }
 
-const getSchool = `-- name: GetSchool :one
-SELECT id, name, nick_name, city, province, website, email, status, verified_date FROM schools
-WHERE id = $1
-`
-
-func (q *Queries) GetSchool(ctx context.Context, id int64) (School, error) {
-	row := q.db.QueryRowContext(ctx, getSchool, id)
-	var i School
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		pq.Array(&i.NickName),
-		&i.City,
-		&i.Province,
-		&i.Website,
-		&i.Email,
-		&i.Status,
-		&i.VerifiedDate,
-	)
-	return i, err
-}
-
 const getSchoolInfoAggregate = `-- name: GetSchoolInfoAggregate :one
 SELECT
-  AVG(SR.reputation)::smallint as reputation,
-  AVG(SR.location)::smallint as location,
-  AVG(SR.opportunities)::smallint as opportunities,
-  AVG(SR.facilities)::smallint as facilities,
-  AVG(SR.internet)::smallint as internet,
-  AVG(SR.food)::smallint as food,
-  AVG(SR.clubs)::smallint as clubs,
-  AVG(SR.social)::smallint as social,
-  AVG(SR.happiness)::smallint as happiness,
-  AVG(SR.safety)::smallint as safety,
-  AVG(SR.overall_rating)::smallint as overall_rating
+  S.name,
+  COALESCE(ROUND(AVG(SR.reputation), 1), 0.0)::text as reputation,
+  COALESCE(ROUND(AVG(SR.location), 1), 0.0)::text as location,
+  COALESCE(ROUND(AVG(SR.opportunities), 1), 0.0)::text as opportunities,
+  COALESCE(ROUND(AVG(SR.facilities), 1), 0.0)::text as facilities,
+  COALESCE(ROUND(AVG(SR.internet), 1), 0.0)::text as internet,
+  COALESCE(ROUND(AVG(SR.food), 1), 0.0)::text as food,
+  COALESCE(ROUND(AVG(SR.clubs), 1), 0.0)::text as clubs,
+  COALESCE(ROUND(AVG(SR.social), 1), 0.0)::text as social,
+  COALESCE(ROUND(AVG(SR.happiness), 1), 0.0)::text as happiness,
+  COALESCE(ROUND(AVG(SR.safety), 1), 0.0)::text as safety,
+  COALESCE(ROUND(AVG(SR.overall_rating), 1), 0.0)::text as overall_rating
 FROM schools S
-  JOIN school_ratings SR ON S.id = SR.school_id
+  LEFT JOIN school_ratings SR ON S.id = SR.school_id
 WHERE
   S.id = $1
 GROUP BY S.id
 `
 
 type GetSchoolInfoAggregateRow struct {
-	Reputation    int16 `json:"reputation"`
-	Location      int16 `json:"location"`
-	Opportunities int16 `json:"opportunities"`
-	Facilities    int16 `json:"facilities"`
-	Internet      int16 `json:"internet"`
-	Food          int16 `json:"food"`
-	Clubs         int16 `json:"clubs"`
-	Social        int16 `json:"social"`
-	Happiness     int16 `json:"happiness"`
-	Safety        int16 `json:"safety"`
-	OverallRating int16 `json:"overallRating"`
+	Name          string `json:"name"`
+	Reputation    string `json:"reputation"`
+	Location      string `json:"location"`
+	Opportunities string `json:"opportunities"`
+	Facilities    string `json:"facilities"`
+	Internet      string `json:"internet"`
+	Food          string `json:"food"`
+	Clubs         string `json:"clubs"`
+	Social        string `json:"social"`
+	Happiness     string `json:"happiness"`
+	Safety        string `json:"safety"`
+	OverallRating string `json:"overallRating"`
 }
 
 func (q *Queries) GetSchoolInfoAggregate(ctx context.Context, id int64) (GetSchoolInfoAggregateRow, error) {
 	row := q.db.QueryRowContext(ctx, getSchoolInfoAggregate, id)
 	var i GetSchoolInfoAggregateRow
 	err := row.Scan(
+		&i.Name,
 		&i.Reputation,
 		&i.Location,
 		&i.Opportunities,
@@ -192,9 +173,15 @@ SELECT
   city,
   province
 FROM schools
-WHERE name ILIKE $1 OR $1 ILIKE ANY(nick_name)
+WHERE $1::text ILIKE ANY(nick_name) OR name ILIKE $2::text
+ORDER BY id ASC
 LIMIT 5
 `
+
+type SearchSchoolsByNameOrNickNameParams struct {
+	NameArr string `json:"nameArr"`
+	Name    string `json:"name"`
+}
 
 type SearchSchoolsByNameOrNickNameRow struct {
 	ID       int64  `json:"id"`
@@ -203,8 +190,8 @@ type SearchSchoolsByNameOrNickNameRow struct {
 	Province string `json:"province"`
 }
 
-func (q *Queries) SearchSchoolsByNameOrNickName(ctx context.Context, name string) ([]SearchSchoolsByNameOrNickNameRow, error) {
-	rows, err := q.db.QueryContext(ctx, searchSchoolsByNameOrNickName, name)
+func (q *Queries) SearchSchoolsByNameOrNickName(ctx context.Context, arg SearchSchoolsByNameOrNickNameParams) ([]SearchSchoolsByNameOrNickNameRow, error) {
+	rows, err := q.db.QueryContext(ctx, searchSchoolsByNameOrNickName, arg.NameArr, arg.Name)
 	if err != nil {
 		return nil, err
 	}

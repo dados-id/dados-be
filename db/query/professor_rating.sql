@@ -7,7 +7,6 @@ INSERT INTO professor_ratings (
   use_textbooks,
   attendance_mandatory,
   grade,
-  -- tags,
   review,
   professor_id,
   course_code,
@@ -34,7 +33,6 @@ INSERT INTO professor_rating_tags (
 
 -- name: GetProfessorRating :one
 SELECT
-  PR.id,
   PR.quality,
   PR.difficult,
   PR.would_take_again,
@@ -42,15 +40,21 @@ SELECT
   PR.use_textbooks,
   PR.attendance_mandatory,
   PR.grade,
-  -- PR.tags,
   PR.review,
   P.first_name as professor_first_name,
   P.last_name as professor_last_name,
-  S.name as school_name
+  S.name as school_name,
+  F.name as faculty_name,
+  array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
   JOIN professors P ON PR.professor_id = P.id
   JOIN schools S ON P.school_id = S.id
-WHERE P.id = @professor_id::bigint AND PR.id = @professor_rating_id::bigint;
+  JOIN faculties F ON P.faculty_id = F.id
+  JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
+WHERE
+  P.id = @professor_id::bigint AND PR.id = @professor_rating_id::bigint
+GROUP BY
+  P.id, PR.id, S.name, F.name;
 
 -- name: ListProfessorRatings :many
 SELECT
@@ -63,9 +67,10 @@ SELECT
   PR.attendance_mandatory,
   PR.grade,
   PR.review,
-  PR.up_vote ,
-  PR.down_vote ,
+  PR.up_vote,
+  PR.down_vote,
   PR.created_at,
+  PR.course_code,
   array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
   JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
@@ -87,9 +92,10 @@ SELECT
   PR.attendance_mandatory,
   PR.grade,
   PR.review,
-  PR.up_vote ,
-  PR.down_vote ,
+  PR.up_vote,
+  PR.down_vote,
   PR.created_at,
+  PR.course_code,
   array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
   JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
@@ -110,15 +116,20 @@ SELECT
   PR.use_textbooks,
   PR.attendance_mandatory,
   PR.grade,
-  -- PR.tags,
   PR.review,
-  PR.up_vote ,
-  PR.down_vote ,
-  PR.created_at
+  PR.up_vote,
+  PR.down_vote,
+  PR.created_at,
+  PR.course_code,
+  array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
-WHERE PR.professor_id = $1 AND PR.quality = $2
-LIMIT $3
-OFFSET $4;
+  JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
+WHERE
+  PR.professor_id = $1 AND PR.quality = @rating::smallint
+GROUP BY
+  PR.id
+LIMIT $2
+OFFSET $3;
 
 -- name: UpdateProfessorRating :one
 UPDATE professor_ratings
