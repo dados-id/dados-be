@@ -26,7 +26,18 @@ func (server *Server) getProfessorInfoAggregate(ctx *gin.Context) {
 			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+		return
+	}
+
+	courses, err := server.query.ListCoursesByProfessorId(ctx, reqURI.ProfessorID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, exception.ErrorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -37,13 +48,14 @@ func (server *Server) getProfessorInfoAggregate(ctx *gin.Context) {
 			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
 	rsp := model.GetProfessorInfoResponse{
 		GetProfessorInfoAggregateRow: professorInfo,
-		Tags:                         listTop5Tags,
+		Top5Tags:                     listTop5Tags,
+		Courses:                      courses,
 	}
 
 	ctx.JSON(http.StatusOK, rsp)
@@ -103,7 +115,7 @@ func (server *Server) listProfessors(ctx *gin.Context) {
 
 		professors, err := server.query.ListProfessors(ctx, arg)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 			return
 		}
 
@@ -113,7 +125,7 @@ func (server *Server) listProfessors(ctx *gin.Context) {
 
 	professors, err := server.query.SearchProfessorsByName(ctx, "%"+reqQueryParams2.Name+"%")
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -147,7 +159,7 @@ func (server *Server) updateProfessorStatusRequest(ctx *gin.Context) {
 
 	professor, err := server.query.UpdateProfessorStatusRequest(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 

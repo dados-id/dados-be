@@ -30,25 +30,25 @@ func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) (Cou
 	return i, err
 }
 
-const getCourseByProfessor = `-- name: GetCourseByProfessor :many
-SELECT c.code, c.name FROM professor_course_associations PCA
+const listCoursesByProfessorId = `-- name: ListCoursesByProfessorId :many
+SELECT C.code FROM professor_course_associations PCA
   JOIN courses C ON PCA.course_code = C.code
 WHERE PCA.professor_id = $1
 `
 
-func (q *Queries) GetCourseByProfessor(ctx context.Context, professorID int64) ([]Course, error) {
-	rows, err := q.db.QueryContext(ctx, getCourseByProfessor, professorID)
+func (q *Queries) ListCoursesByProfessorId(ctx context.Context, professorID int64) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listCoursesByProfessorId, professorID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Course{}
+	items := []string{}
 	for rows.Next() {
-		var i Course
-		if err := rows.Scan(&i.Code, &i.Name); err != nil {
+		var code string
+		if err := rows.Scan(&code); err != nil {
 			return nil, err
 		}
-		items = append(items, i)
+		items = append(items, code)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

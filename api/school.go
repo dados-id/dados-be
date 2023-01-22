@@ -26,7 +26,7 @@ func (server *Server) getSchoolInfoAggregate(ctx *gin.Context) {
 			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -52,7 +52,7 @@ func (server *Server) listSchools(ctx *gin.Context) {
 
 		schools, err := server.query.ListSchools(ctx, arg)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 			return
 		}
 
@@ -60,9 +60,14 @@ func (server *Server) listSchools(ctx *gin.Context) {
 		return
 	}
 
-	schools, err := server.query.SearchSchoolsByNameOrNickName(ctx, "%"+reqQueryParams2.Name+"%")
+	arg := db.SearchSchoolsByNameOrNickNameParams{
+		NameArr: reqQueryParams2.Name,
+		Name:    "%" + reqQueryParams2.Name + "%",
+	}
+
+	schools, err := server.query.SearchSchoolsByNameOrNickName(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -133,7 +138,7 @@ func (server *Server) updateSchoolStatusRequest(ctx *gin.Context) {
 
 	school, err := server.query.UpdateSchoolStatusRequest(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 

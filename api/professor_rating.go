@@ -31,7 +31,7 @@ func (server *Server) getProfessorRating(ctx *gin.Context) {
 			return
 		}
 
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -60,7 +60,7 @@ func (server *Server) listProfessorRatings(ctx *gin.Context) {
 
 	professorRatings, err := server.query.ListProfessorRatings(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -103,7 +103,7 @@ func (server *Server) createProfessorRating(ctx *gin.Context) {
 
 	professorRating, err := server.query.CreateProfessorRating(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
@@ -114,7 +114,7 @@ func (server *Server) createProfessorRating(ctx *gin.Context) {
 		}
 		err := server.query.CreateProfessorRatingTags(ctx, arg)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 			return
 		}
 	}
@@ -159,7 +159,7 @@ func (server *Server) updateProfessorRating(ctx *gin.Context) {
 
 	professorRating, err := server.query.UpdateProfessorRating(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ErrorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 

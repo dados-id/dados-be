@@ -8,10 +8,6 @@ INSERT INTO professors (
   $1, $2, $3, $4
 ) RETURNING *;
 
--- name: GetProfessor :one
-SELECT * FROM professors
-WHERE id = $1;
-
 -- name: GetProfessorInfoAggregate :one
 SELECT
   P.total_review,
@@ -82,7 +78,7 @@ SELECT
 FROM professors P
   JOIN faculties F ON P.faculty_id = F.id
   JOIN schools S ON P.school_id = S.id
-WHERE school_id = $1
+WHERE P.school_id = $1
 LIMIT $2
 OFFSET $3;
 
@@ -100,7 +96,7 @@ SELECT
 FROM professors P
   JOIN faculties F ON P.faculty_id = F.id
   JOIN schools S ON P.school_id = S.id
-WHERE faculty_id = $1
+WHERE P.faculty_id = $1
 LIMIT $2
 OFFSET $3;
 
@@ -118,7 +114,7 @@ SELECT
 FROM professors P
   JOIN faculties F ON P.faculty_id = F.id
   JOIN schools S ON P.school_id = S.id
-WHERE faculty_id = $1 AND school_id = $2
+WHERE P.faculty_id = $1 AND P.school_id = $2
 LIMIT $3
 OFFSET $4;
 

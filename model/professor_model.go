@@ -19,7 +19,8 @@ type GetProfessorRequest struct {
 
 type GetProfessorInfoResponse struct {
 	db.GetProfessorInfoAggregateRow
-	Tags []string `json:"tags"`
+	Top5Tags []string `json:"top5Tags"`
+	Courses  []string `json:"courses"`
 }
 
 type ListProfessorsRequest struct {

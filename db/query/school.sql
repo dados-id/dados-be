@@ -10,25 +10,22 @@ INSERT INTO schools (
   $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 
--- name: GetSchool :one
-SELECT * FROM schools
-WHERE id = $1;
-
 -- name: GetSchoolInfoAggregate :one
 SELECT
-  AVG(SR.reputation)::smallint as reputation,
-  AVG(SR.location)::smallint as location,
-  AVG(SR.opportunities)::smallint as opportunities,
-  AVG(SR.facilities)::smallint as facilities,
-  AVG(SR.internet)::smallint as internet,
-  AVG(SR.food)::smallint as food,
-  AVG(SR.clubs)::smallint as clubs,
-  AVG(SR.social)::smallint as social,
-  AVG(SR.happiness)::smallint as happiness,
-  AVG(SR.safety)::smallint as safety,
-  AVG(SR.overall_rating)::smallint as overall_rating
+  S.name,
+  COALESCE(ROUND(AVG(SR.reputation), 1), 0.0)::text as reputation,
+  COALESCE(ROUND(AVG(SR.location), 1), 0.0)::text as location,
+  COALESCE(ROUND(AVG(SR.opportunities), 1), 0.0)::text as opportunities,
+  COALESCE(ROUND(AVG(SR.facilities), 1), 0.0)::text as facilities,
+  COALESCE(ROUND(AVG(SR.internet), 1), 0.0)::text as internet,
+  COALESCE(ROUND(AVG(SR.food), 1), 0.0)::text as food,
+  COALESCE(ROUND(AVG(SR.clubs), 1), 0.0)::text as clubs,
+  COALESCE(ROUND(AVG(SR.social), 1), 0.0)::text as social,
+  COALESCE(ROUND(AVG(SR.happiness), 1), 0.0)::text as happiness,
+  COALESCE(ROUND(AVG(SR.safety), 1), 0.0)::text as safety,
+  COALESCE(ROUND(AVG(SR.overall_rating), 1), 0.0)::text as overall_rating
 FROM schools S
-  JOIN school_ratings SR ON S.id = SR.school_id
+  LEFT JOIN school_ratings SR ON S.id = SR.school_id
 WHERE
   S.id = $1
 GROUP BY S.id;
@@ -48,7 +45,8 @@ SELECT
   city,
   province
 FROM schools
-WHERE name ILIKE $1 OR $1 ILIKE ANY(nick_name)
+WHERE @name_arr::text ILIKE ANY(nick_name) OR name ILIKE @name::text
+ORDER BY id ASC
 LIMIT 5;
 
 -- name: UpdateSchoolStatusRequest :one
