@@ -67,9 +67,10 @@ SELECT
   PR.attendance_mandatory,
   PR.grade,
   PR.review,
-  PR.up_vote ,
-  PR.down_vote ,
+  PR.up_vote,
+  PR.down_vote,
   PR.created_at,
+  PR.course_code,
   array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
   JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
@@ -91,9 +92,10 @@ SELECT
   PR.attendance_mandatory,
   PR.grade,
   PR.review,
-  PR.up_vote ,
-  PR.down_vote ,
+  PR.up_vote,
+  PR.down_vote,
   PR.created_at,
+  PR.course_code,
   array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
   JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
@@ -115,18 +117,19 @@ SELECT
   PR.attendance_mandatory,
   PR.grade,
   PR.review,
-  PR.up_vote ,
-  PR.down_vote ,
+  PR.up_vote,
+  PR.down_vote,
   PR.created_at,
+  PR.course_code,
   array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
   JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
 WHERE
-  PR.professor_id = $1 AND PR.quality = $2
+  PR.professor_id = $1 AND PR.quality = @rating::smallint
 GROUP BY
   PR.id
-LIMIT $3
-OFFSET $4;
+LIMIT $2
+OFFSET $3;
 
 -- name: UpdateProfessorRating :one
 UPDATE professor_ratings

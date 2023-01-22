@@ -43,7 +43,6 @@ type Querier interface {
 	ListReport(ctx context.Context, arg ListReportParams) ([]ReportForm, error)
 	ListSchoolRatings(ctx context.Context, arg ListSchoolRatingsParams) ([]ListSchoolRatingsRow, error)
 	ListSchools(ctx context.Context, arg ListSchoolsParams) ([]ListSchoolsRow, error)
-	ListTagsByProfessorRatingId(ctx context.Context, id int64) ([]string, error)
 	ListTop5Tags(ctx context.Context, professorID int64) ([]string, error)
 	RandomCourseCode(ctx context.Context) (string, error)
 	RandomTag(ctx context.Context) (string, error)

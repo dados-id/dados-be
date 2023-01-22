@@ -200,9 +200,10 @@ SELECT
   PR.attendance_mandatory,
   PR.grade,
   PR.review,
-  PR.up_vote ,
-  PR.down_vote ,
+  PR.up_vote,
+  PR.down_vote,
   PR.created_at,
+  PR.course_code,
   array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
   JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
@@ -233,6 +234,7 @@ type ListProfessorRatingsRow struct {
 	UpVote              int32     `json:"upVote"`
 	DownVote            int32     `json:"downVote"`
 	CreatedAt           time.Time `json:"createdAt"`
+	CourseCode          string    `json:"courseCode"`
 	Tags                []string  `json:"tags"`
 }
 
@@ -258,6 +260,7 @@ func (q *Queries) ListProfessorRatings(ctx context.Context, arg ListProfessorRat
 			&i.UpVote,
 			&i.DownVote,
 			&i.CreatedAt,
+			&i.CourseCode,
 			pq.Array(&i.Tags),
 		); err != nil {
 			return nil, err
@@ -284,9 +287,10 @@ SELECT
   PR.attendance_mandatory,
   PR.grade,
   PR.review,
-  PR.up_vote ,
-  PR.down_vote ,
+  PR.up_vote,
+  PR.down_vote,
   PR.created_at,
+  PR.course_code,
   array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
   JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
@@ -318,6 +322,7 @@ type ListProfessorRatingsFilterByCourseRow struct {
 	UpVote              int32     `json:"upVote"`
 	DownVote            int32     `json:"downVote"`
 	CreatedAt           time.Time `json:"createdAt"`
+	CourseCode          string    `json:"courseCode"`
 	Tags                []string  `json:"tags"`
 }
 
@@ -348,6 +353,7 @@ func (q *Queries) ListProfessorRatingsFilterByCourse(ctx context.Context, arg Li
 			&i.UpVote,
 			&i.DownVote,
 			&i.CreatedAt,
+			&i.CourseCode,
 			pq.Array(&i.Tags),
 		); err != nil {
 			return nil, err
@@ -374,25 +380,26 @@ SELECT
   PR.attendance_mandatory,
   PR.grade,
   PR.review,
-  PR.up_vote ,
-  PR.down_vote ,
+  PR.up_vote,
+  PR.down_vote,
   PR.created_at,
+  PR.course_code,
   array_agg(PRT.tag_name)::varchar[] tags
 FROM professor_ratings PR
   JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
 WHERE
-  PR.professor_id = $1 AND PR.quality = $2
+  PR.professor_id = $1 AND PR.quality = $4::smallint
 GROUP BY
   PR.id
-LIMIT $3
-OFFSET $4
+LIMIT $2
+OFFSET $3
 `
 
 type ListProfessorRatingsFilterByRatingParams struct {
-	ProfessorID int64  `json:"professorID"`
-	Quality     string `json:"quality"`
-	Limit       int32  `json:"limit"`
-	Offset      int32  `json:"offset"`
+	ProfessorID int64 `json:"professorID"`
+	Limit       int32 `json:"limit"`
+	Offset      int32 `json:"offset"`
+	Rating      int16 `json:"rating"`
 }
 
 type ListProfessorRatingsFilterByRatingRow struct {
@@ -408,15 +415,16 @@ type ListProfessorRatingsFilterByRatingRow struct {
 	UpVote              int32     `json:"upVote"`
 	DownVote            int32     `json:"downVote"`
 	CreatedAt           time.Time `json:"createdAt"`
+	CourseCode          string    `json:"courseCode"`
 	Tags                []string  `json:"tags"`
 }
 
 func (q *Queries) ListProfessorRatingsFilterByRating(ctx context.Context, arg ListProfessorRatingsFilterByRatingParams) ([]ListProfessorRatingsFilterByRatingRow, error) {
 	rows, err := q.db.QueryContext(ctx, listProfessorRatingsFilterByRating,
 		arg.ProfessorID,
-		arg.Quality,
 		arg.Limit,
 		arg.Offset,
+		arg.Rating,
 	)
 	if err != nil {
 		return nil, err
@@ -438,6 +446,7 @@ func (q *Queries) ListProfessorRatingsFilterByRating(ctx context.Context, arg Li
 			&i.UpVote,
 			&i.DownVote,
 			&i.CreatedAt,
+			&i.CourseCode,
 			pq.Array(&i.Tags),
 		); err != nil {
 			return nil, err

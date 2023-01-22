@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	db "github.com/dados-id/dados-be/db/sqlc"
@@ -51,7 +52,48 @@ func (server *Server) listProfessorRatings(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
+	fmt.Println(reqQueryParams.CourseCode, reqQueryParams.Rating)
 
+	// Filter By CourseCode
+	if reqQueryParams.CourseCode != nil {
+		arg := db.ListProfessorRatingsFilterByCourseParams{
+			ProfessorID: reqURI.ProfessorID,
+			CourseCode:  reqQueryParams.GetCourseCode(),
+			Limit:       reqQueryParams.PageSize,
+			Offset:      (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+		}
+
+		professorRatings, err := server.query.ListProfessorRatingsFilterByCourse(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusOK, professorRatings)
+		return
+	}
+
+	// Filter By Rating
+	if reqQueryParams.Rating != nil {
+		arg := db.ListProfessorRatingsFilterByRatingParams{
+			ProfessorID: reqURI.ProfessorID,
+			Rating:      reqQueryParams.GetRating(),
+			Limit:       reqQueryParams.PageSize,
+			Offset:      (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+		}
+		professorRatings, err := server.query.ListProfessorRatingsFilterByRating(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusOK, professorRatings)
+		return
+	}
+
+	// TODO: Filter By Date
+
+	// No Filter
 	arg := db.ListProfessorRatingsParams{
 		ProfessorID: reqURI.ProfessorID,
 		Limit:       reqQueryParams.PageSize,

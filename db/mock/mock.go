@@ -542,21 +542,6 @@ func (mr *MockQuerierMockRecorder) ListSchools(arg0, arg1 interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSchools", reflect.TypeOf((*MockQuerier)(nil).ListSchools), arg0, arg1)
 }
 
-// ListTagsByProfessorRatingId mocks base method.
-func (m *MockQuerier) ListTagsByProfessorRatingId(arg0 context.Context, arg1 int64) ([]string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListTagsByProfessorRatingId", arg0, arg1)
-	ret0, _ := ret[0].([]string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListTagsByProfessorRatingId indicates an expected call of ListTagsByProfessorRatingId.
-func (mr *MockQuerierMockRecorder) ListTagsByProfessorRatingId(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTagsByProfessorRatingId", reflect.TypeOf((*MockQuerier)(nil).ListTagsByProfessorRatingId), arg0, arg1)
-}
-
 // ListTop5Tags mocks base method.
 func (m *MockQuerier) ListTop5Tags(arg0 context.Context, arg1 int64) ([]string, error) {
 	m.ctrl.T.Helper()
