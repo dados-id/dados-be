@@ -17,28 +17,32 @@ func main() {
 	database := config.NewPostgres(configuration.DBDriver, configuration.DBSource)
 	queries := sqlc.New(database)
 
-	var wg sync.WaitGroup
-
-	NDATA := 500
-	for i := 1; i <= 5; i++ {
-		wg.Add(1)
-		go createProfessor(NDATA, *queries, &wg)
-	}
-	wg.Wait()
-
-	fmt.Printf("Successfully added %d data Professor to database\n", NDATA)
-}
-
-func createProfessor(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
-	defer wg.Done()
-
 	totalRowSchool, err := queries.CountSchool(context.Background())
 	exception.FatalIfNeeded(err, "Error Count School")
 
 	totalRowFaculty, err := queries.CountFaculty(context.Background())
 	exception.FatalIfNeeded(err, "Error Count Faculty")
 
+	totalRowUser, err := queries.CountUser(context.Background())
+	exception.FatalIfNeeded(err, "Error Count User")
+
+	var wg sync.WaitGroup
+
+	NDATA := 500
+	for i := 1; i <= 5; i++ {
+		wg.Add(1)
+		go createProfessor(NDATA, *queries, &wg, totalRowSchool, totalRowFaculty, totalRowUser)
+	}
+	wg.Wait()
+
+	fmt.Printf("Successfully added %d data Professor to database\n", NDATA)
+}
+
+func createProfessor(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup, totalRowSchool, totalRowFaculty, totalRowUser int64) {
+	defer wg.Done()
+
 	for i := 1; i <= NDATA; i++ {
+		ctx := context.Background()
 		professor := util.GetValidProfessor(totalRowSchool, totalRowFaculty)
 
 		arg := sqlc.CreateProfessorParams{
@@ -48,7 +52,35 @@ func createProfessor(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 			SchoolID:  professor.SchoolID,
 		}
 
-		_, err := queries.CreateProfessor(context.Background(), arg)
+		createdProfessor, err := queries.CreateProfessor(ctx, arg)
+		if err != nil {
+			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
+			continue
+		}
+
+		arg2 := sqlc.SaveProfessorParams{
+			ProfessorID: createdProfessor.ID,
+			UserID:      util.RandomInt(1, totalRowUser),
+		}
+
+		err = queries.SaveProfessor(ctx, arg2)
+		if err != nil {
+			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
+			continue
+		}
+
+		randomCourseCode, err := queries.RandomCourseCode(context.Background())
+		if err != nil {
+			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
+			continue
+		}
+
+		arg3 := sqlc.CreateProfessorCourseAssociationParams{
+			CourseCode:  randomCourseCode,
+			ProfessorID: createdProfessor.ID,
+		}
+
+		err = queries.CreateProfessorCourseAssociation(ctx, arg3)
 		if err != nil {
 			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
 			continue

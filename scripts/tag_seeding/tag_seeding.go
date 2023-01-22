@@ -15,7 +15,7 @@ func main() {
 	database := config.NewPostgres(configuration.DBDriver, configuration.DBSource)
 	queries := sqlc.New(database)
 
-	NDATA := 12
+	NDATA := 3
 	createTag(NDATA, *queries)
 
 	fmt.Printf("Successfully added %d data Tag to database\n", NDATA)

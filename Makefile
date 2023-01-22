@@ -36,6 +36,7 @@ seeds:
 
 	go run scripts/school_rating_seeding/school_rating_seeding.go;
 	go run scripts/professor_seeding/professor_seeding.go;
+	go run scripts/professor_rating_seeding/professor_rating_seeding.go;
 
 mock:
 	mockgen -package mockdb -destination db/mock/mock.go github.com/dados-id/dados-be/db/sqlc Querier

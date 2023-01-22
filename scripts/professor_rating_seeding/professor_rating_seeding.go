@@ -65,23 +65,21 @@ func createProfessorRating(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup, 
 			continue
 		}
 
-		for j := 1; j <= 3; j++ {
-			randomTag, err := queries.RandomTag(ctx)
-			if err != nil {
-				fmt.Printf("Error seeded on the %dth data on Create Tag\n %s", i, err.Error())
-				continue
-			}
+		randomTag, err := queries.RandomTag(ctx)
+		if err != nil {
+			fmt.Printf("Error seeded on the %dth data on Create Tag\n %s", i, err.Error())
+			continue
+		}
 
-			arg := sqlc.CreateProfessorRatingTagsParams{
-				TagName:           randomTag,
-				ProfessorRatingID: createdProfessorRating.ID,
-			}
+		arg2 := sqlc.CreateProfessorRatingTagsParams{
+			TagName:           randomTag,
+			ProfessorRatingID: createdProfessorRating.ID,
+		}
 
-			err = queries.CreateProfessorRatingTags(ctx, arg)
-			if err != nil {
-				fmt.Printf("Error seeded on the %dth data on ProfessorTag\n %s", i, err.Error())
-				continue
-			}
+		err = queries.CreateProfessorRatingTags(ctx, arg2)
+		if err != nil {
+			fmt.Printf("Error seeded on the %dth data on ProfessorTag\n %s", i, err.Error())
+			continue
 		}
 
 		if i%100 == 0 {
