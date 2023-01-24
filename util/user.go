@@ -8,6 +8,7 @@ import (
 
 func GetValidUser() (user db.User) {
 	user = db.User{
+		ID:                       RandomInt(1, 1000),
 		FirstName:                randomName(),
 		LastName:                 randomName(),
 		School:                   randomSchool(),

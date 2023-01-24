@@ -16,11 +16,11 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func newTestServer(t *testing.T, store db.Querier) *Server {
+func newTestServer(t *testing.T, query db.Querier) *Server {
 	configuration := config.Config{}
 	firebaseClient := config.NewFireBase("../privateKey.json")
 
-	server, err := NewServer(configuration, store, *firebaseClient)
+	server, err := NewServer(configuration, query, *firebaseClient)
 	require.NoError(t, err)
 
 	return server
