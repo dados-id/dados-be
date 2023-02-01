@@ -49,6 +49,9 @@ ORDER BY
 LIMIT $1
 OFFSET $2;
 
+-- name: CountListSchools :one
+SELECT COUNT(*) FROM schools;
+
 -- name: ListSchoolsByName :many
 SELECT
   S.id,
@@ -68,6 +71,11 @@ ORDER BY
   END DESC
 LIMIT $1
 OFFSET $2;
+
+-- name: CountListSchoolsByName :one
+SELECT COUNT(*) FROM schools
+  WHERE @nick_name::varchar ILIKE ANY(S.nick_name)
+  OR S.name ILIKE @name::varchar;
 
 -- name: UpdateSchoolStatusRequest :one
 UPDATE schools

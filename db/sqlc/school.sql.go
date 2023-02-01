@@ -11,6 +11,35 @@ import (
 	"github.com/lib/pq"
 )
 
+const countListSchools = `-- name: CountListSchools :one
+SELECT COUNT(*) FROM schools
+`
+
+func (q *Queries) CountListSchools(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countListSchools)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countListSchoolsByName = `-- name: CountListSchoolsByName :one
+SELECT COUNT(*) FROM schools
+  WHERE $1::varchar ILIKE ANY(S.nick_name)
+  OR S.name ILIKE $2::varchar
+`
+
+type CountListSchoolsByNameParams struct {
+	NickName string `json:"nickName"`
+	Name     string `json:"name"`
+}
+
+func (q *Queries) CountListSchoolsByName(ctx context.Context, arg CountListSchoolsByNameParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countListSchoolsByName, arg.NickName, arg.Name)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createSchool = `-- name: CreateSchool :one
 INSERT INTO schools (
   name,
@@ -60,17 +89,17 @@ func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (Sch
 const getSchoolInfo = `-- name: GetSchoolInfo :one
 SELECT
   S.name,
-  COALESCE(ROUND(AVG(SR.reputation), 1), 0.0)::text as reputation,
-  COALESCE(ROUND(AVG(SR.location), 1), 0.0)::text as location,
-  COALESCE(ROUND(AVG(SR.opportunities), 1), 0.0)::text as opportunities,
-  COALESCE(ROUND(AVG(SR.facilities), 1), 0.0)::text as facilities,
-  COALESCE(ROUND(AVG(SR.internet), 1), 0.0)::text as internet,
-  COALESCE(ROUND(AVG(SR.food), 1), 0.0)::text as food,
-  COALESCE(ROUND(AVG(SR.clubs), 1), 0.0)::text as clubs,
-  COALESCE(ROUND(AVG(SR.social), 1), 0.0)::text as social,
-  COALESCE(ROUND(AVG(SR.happiness), 1), 0.0)::text as happiness,
-  COALESCE(ROUND(AVG(SR.safety), 1), 0.0)::text as safety,
-  COALESCE(ROUND(AVG(SR.overall_rating), 1), 0.0)::text as overall_rating
+  COALESCE(ROUND(AVG(SR.reputation), 1), 0.0)::varchar as reputation,
+  COALESCE(ROUND(AVG(SR.location), 1), 0.0)::varchar as location,
+  COALESCE(ROUND(AVG(SR.opportunities), 1), 0.0)::varchar as opportunities,
+  COALESCE(ROUND(AVG(SR.facilities), 1), 0.0)::varchar as facilities,
+  COALESCE(ROUND(AVG(SR.internet), 1), 0.0)::varchar as internet,
+  COALESCE(ROUND(AVG(SR.food), 1), 0.0)::varchar as food,
+  COALESCE(ROUND(AVG(SR.clubs), 1), 0.0)::varchar as clubs,
+  COALESCE(ROUND(AVG(SR.social), 1), 0.0)::varchar as social,
+  COALESCE(ROUND(AVG(SR.happiness), 1), 0.0)::varchar as happiness,
+  COALESCE(ROUND(AVG(SR.safety), 1), 0.0)::varchar as safety,
+  COALESCE(ROUND(AVG(SR.overall_rating), 1), 0.0)::varchar as overall_rating
 FROM schools S
   LEFT JOIN school_ratings SR ON S.id = SR.school_id
 WHERE
@@ -182,19 +211,19 @@ func (q *Queries) ListSchools(ctx context.Context, arg ListSchoolsParams) ([]Lis
 
 const listSchoolsByName = `-- name: ListSchoolsByName :many
 SELECT
-  id,
-  name,
-  city,
-  province
-FROM schools
-WHERE $3::text ILIKE ANY(nick_name) OR name ILIKE $4::text
+  S.id,
+  S.name,
+  S.city,
+  S.province
+FROM schools S
+WHERE $3::varchar ILIKE ANY(S.nick_name) OR S.name ILIKE $4::varchar
 ORDER BY
   CASE
-    WHEN $5::varchar = 'name' AND $6::varchar = 'asc' THEN LOWER(name)
+    WHEN $5::varchar = 'name' AND $6::varchar = 'asc' THEN LOWER(S.name)
     ELSE NULL
   END,
   CASE
-    WHEN $5::varchar = 'name' AND $6::varchar = 'desc' THEN LOWER(name)
+    WHEN $5::varchar = 'name' AND $6::varchar = 'desc' THEN LOWER(S.name)
     ELSE NULL
   END DESC
 LIMIT $1

@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"strconv"
 
 	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
@@ -58,6 +59,18 @@ func (server *Server) listSchools(ctx *gin.Context) {
 			return
 		}
 
+		arg2 := db.CountListSchoolsByNameParams{
+			NickName: reqQueryParams.GetName(),
+			Name:     "%" + reqQueryParams.GetName() + "%",
+		}
+
+		totalCount, err := server.query.CountListSchoolsByName(ctx, arg2)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		ctx.Header("x-total-count", strconv.FormatInt(totalCount, 10))
 		ctx.JSON(http.StatusOK, schools)
 		return
 	}
@@ -75,6 +88,13 @@ func (server *Server) listSchools(ctx *gin.Context) {
 		return
 	}
 
+	totalCount, err := server.query.CountListSchools(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+		return
+	}
+
+	ctx.Header("x-total-count", strconv.FormatInt(totalCount, 10))
 	ctx.JSON(http.StatusOK, schools)
 }
 

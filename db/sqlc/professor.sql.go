@@ -9,6 +9,55 @@ import (
 	"context"
 )
 
+const countListProfessors = `-- name: CountListProfessors :one
+SELECT COUNT(*) FROM professors
+`
+
+func (q *Queries) CountListProfessors(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countListProfessors)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countListProfessorsByFaculty = `-- name: CountListProfessorsByFaculty :one
+SELECT COUNT(*) FROM professors
+  WHERE faculty_id = $1
+`
+
+func (q *Queries) CountListProfessorsByFaculty(ctx context.Context, facultyID int64) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countListProfessorsByFaculty, facultyID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countListProfessorsByName = `-- name: CountListProfessorsByName :one
+SELECT COUNT(*) FROM professors P
+ WHERE LOWER(P.first_name) LIKE LOWER($1::varchar)
+ OR LOWER(P.last_name) LIKE LOWER($1::varchar)
+ OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER($1::varchar)
+`
+
+func (q *Queries) CountListProfessorsByName(ctx context.Context, name string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countListProfessorsByName, name)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countListProfessorsBySchool = `-- name: CountListProfessorsBySchool :one
+SELECT COUNT(*) FROM professors
+  WHERE school_id = $1
+`
+
+func (q *Queries) CountListProfessorsBySchool(ctx context.Context, schoolID int64) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countListProfessorsBySchool, schoolID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createProfessor = `-- name: CreateProfessor :one
 INSERT INTO professors (
   first_name,
@@ -384,7 +433,9 @@ SELECT
 FROM professors P
   JOIN faculties F ON P.faculty_id = F.id
   JOIN schools S ON P.school_id = S.id
-WHERE LOWER(P.first_name) LIKE LOWER($3::varchar) OR LOWER(P.last_name) LIKE LOWER($3::varchar) OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER($3::varchar)
+WHERE LOWER(P.first_name) LIKE LOWER($3::varchar)
+  OR LOWER(P.last_name) LIKE LOWER($3::varchar)
+  OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER($3::varchar)
 ORDER BY
   CASE
     WHEN $4::varchar = 'name' AND $5::varchar = 'asc' THEN LOWER(concat(P.first_name, ' ', P.last_name))
