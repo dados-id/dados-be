@@ -47,7 +47,7 @@ func createUser(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 			LastName:                 user.LastName,
 			ExpectedYearOfGraduation: user.ExpectedYearOfGraduation,
 			Email:                    user.Email,
-			SchoolID:                 sql.NullInt64{Int64: randomSchoolID, Valid: true},
+			SchoolID:                 sql.NullInt32{Int32: randomSchoolID, Valid: true},
 		}
 
 		_, err = queries.CreateUser(context.Background(), arg)

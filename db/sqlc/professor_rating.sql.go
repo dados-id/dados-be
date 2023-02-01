@@ -24,7 +24,7 @@ INSERT INTO professor_course_associations (
 
 type CreateProfessorCourseAssociationParams struct {
 	CourseCode  string `json:"courseCode"`
-	ProfessorID int64  `json:"professorID"`
+	ProfessorID int32  `json:"professorID"`
 }
 
 func (q *Queries) CreateProfessorCourseAssociation(ctx context.Context, arg CreateProfessorCourseAssociationParams) error {
@@ -59,7 +59,7 @@ type CreateProfessorRatingParams struct {
 	AttendanceMandatory int16  `json:"attendanceMandatory"`
 	Grade               string `json:"grade"`
 	Review              string `json:"review"`
-	ProfessorID         int64  `json:"professorID"`
+	ProfessorID         int32  `json:"professorID"`
 	CourseCode          string `json:"courseCode"`
 	UserID              string `json:"userID"`
 }
@@ -113,7 +113,7 @@ INSERT INTO professor_rating_tags (
 
 type CreateProfessorRatingTagsParams struct {
 	TagName           string `json:"tagName"`
-	ProfessorRatingID int64  `json:"professorRatingID"`
+	ProfessorRatingID int32  `json:"professorRatingID"`
 }
 
 func (q *Queries) CreateProfessorRatingTags(ctx context.Context, arg CreateProfessorRatingTagsParams) error {
@@ -148,8 +148,8 @@ GROUP BY
 `
 
 type GetProfessorRatingParams struct {
-	ProfessorID       int64 `json:"professorID"`
-	ProfessorRatingID int64 `json:"professorRatingID"`
+	ProfessorID       int32 `json:"professorID"`
+	ProfessorRatingID int32 `json:"professorRatingID"`
 }
 
 type GetProfessorRatingRow struct {
@@ -216,13 +216,13 @@ OFFSET $3
 `
 
 type ListProfessorRatingsParams struct {
-	ProfessorID int64 `json:"professorID"`
+	ProfessorID int32 `json:"professorID"`
 	Limit       int32 `json:"limit"`
 	Offset      int32 `json:"offset"`
 }
 
 type ListProfessorRatingsRow struct {
-	ID                  int64     `json:"id"`
+	ID                  int32     `json:"id"`
 	Quality             string    `json:"quality"`
 	Difficult           string    `json:"difficult"`
 	WouldTakeAgain      int16     `json:"wouldTakeAgain"`
@@ -303,14 +303,14 @@ OFFSET $4
 `
 
 type ListProfessorRatingsFilterByCourseParams struct {
-	ProfessorID int64  `json:"professorID"`
+	ProfessorID int32  `json:"professorID"`
 	CourseCode  string `json:"courseCode"`
 	Limit       int32  `json:"limit"`
 	Offset      int32  `json:"offset"`
 }
 
 type ListProfessorRatingsFilterByCourseRow struct {
-	ID                  int64     `json:"id"`
+	ID                  int32     `json:"id"`
 	Quality             string    `json:"quality"`
 	Difficult           string    `json:"difficult"`
 	WouldTakeAgain      int16     `json:"wouldTakeAgain"`
@@ -396,14 +396,14 @@ OFFSET $3
 `
 
 type ListProfessorRatingsFilterByRatingParams struct {
-	ProfessorID int64 `json:"professorID"`
+	ProfessorID int32 `json:"professorID"`
 	Limit       int32 `json:"limit"`
 	Offset      int32 `json:"offset"`
 	Rating      int16 `json:"rating"`
 }
 
 type ListProfessorRatingsFilterByRatingRow struct {
-	ID                  int64     `json:"id"`
+	ID                  int32     `json:"id"`
 	Quality             string    `json:"quality"`
 	Difficult           string    `json:"difficult"`
 	WouldTakeAgain      int16     `json:"wouldTakeAgain"`
@@ -493,7 +493,7 @@ type UpdateProfessorRatingParams struct {
 	UpVote              sql.NullInt32  `json:"upVote"`
 	DownVote            sql.NullInt32  `json:"downVote"`
 	CourseCode          sql.NullString `json:"courseCode"`
-	ProfessorID         int64          `json:"professorID"`
+	ProfessorID         int32          `json:"professorID"`
 }
 
 func (q *Queries) UpdateProfessorRating(ctx context.Context, arg UpdateProfessorRatingParams) (ProfessorRating, error) {

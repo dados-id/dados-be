@@ -15,11 +15,11 @@ func ValidateCreateProfessorRequest(req *model.CreateProfessorRequest) (violatio
 		violations = append(violations, fieldViolation("lastName", err))
 	}
 
-	if err := validateInt64(req.FacultyID, 1, math.MaxInt64); err != nil {
+	if err := validateInt32(req.FacultyID, 1, math.MaxInt32); err != nil {
 		violations = append(violations, fieldViolation("facultyID", err))
 	}
 
-	if err := validateInt64(req.SchoolID, 1, math.MaxInt64); err != nil {
+	if err := validateInt32(req.SchoolID, 1, math.MaxInt32); err != nil {
 		violations = append(violations, fieldViolation("schoolID", err))
 	}
 

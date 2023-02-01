@@ -10,52 +10,52 @@ import (
 )
 
 const countListProfessors = `-- name: CountListProfessors :one
-SELECT COUNT(*) FROM professors
+SELECT COUNT(*)::int::int FROM professors
 `
 
-func (q *Queries) CountListProfessors(ctx context.Context) (int64, error) {
+func (q *Queries) CountListProfessors(ctx context.Context) (int32, error) {
 	row := q.db.QueryRowContext(ctx, countListProfessors)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
 }
 
 const countListProfessorsByFaculty = `-- name: CountListProfessorsByFaculty :one
-SELECT COUNT(*) FROM professors
+SELECT COUNT(*)::int FROM professors
   WHERE faculty_id = $1
 `
 
-func (q *Queries) CountListProfessorsByFaculty(ctx context.Context, facultyID int64) (int64, error) {
+func (q *Queries) CountListProfessorsByFaculty(ctx context.Context, facultyID int32) (int32, error) {
 	row := q.db.QueryRowContext(ctx, countListProfessorsByFaculty, facultyID)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
 }
 
 const countListProfessorsByName = `-- name: CountListProfessorsByName :one
-SELECT COUNT(*) FROM professors P
+SELECT COUNT(*)::int FROM professors P
  WHERE LOWER(P.first_name) LIKE LOWER($1::varchar)
  OR LOWER(P.last_name) LIKE LOWER($1::varchar)
  OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER($1::varchar)
 `
 
-func (q *Queries) CountListProfessorsByName(ctx context.Context, name string) (int64, error) {
+func (q *Queries) CountListProfessorsByName(ctx context.Context, name string) (int32, error) {
 	row := q.db.QueryRowContext(ctx, countListProfessorsByName, name)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
 }
 
 const countListProfessorsBySchool = `-- name: CountListProfessorsBySchool :one
-SELECT COUNT(*) FROM professors
+SELECT COUNT(*)::int FROM professors
   WHERE school_id = $1
 `
 
-func (q *Queries) CountListProfessorsBySchool(ctx context.Context, schoolID int64) (int64, error) {
+func (q *Queries) CountListProfessorsBySchool(ctx context.Context, schoolID int32) (int32, error) {
 	row := q.db.QueryRowContext(ctx, countListProfessorsBySchool, schoolID)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
 }
 
 const createProfessor = `-- name: CreateProfessor :one
@@ -72,8 +72,8 @@ INSERT INTO professors (
 type CreateProfessorParams struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
-	FacultyID int64  `json:"facultyID"`
-	SchoolID  int64  `json:"schoolID"`
+	FacultyID int32  `json:"facultyID"`
+	SchoolID  int32  `json:"schoolID"`
 }
 
 func (q *Queries) CreateProfessor(ctx context.Context, arg CreateProfessorParams) (Professor, error) {
@@ -112,11 +112,11 @@ SELECT
   P.level_of_difficulty,
   F.name as faculty_name,
   S.name as school_name,
-  SUM(CASE PR.quality when 1 then 1 else 0 end)::int as terrible,
-  SUM(CASE PR.quality when 2 then 1 else 0 end)::int as poor,
-  SUM(CASE PR.quality when 3 then 1 else 0 end)::int as fair,
-  SUM(CASE PR.quality when 4 then 1 else 0 end)::int as good,
-  SUM(CASE PR.quality when 5 then 1 else 0 end)::int as excellent
+  SUM(CASE PR.quality when 1 then 1 else 0 end)::int32 as terrible,
+  SUM(CASE PR.quality when 2 then 1 else 0 end)::int32 as poor,
+  SUM(CASE PR.quality when 3 then 1 else 0 end)::int32 as fair,
+  SUM(CASE PR.quality when 4 then 1 else 0 end)::int32 as good,
+  SUM(CASE PR.quality when 5 then 1 else 0 end)::int32 as excellent
 FROM professors P
   LEFT JOIN professor_ratings PR ON P.id = PR.professor_id
   JOIN faculties F ON P.faculty_id = F.id
@@ -127,23 +127,23 @@ GROUP BY P.id, F.id, S.id
 `
 
 type GetProfessorInfoRow struct {
-	ID                int64  `json:"id"`
-	FirstName         string `json:"firstName"`
-	LastName          string `json:"lastName"`
-	TotalReview       int32  `json:"totalReview"`
-	Rating            string `json:"rating"`
-	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
-	LevelOfDifficulty string `json:"levelOfDifficulty"`
-	FacultyName       string `json:"facultyName"`
-	SchoolName        string `json:"schoolName"`
-	Terrible          int32  `json:"terrible"`
-	Poor              int32  `json:"poor"`
-	Fair              int32  `json:"fair"`
-	Good              int32  `json:"good"`
-	Excellent         int32  `json:"excellent"`
+	ID                int32       `json:"id"`
+	FirstName         string      `json:"firstName"`
+	LastName          string      `json:"lastName"`
+	TotalReview       int32       `json:"totalReview"`
+	Rating            string      `json:"rating"`
+	WouldTakeAgain    int16       `json:"wouldTakeAgain"`
+	LevelOfDifficulty string      `json:"levelOfDifficulty"`
+	FacultyName       string      `json:"facultyName"`
+	SchoolName        string      `json:"schoolName"`
+	Terrible          interface{} `json:"terrible"`
+	Poor              interface{} `json:"poor"`
+	Fair              interface{} `json:"fair"`
+	Good              interface{} `json:"good"`
+	Excellent         interface{} `json:"excellent"`
 }
 
-func (q *Queries) GetProfessorInfo(ctx context.Context, id int64) (GetProfessorInfoRow, error) {
+func (q *Queries) GetProfessorInfo(ctx context.Context, id int32) (GetProfessorInfoRow, error) {
 	row := q.db.QueryRowContext(ctx, getProfessorInfo, id)
 	var i GetProfessorInfoRow
 	err := row.Scan(
@@ -205,7 +205,7 @@ type ListProfessorsParams struct {
 }
 
 type ListProfessorsRow struct {
-	ID          int64  `json:"id"`
+	ID          int32  `json:"id"`
 	FirstName   string `json:"firstName"`
 	LastName    string `json:"lastName"`
 	Rating      string `json:"rating"`
@@ -282,7 +282,7 @@ OFFSET $3
 `
 
 type ListProfessorsByFacultyParams struct {
-	FacultyID int64  `json:"facultyID"`
+	FacultyID int32  `json:"facultyID"`
 	Limit     int32  `json:"limit"`
 	Offset    int32  `json:"offset"`
 	SortBy    string `json:"sortBy"`
@@ -290,7 +290,7 @@ type ListProfessorsByFacultyParams struct {
 }
 
 type ListProfessorsByFacultyRow struct {
-	ID          int64  `json:"id"`
+	ID          int32  `json:"id"`
 	FirstName   string `json:"firstName"`
 	LastName    string `json:"lastName"`
 	Rating      string `json:"rating"`
@@ -368,8 +368,8 @@ OFFSET $4
 `
 
 type ListProfessorsByFacultyAndSchoolParams struct {
-	FacultyID int64  `json:"facultyID"`
-	SchoolID  int64  `json:"schoolID"`
+	FacultyID int32  `json:"facultyID"`
+	SchoolID  int32  `json:"schoolID"`
 	Limit     int32  `json:"limit"`
 	Offset    int32  `json:"offset"`
 	SortBy    string `json:"sortBy"`
@@ -377,7 +377,7 @@ type ListProfessorsByFacultyAndSchoolParams struct {
 }
 
 type ListProfessorsByFacultyAndSchoolRow struct {
-	ID          int64  `json:"id"`
+	ID          int32  `json:"id"`
 	FirstName   string `json:"firstName"`
 	LastName    string `json:"lastName"`
 	Rating      string `json:"rating"`
@@ -466,7 +466,7 @@ type ListProfessorsByNameParams struct {
 }
 
 type ListProfessorsByNameRow struct {
-	ID          int64  `json:"id"`
+	ID          int32  `json:"id"`
 	FirstName   string `json:"firstName"`
 	LastName    string `json:"lastName"`
 	Rating      string `json:"rating"`
@@ -544,7 +544,7 @@ OFFSET $3
 `
 
 type ListProfessorsBySchoolParams struct {
-	SchoolID  int64  `json:"schoolID"`
+	SchoolID  int32  `json:"schoolID"`
 	Limit     int32  `json:"limit"`
 	Offset    int32  `json:"offset"`
 	SortBy    string `json:"sortBy"`
@@ -552,7 +552,7 @@ type ListProfessorsBySchoolParams struct {
 }
 
 type ListProfessorsBySchoolRow struct {
-	ID          int64  `json:"id"`
+	ID          int32  `json:"id"`
 	FirstName   string `json:"firstName"`
 	LastName    string `json:"lastName"`
 	Rating      string `json:"rating"`
@@ -603,11 +603,11 @@ WHERE
   PR.professor_id = $1
 GROUP BY
   PR.course_code
-ORDER BY COUNT(*) DESC
+ORDER BY COUNT(*)::int DESC
 LIMIT 3
 `
 
-func (q *Queries) ListTopCoursesTaught(ctx context.Context, professorID int64) ([]string, error) {
+func (q *Queries) ListTopCoursesTaught(ctx context.Context, professorID int32) ([]string, error) {
 	rows, err := q.db.QueryContext(ctx, listTopCoursesTaught, professorID)
 	if err != nil {
 		return nil, err
@@ -640,7 +640,7 @@ ORDER BY COUNT(PRT.tag_name) DESC
 LIMIT 5
 `
 
-func (q *Queries) ListTopTags(ctx context.Context, professorID int64) ([]string, error) {
+func (q *Queries) ListTopTags(ctx context.Context, professorID int32) ([]string, error) {
 	rows, err := q.db.QueryContext(ctx, listTopTags, professorID)
 	if err != nil {
 		return nil, err
@@ -669,9 +669,9 @@ ORDER BY RANDOM()
 LIMIT 1
 `
 
-func (q *Queries) RandomProfessorID(ctx context.Context) (int64, error) {
+func (q *Queries) RandomProfessorID(ctx context.Context) (int32, error) {
 	row := q.db.QueryRowContext(ctx, randomProfessorID)
-	var id int64
+	var id int32
 	err := row.Scan(&id)
 	return id, err
 }
@@ -687,7 +687,7 @@ RETURNING id, first_name, last_name, rating, total_review, would_take_again, lev
 
 type UpdateProfessorStatusRequestParams struct {
 	Status Statusrequest `json:"status"`
-	ID     int64         `json:"id"`
+	ID     int32         `json:"id"`
 }
 
 func (q *Queries) UpdateProfessorStatusRequest(ctx context.Context, arg UpdateProfessorStatusRequestParams) (Professor, error) {

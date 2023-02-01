@@ -2,7 +2,7 @@ package util
 
 import db "github.com/dados-id/dados-be/db/sqlc"
 
-func GetValidProfessorRating(randomUserID string, totalRowProfessor int64, courseCode string) (ProfessorRating db.ProfessorRating) {
+func GetValidProfessorRating(randomUserID string, totalRowProfessor int32, courseCode string) (ProfessorRating db.ProfessorRating) {
 	ProfessorRating = db.ProfessorRating{
 		Quality:             convertIntToStr(RandomFloat(1, 5)),
 		Difficult:           convertIntToStr(RandomFloat(1, 5)),
@@ -13,7 +13,7 @@ func GetValidProfessorRating(randomUserID string, totalRowProfessor int64, cours
 		Grade:               RandomString(5),
 		CourseCode:          courseCode,
 		UserID:              randomUserID,
-		ProfessorID:         RandomInt(1, totalRowProfessor),
+		ProfessorID:         totalRowProfessor,
 		Review:              randomReview(),
 	}
 	return

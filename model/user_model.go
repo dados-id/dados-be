@@ -9,7 +9,7 @@ type CreateUserRequest struct {
 	LastName                 string `json:"lastName"`
 	ExpectedYearOfGraduation int16  `json:"expectedYearOfGraduation"`
 	Email                    string `json:"email"`
-	SchoolID                 int64  `json:"schoolId"`
+	SchoolID                 int32  `json:"schoolId"`
 }
 
 type GetUserRequest struct {
@@ -19,7 +19,7 @@ type GetUserRequest struct {
 type UpdateUserJSONRequest struct {
 	FirstName                *string `json:"firstName"`
 	LastName                 *string `json:"lastName"`
-	SchoolID                 *int64  `json:"schoolId"`
+	SchoolID                 *int32  `json:"schoolId"`
 	ExpectedYearOfGraduation *int16  `json:"expectedYearOfGraduation"`
 }
 
@@ -37,7 +37,7 @@ func (x *UpdateUserJSONRequest) GetLastName() string {
 	return ""
 }
 
-func (x *UpdateUserJSONRequest) GetSchoolID() int64 {
+func (x *UpdateUserJSONRequest) GetSchoolID() int32 {
 	if x != nil && x.SchoolID != nil {
 		return *x.SchoolID
 	}
@@ -57,9 +57,9 @@ type UserListQueryRequest struct {
 }
 
 type UnsaveProfessorURIRequest struct {
-	ProfessorID int64 `uri:"professor_id" binding:"required,min=1"`
+	ProfessorID int32 `uri:"professor_id" binding:"required,min=1"`
 }
 
 type SaveProfessorURIRequest struct {
-	ProfessorID int64 `uri:"professor_id" binding:"required,min=1"`
+	ProfessorID int32 `uri:"professor_id" binding:"required,min=1"`
 }

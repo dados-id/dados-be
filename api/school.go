@@ -70,7 +70,7 @@ func (server *Server) listSchools(ctx *gin.Context) {
 			return
 		}
 
-		ctx.Header("x-total-count", strconv.FormatInt(totalCount, 10))
+		ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 		ctx.JSON(http.StatusOK, schools)
 		return
 	}
@@ -94,7 +94,7 @@ func (server *Server) listSchools(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Header("x-total-count", strconv.FormatInt(totalCount, 10))
+	ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 	ctx.JSON(http.StatusOK, schools)
 }
 

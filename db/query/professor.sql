@@ -19,11 +19,11 @@ SELECT
   P.level_of_difficulty,
   F.name as faculty_name,
   S.name as school_name,
-  SUM(CASE PR.quality when 1 then 1 else 0 end)::int as terrible,
-  SUM(CASE PR.quality when 2 then 1 else 0 end)::int as poor,
-  SUM(CASE PR.quality when 3 then 1 else 0 end)::int as fair,
-  SUM(CASE PR.quality when 4 then 1 else 0 end)::int as good,
-  SUM(CASE PR.quality when 5 then 1 else 0 end)::int as excellent
+  SUM(CASE PR.quality when 1 then 1 else 0 end)::int32 as terrible,
+  SUM(CASE PR.quality when 2 then 1 else 0 end)::int32 as poor,
+  SUM(CASE PR.quality when 3 then 1 else 0 end)::int32 as fair,
+  SUM(CASE PR.quality when 4 then 1 else 0 end)::int32 as good,
+  SUM(CASE PR.quality when 5 then 1 else 0 end)::int32 as excellent
 FROM professors P
   LEFT JOIN professor_ratings PR ON P.id = PR.professor_id
   JOIN faculties F ON P.faculty_id = F.id
@@ -48,7 +48,7 @@ WHERE
   PR.professor_id = $1
 GROUP BY
   PR.course_code
-ORDER BY COUNT(*) DESC
+ORDER BY COUNT(*)::int DESC
 LIMIT 3;
 
 -- name: ListProfessors :many
@@ -83,7 +83,7 @@ LIMIT $1
 OFFSET $2;
 
 -- name: CountListProfessors :one
-SELECT COUNT(*) FROM professors;
+SELECT COUNT(*)::int::int FROM professors;
 
 -- name: ListProfessorsByName :many
 SELECT
@@ -120,7 +120,7 @@ LIMIT $1
 OFFSET $2;
 
 -- name: CountListProfessorsByName :one
-SELECT COUNT(*) FROM professors P
+SELECT COUNT(*)::int FROM professors P
  WHERE LOWER(P.first_name) LIKE LOWER(@name::varchar)
  OR LOWER(P.last_name) LIKE LOWER(@name::varchar)
  OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER(@name::varchar);
@@ -158,7 +158,7 @@ LIMIT $2
 OFFSET $3;
 
 -- name: CountListProfessorsBySchool :one
-SELECT COUNT(*) FROM professors
+SELECT COUNT(*)::int FROM professors
   WHERE school_id = $1;
 
 -- name: ListProfessorsByFaculty :many
@@ -194,7 +194,7 @@ LIMIT $2
 OFFSET $3;
 
 -- name: CountListProfessorsByFaculty :one
-SELECT COUNT(*) FROM professors
+SELECT COUNT(*)::int FROM professors
   WHERE faculty_id = $1;
 
 -- name: ListProfessorsByFacultyAndSchool :many

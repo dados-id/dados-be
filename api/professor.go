@@ -124,7 +124,7 @@ func (server *Server) listProfessors(ctx *gin.Context) {
 			return
 		}
 
-		ctx.Header("x-total-count", strconv.FormatInt(totalCount, 10))
+		ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 		ctx.JSON(http.StatusOK, professors)
 		return
 	}
@@ -148,7 +148,7 @@ func (server *Server) listProfessors(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Header("x-total-count", strconv.FormatInt(totalCount, 10))
+	ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 	ctx.JSON(http.StatusOK, professors)
 }
 
@@ -186,7 +186,7 @@ func (server *Server) listProfessorsBySchool(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Header("x-total-count", strconv.FormatInt(totalCount, 10))
+	ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 	ctx.JSON(http.StatusOK, professors)
 }
 
@@ -224,7 +224,7 @@ func (server *Server) listProfessorsByFaculty(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Header("x-total-count", strconv.FormatInt(totalCount, 10))
+	ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 	ctx.JSON(http.StatusOK, professors)
 }
 

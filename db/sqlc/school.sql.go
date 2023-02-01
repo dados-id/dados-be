@@ -12,18 +12,18 @@ import (
 )
 
 const countListSchools = `-- name: CountListSchools :one
-SELECT COUNT(*) FROM schools
+SELECT COUNT(*)::int FROM schools
 `
 
-func (q *Queries) CountListSchools(ctx context.Context) (int64, error) {
+func (q *Queries) CountListSchools(ctx context.Context) (int32, error) {
 	row := q.db.QueryRowContext(ctx, countListSchools)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
 }
 
 const countListSchoolsByName = `-- name: CountListSchoolsByName :one
-SELECT COUNT(*) FROM schools
+SELECT COUNT(*)::int FROM schools
   WHERE $1::varchar ILIKE ANY(S.nick_name)
   OR S.name ILIKE $2::varchar
 `
@@ -33,11 +33,11 @@ type CountListSchoolsByNameParams struct {
 	Name     string `json:"name"`
 }
 
-func (q *Queries) CountListSchoolsByName(ctx context.Context, arg CountListSchoolsByNameParams) (int64, error) {
+func (q *Queries) CountListSchoolsByName(ctx context.Context, arg CountListSchoolsByNameParams) (int32, error) {
 	row := q.db.QueryRowContext(ctx, countListSchoolsByName, arg.NickName, arg.Name)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
 }
 
 const createSchool = `-- name: CreateSchool :one
@@ -122,7 +122,7 @@ type GetSchoolInfoRow struct {
 	OverallRating string `json:"overallRating"`
 }
 
-func (q *Queries) GetSchoolInfo(ctx context.Context, id int64) (GetSchoolInfoRow, error) {
+func (q *Queries) GetSchoolInfo(ctx context.Context, id int32) (GetSchoolInfoRow, error) {
 	row := q.db.QueryRowContext(ctx, getSchoolInfo, id)
 	var i GetSchoolInfoRow
 	err := row.Scan(
@@ -170,7 +170,7 @@ type ListSchoolsParams struct {
 }
 
 type ListSchoolsRow struct {
-	ID       int64  `json:"id"`
+	ID       int32  `json:"id"`
 	Name     string `json:"name"`
 	City     string `json:"city"`
 	Province string `json:"province"`
@@ -240,7 +240,7 @@ type ListSchoolsByNameParams struct {
 }
 
 type ListSchoolsByNameRow struct {
-	ID       int64  `json:"id"`
+	ID       int32  `json:"id"`
 	Name     string `json:"name"`
 	City     string `json:"city"`
 	Province string `json:"province"`
@@ -287,9 +287,9 @@ ORDER BY RANDOM()
 LIMIT 1
 `
 
-func (q *Queries) RandomSchoolID(ctx context.Context) (int64, error) {
+func (q *Queries) RandomSchoolID(ctx context.Context) (int32, error) {
 	row := q.db.QueryRowContext(ctx, randomSchoolID)
-	var id int64
+	var id int32
 	err := row.Scan(&id)
 	return id, err
 }
@@ -305,7 +305,7 @@ RETURNING id, name, nick_name, city, province, website, email, status, verified_
 
 type UpdateSchoolStatusRequestParams struct {
 	Status Statusrequest `json:"status"`
-	ID     int64         `json:"id"`
+	ID     int32         `json:"id"`
 }
 
 func (q *Queries) UpdateSchoolStatusRequest(ctx context.Context, arg UpdateSchoolStatusRequestParams) (School, error) {

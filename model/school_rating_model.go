@@ -1,8 +1,8 @@
 package model
 
 type SchoolRatingURIRequest struct {
-	SchoolID       int64 `uri:"school_id" binding:"required,min=1"`
-	SchoolRatingID int64 `uri:"school_rating_id" binding:"required,min=1"`
+	SchoolID       int32 `uri:"school_id" binding:"required,min=1"`
+	SchoolRatingID int32 `uri:"school_rating_id" binding:"required,min=1"`
 }
 
 type ListSchoolRatingsQueryRequest struct {
@@ -11,11 +11,11 @@ type ListSchoolRatingsQueryRequest struct {
 }
 
 type ListSchoolRatingsURIRequest struct {
-	SchoolID int64 `uri:"school_id" binding:"required,min=1"`
+	SchoolID int32 `uri:"school_id" binding:"required,min=1"`
 }
 
 type CreateSchoolRatingURIRequest struct {
-	SchoolID int64 `uri:"school_id" binding:"required,min=1"`
+	SchoolID int32 `uri:"school_id" binding:"required,min=1"`
 }
 
 type CreateSchoolRatingJSONRequest struct {

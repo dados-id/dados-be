@@ -120,8 +120,8 @@ func ValidateUpdateSchoolRatingRequest(req *model.UpdateSchoolRatingJSONRequest)
 }
 
 func validateSchoolRatingField(value int16) error {
-	if err := validateIntNull(int(value)); err != nil {
+	if err := validateInt32Null(int32(value)); err != nil {
 		return err
 	}
-	return validateInt(int(value), 1, 5)
+	return validateInt32(int32(value), 1, 5)
 }

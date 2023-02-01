@@ -55,7 +55,7 @@ func (ns NullStatusrequest) Value() (driver.Value, error) {
 }
 
 type CorrectionForm struct {
-	ID           int64         `json:"id"`
+	ID           int32         `json:"id"`
 	Problem      string        `json:"problem"`
 	CorrectInfo  string        `json:"correctInfo"`
 	Email        string        `json:"email"`
@@ -71,7 +71,7 @@ type Course struct {
 }
 
 type Faculty struct {
-	ID   int64  `json:"id"`
+	ID   int32  `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -80,7 +80,7 @@ type Faculty struct {
 //       1. 5 distribusi nilai (from quality)
 //
 type Professor struct {
-	ID                int64         `json:"id"`
+	ID                int32         `json:"id"`
 	FirstName         string        `json:"firstName"`
 	LastName          string        `json:"lastName"`
 	Rating            string        `json:"rating"`
@@ -90,12 +90,12 @@ type Professor struct {
 	CreatedAt         time.Time     `json:"createdAt"`
 	Status            Statusrequest `json:"status"`
 	VerifiedDate      time.Time     `json:"verifiedDate"`
-	FacultyID         int64         `json:"facultyID"`
-	SchoolID          int64         `json:"schoolID"`
+	FacultyID         int32         `json:"facultyID"`
+	SchoolID          int32         `json:"schoolID"`
 }
 
 type ProfessorCourseAssociation struct {
-	ProfessorID int64  `json:"professorID"`
+	ProfessorID int32  `json:"professorID"`
 	CourseCode  string `json:"courseCode"`
 }
 
@@ -120,7 +120,7 @@ type ProfessorCourseAssociation struct {
 //       1 -> true
 //
 type ProfessorRating struct {
-	ID                  int64         `json:"id"`
+	ID                  int32         `json:"id"`
 	Quality             string        `json:"quality"`
 	Difficult           string        `json:"difficult"`
 	WouldTakeAgain      int16         `json:"wouldTakeAgain"`
@@ -135,23 +135,23 @@ type ProfessorRating struct {
 	EditedAt            time.Time     `json:"editedAt"`
 	Status              Statusrequest `json:"status"`
 	VerifiedDate        time.Time     `json:"verifiedDate"`
-	ProfessorID         int64         `json:"professorID"`
+	ProfessorID         int32         `json:"professorID"`
 	CourseCode          string        `json:"courseCode"`
 	UserID              string        `json:"userID"`
 }
 
 type ProfessorRatingTag struct {
 	TagName           string `json:"tagName"`
-	ProfessorRatingID int64  `json:"professorRatingID"`
+	ProfessorRatingID int32  `json:"professorRatingID"`
 }
 
 type ReportForm struct {
-	ID                int64         `json:"id"`
+	ID                int32         `json:"id"`
 	Comment           string        `json:"comment"`
 	Status            Statusrequest `json:"status"`
 	RequestDate       time.Time     `json:"requestDate"`
 	VerifiedDate      time.Time     `json:"verifiedDate"`
-	ProfessorRatingID int64         `json:"professorRatingID"`
+	ProfessorRatingID int32         `json:"professorRatingID"`
 	UserID            string        `json:"userID"`
 }
 
@@ -161,7 +161,7 @@ type ReportForm struct {
 //       2. avg overall quality
 //
 type School struct {
-	ID           int64         `json:"id"`
+	ID           int32         `json:"id"`
 	Name         string        `json:"name"`
 	NickName     []string      `json:"nickName"`
 	City         string        `json:"city"`
@@ -173,12 +173,12 @@ type School struct {
 }
 
 type SchoolFacultyAssociation struct {
-	FacultyID int64 `json:"facultyID"`
-	SchoolID  int64 `json:"schoolID"`
+	FacultyID int32 `json:"facultyID"`
+	SchoolID  int32 `json:"schoolID"`
 }
 
 type SchoolRating struct {
-	ID            int64         `json:"id"`
+	ID            int32         `json:"id"`
 	Reputation    int16         `json:"reputation"`
 	Location      int16         `json:"location"`
 	Opportunities int16         `json:"opportunities"`
@@ -198,7 +198,7 @@ type SchoolRating struct {
 	Status        Statusrequest `json:"status"`
 	VerifiedDate  time.Time     `json:"verifiedDate"`
 	UserID        string        `json:"userID"`
-	SchoolID      int64         `json:"schoolID"`
+	SchoolID      int32         `json:"schoolID"`
 }
 
 type Tag struct {
@@ -212,10 +212,10 @@ type User struct {
 	ExpectedYearOfGraduation sql.NullInt16 `json:"expectedYearOfGraduation"`
 	Email                    string        `json:"email"`
 	CreatedAt                time.Time     `json:"createdAt"`
-	SchoolID                 sql.NullInt64 `json:"schoolID"`
+	SchoolID                 sql.NullInt32 `json:"schoolID"`
 }
 
 type UserSaveProfessor struct {
-	ProfessorID int64  `json:"professorID"`
+	ProfessorID int32  `json:"professorID"`
 	UserID      string `json:"userID"`
 }

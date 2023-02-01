@@ -36,10 +36,10 @@ func (m *MockQuerier) EXPECT() *MockQuerierMockRecorder {
 }
 
 // CountListProfessors mocks base method.
-func (m *MockQuerier) CountListProfessors(arg0 context.Context) (int64, error) {
+func (m *MockQuerier) CountListProfessors(arg0 context.Context) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CountListProfessors", arg0)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -51,10 +51,10 @@ func (mr *MockQuerierMockRecorder) CountListProfessors(arg0 interface{}) *gomock
 }
 
 // CountListProfessorsByFaculty mocks base method.
-func (m *MockQuerier) CountListProfessorsByFaculty(arg0 context.Context, arg1 int64) (int64, error) {
+func (m *MockQuerier) CountListProfessorsByFaculty(arg0 context.Context, arg1 int32) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CountListProfessorsByFaculty", arg0, arg1)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -66,10 +66,10 @@ func (mr *MockQuerierMockRecorder) CountListProfessorsByFaculty(arg0, arg1 inter
 }
 
 // CountListProfessorsByName mocks base method.
-func (m *MockQuerier) CountListProfessorsByName(arg0 context.Context, arg1 string) (int64, error) {
+func (m *MockQuerier) CountListProfessorsByName(arg0 context.Context, arg1 string) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CountListProfessorsByName", arg0, arg1)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -81,10 +81,10 @@ func (mr *MockQuerierMockRecorder) CountListProfessorsByName(arg0, arg1 interfac
 }
 
 // CountListProfessorsBySchool mocks base method.
-func (m *MockQuerier) CountListProfessorsBySchool(arg0 context.Context, arg1 int64) (int64, error) {
+func (m *MockQuerier) CountListProfessorsBySchool(arg0 context.Context, arg1 int32) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CountListProfessorsBySchool", arg0, arg1)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -96,10 +96,10 @@ func (mr *MockQuerierMockRecorder) CountListProfessorsBySchool(arg0, arg1 interf
 }
 
 // CountListSchools mocks base method.
-func (m *MockQuerier) CountListSchools(arg0 context.Context) (int64, error) {
+func (m *MockQuerier) CountListSchools(arg0 context.Context) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CountListSchools", arg0)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -111,10 +111,10 @@ func (mr *MockQuerierMockRecorder) CountListSchools(arg0 interface{}) *gomock.Ca
 }
 
 // CountListSchoolsByName mocks base method.
-func (m *MockQuerier) CountListSchoolsByName(arg0 context.Context, arg1 db.CountListSchoolsByNameParams) (int64, error) {
+func (m *MockQuerier) CountListSchoolsByName(arg0 context.Context, arg1 db.CountListSchoolsByNameParams) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CountListSchoolsByName", arg0, arg1)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -318,7 +318,7 @@ func (mr *MockQuerierMockRecorder) CreateUser(arg0, arg1 interface{}) *gomock.Ca
 }
 
 // GetProfessorInfo mocks base method.
-func (m *MockQuerier) GetProfessorInfo(arg0 context.Context, arg1 int64) (db.GetProfessorInfoRow, error) {
+func (m *MockQuerier) GetProfessorInfo(arg0 context.Context, arg1 int32) (db.GetProfessorInfoRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetProfessorInfo", arg0, arg1)
 	ret0, _ := ret[0].(db.GetProfessorInfoRow)
@@ -348,7 +348,7 @@ func (mr *MockQuerierMockRecorder) GetProfessorRating(arg0, arg1 interface{}) *g
 }
 
 // GetSchoolInfo mocks base method.
-func (m *MockQuerier) GetSchoolInfo(arg0 context.Context, arg1 int64) (db.GetSchoolInfoRow, error) {
+func (m *MockQuerier) GetSchoolInfo(arg0 context.Context, arg1 int32) (db.GetSchoolInfoRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSchoolInfo", arg0, arg1)
 	ret0, _ := ret[0].(db.GetSchoolInfoRow)
@@ -408,7 +408,7 @@ func (mr *MockQuerierMockRecorder) ListCorrection(arg0, arg1 interface{}) *gomoc
 }
 
 // ListCoursesByProfessorId mocks base method.
-func (m *MockQuerier) ListCoursesByProfessorId(arg0 context.Context, arg1 int64) ([]string, error) {
+func (m *MockQuerier) ListCoursesByProfessorId(arg0 context.Context, arg1 int32) ([]string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListCoursesByProfessorId", arg0, arg1)
 	ret0, _ := ret[0].([]string)
@@ -423,7 +423,7 @@ func (mr *MockQuerierMockRecorder) ListCoursesByProfessorId(arg0, arg1 interface
 }
 
 // ListFacultyBySchool mocks base method.
-func (m *MockQuerier) ListFacultyBySchool(arg0 context.Context, arg1 int64) ([]db.Faculty, error) {
+func (m *MockQuerier) ListFacultyBySchool(arg0 context.Context, arg1 int32) ([]db.Faculty, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListFacultyBySchool", arg0, arg1)
 	ret0, _ := ret[0].([]db.Faculty)
@@ -618,7 +618,7 @@ func (mr *MockQuerierMockRecorder) ListSchoolsByName(arg0, arg1 interface{}) *go
 }
 
 // ListTopCoursesTaught mocks base method.
-func (m *MockQuerier) ListTopCoursesTaught(arg0 context.Context, arg1 int64) ([]string, error) {
+func (m *MockQuerier) ListTopCoursesTaught(arg0 context.Context, arg1 int32) ([]string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTopCoursesTaught", arg0, arg1)
 	ret0, _ := ret[0].([]string)
@@ -633,7 +633,7 @@ func (mr *MockQuerierMockRecorder) ListTopCoursesTaught(arg0, arg1 interface{}) 
 }
 
 // ListTopTags mocks base method.
-func (m *MockQuerier) ListTopTags(arg0 context.Context, arg1 int64) ([]string, error) {
+func (m *MockQuerier) ListTopTags(arg0 context.Context, arg1 int32) ([]string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTopTags", arg0, arg1)
 	ret0, _ := ret[0].([]string)
@@ -663,10 +663,10 @@ func (mr *MockQuerierMockRecorder) RandomCourseCode(arg0 interface{}) *gomock.Ca
 }
 
 // RandomFacultyID mocks base method.
-func (m *MockQuerier) RandomFacultyID(arg0 context.Context) (int64, error) {
+func (m *MockQuerier) RandomFacultyID(arg0 context.Context) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RandomFacultyID", arg0)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -678,10 +678,10 @@ func (mr *MockQuerierMockRecorder) RandomFacultyID(arg0 interface{}) *gomock.Cal
 }
 
 // RandomProfessorID mocks base method.
-func (m *MockQuerier) RandomProfessorID(arg0 context.Context) (int64, error) {
+func (m *MockQuerier) RandomProfessorID(arg0 context.Context) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RandomProfessorID", arg0)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -693,10 +693,10 @@ func (mr *MockQuerierMockRecorder) RandomProfessorID(arg0 interface{}) *gomock.C
 }
 
 // RandomSchoolID mocks base method.
-func (m *MockQuerier) RandomSchoolID(arg0 context.Context) (int64, error) {
+func (m *MockQuerier) RandomSchoolID(arg0 context.Context) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RandomSchoolID", arg0)
-	ret0, _ := ret[0].(int64)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
