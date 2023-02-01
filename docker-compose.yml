@@ -20,5 +20,5 @@ services:
       - DB_SOURCE=${DB_SOURCE_CONTAINER}
     depends_on:
       - postgres
-    entrypoint: [ "/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh" ]
-    command: [ "/app/main" ]
+    entrypoint: ["/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh"]
+    command: ["/app/main"]

@@ -5,6 +5,7 @@ import (
 	"github.com/dados-id/dados-be/config"
 	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
+	"github.com/dados-id/dados-be/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,17 +25,17 @@ func NewServer(configuration config.Config, query db.Querier, firebaseClient aut
 		firebaseClient: firebaseClient,
 	}
 
+	if server.config.Environment != "development" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	server.setupRouter()
 	return server, nil
 }
 
 func (server *Server) setupRouter() {
-	if server.config.Environment != "development" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
 	router := gin.New()
-	router.Use(HttpLogger())
+	router.Use(util.HttpLogger())
 	router.Use(gin.Recovery())
 
 	router.GET("/ping", func(c *gin.Context) {
@@ -50,17 +51,17 @@ func (server *Server) setupRouter() {
 	authRoutes.Use()
 	{
 		userRoutes := authRoutes.Group("/")
-		userRoutes.GET("/users/:id", server.getUser)
-		userRoutes.PUT("/users/:id", server.updateUser)
-		userRoutes.GET("/users/:id/professor_ratings", server.userListProfessorRatings)
-		userRoutes.GET("/users/:id/school_ratings", server.userListSchoolRatings)
-		userRoutes.GET("/users/:id/saved_professors", server.userListSavedProfessors)
-		userRoutes.DELETE("/users/:user_id/professors/:professor_id", server.unsaveProfessor)
-		userRoutes.POST("/users/:user_id/professors/:professor_id", server.saveProfessor)
+		userRoutes.GET("/users", server.getUser)
+		userRoutes.PUT("/users", server.updateUser)
+		userRoutes.GET("/users/professor_ratings", server.userListProfessorRatings)
+		userRoutes.GET("/users/school_ratings", server.userListSchoolRatings)
+		userRoutes.GET("/users/saved_professors", server.userListSavedProfessors)
+		userRoutes.DELETE("/users/professors/:professor_id", server.unsaveProfessor)
+		userRoutes.POST("/users/professors/:professor_id", server.saveProfessor)
 
 		schoolRoutes := authRoutes.Group("/")
 		schoolRoutes.POST("/schools", server.createSchool)
-		schoolRoutes.GET("/schools/:school_id", server.getSchoolInfoAggregate)
+		schoolRoutes.GET("/schools/:school_id", server.getSchoolInfo)
 		schoolRoutes.GET("/schools", server.listSchools)
 		schoolRoutes.PUT("/schools/:school_id", server.updateSchoolStatusRequest)
 
@@ -72,7 +73,7 @@ func (server *Server) setupRouter() {
 
 		professorRoutes := authRoutes.Group("/")
 		professorRoutes.POST("/professors", server.createProfessor)
-		professorRoutes.GET("/professors/:professor_id", server.getProfessorInfoAggregate)
+		professorRoutes.GET("/professors/:professor_id", server.getProfessorInfo)
 		professorRoutes.GET("/professors", server.listProfessors)
 		professorRoutes.GET("schools/:school_id/professors", server.listProfessorsBySchool)
 		professorRoutes.GET("faculties/:faculty_id/professors", server.listProfessorsByFaculty)

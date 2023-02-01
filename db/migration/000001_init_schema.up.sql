@@ -9,18 +9,19 @@ CREATE TYPE StatusRequest AS ENUM (
 );
 
 CREATE TABLE "users" (
-  "id" bigserial PRIMARY KEY,
+  "id" varchar PRIMARY KEY,
   "first_name" varchar NOT NULL,
   "last_name" varchar NOT NULL,
-  "school" varchar NOT NULL,
-  "expected_year_of_graduation" smallint NOT NULL,
+  "expected_year_of_graduation" smallint,
   "email" varchar UNIQUE NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now())
+  "created_at" timestamptz NOT NULL DEFAULT (now()),
+
+  "school_id" bigint
 );
 
 CREATE TABLE "user_save_professors" (
   "professor_id" bigint,
-  "user_id" bigint,
+  "user_id" varchar,
   PRIMARY KEY ("professor_id", "user_id")
 );
 
@@ -65,7 +66,7 @@ CREATE TABLE "professor_ratings" (
 
   "professor_id" bigint NOT NULL,
   "course_code" varchar NOT NULL,
-  "user_id" bigint NOT NULL
+  "user_id" varchar NOT NULL
 );
 
 CREATE TABLE "professor_rating_tags" (
@@ -127,7 +128,7 @@ CREATE TABLE "school_ratings" (
   "status" StatusRequest NOT NULL DEFAULT 'pending',
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
 
-  "user_id" bigint NOT NULL,
+  "user_id" varchar NOT NULL,
   "school_id" bigint NOT NULL
 );
 
@@ -139,7 +140,7 @@ CREATE TABLE "report_forms" (
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
 
   "professor_rating_id" bigserial NOT NULL,
-  "user_id" bigint NOT NULL
+  "user_id" varchar NOT NULL
 );
 
 CREATE TABLE "correction_forms" (
@@ -151,7 +152,7 @@ CREATE TABLE "correction_forms" (
   "request_date" timestamptz NOT NULL DEFAULT (now()),
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
 
-  "user_id" bigint NOT NULL
+  "user_id" varchar NOT NULL
 );
 
 CREATE INDEX ON "professors" ("first_name", "last_name");
@@ -207,6 +208,8 @@ COMMENT ON TABLE "schools" IS '
 ALTER TABLE "professors" ADD UNIQUE ("first_name", "last_name");
 
 ALTER TABLE "user_save_professors" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "users" ADD FOREIGN KEY ("school_id") REFERENCES "schools" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "user_save_professors" ADD FOREIGN KEY ("professor_id") REFERENCES "professors" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 

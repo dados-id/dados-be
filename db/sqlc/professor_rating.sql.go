@@ -61,7 +61,7 @@ type CreateProfessorRatingParams struct {
 	Review              string `json:"review"`
 	ProfessorID         int64  `json:"professorID"`
 	CourseCode          string `json:"courseCode"`
-	UserID              int64  `json:"userID"`
+	UserID              string `json:"userID"`
 }
 
 func (q *Queries) CreateProfessorRating(ctx context.Context, arg CreateProfessorRatingParams) (ProfessorRating, error) {

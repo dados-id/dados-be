@@ -24,7 +24,7 @@ type CreateCorrectionParams struct {
 	Problem     string `json:"problem"`
 	CorrectInfo string `json:"correctInfo"`
 	Email       string `json:"email"`
-	UserID      int64  `json:"userID"`
+	UserID      string `json:"userID"`
 }
 
 func (q *Queries) CreateCorrection(ctx context.Context, arg CreateCorrectionParams) (CorrectionForm, error) {

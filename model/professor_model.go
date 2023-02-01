@@ -18,15 +18,18 @@ type GetProfessorRequest struct {
 }
 
 type GetProfessorInfoResponse struct {
-	db.GetProfessorInfoAggregateRow
-	Top5Tags []string `json:"top5Tags"`
-	Courses  []string `json:"courses"`
+	db.GetProfessorInfoRow
+	TopTags          []string `json:"topTags"`
+	TopCoursesTaught []string `json:"topCoursesTaught"`
+	Courses          []string `json:"courses"`
 }
 
 type ListProfessorsQueryRequest struct {
-	PageID   int32   `form:"page_id" binding:"required,min=1"`
-	PageSize int32   `form:"page_size" binding:"required,min=5"`
-	Name     *string `form:"name"`
+	PageID    int32   `form:"page_id" binding:"required,min=1"`
+	PageSize  int32   `form:"page_size" binding:"required,min=5,max=10"`
+	Name      *string `form:"name"`
+	SortBy    *string `form:"sort_by"`
+	SortOrder *string `form:"sort_order"`
 }
 
 func (x *ListProfessorsQueryRequest) GetName() string {
@@ -36,9 +39,39 @@ func (x *ListProfessorsQueryRequest) GetName() string {
 	return ""
 }
 
+func (x *ListProfessorsQueryRequest) GetSortBy() string {
+	if x != nil && x.SortBy != nil {
+		return *x.SortBy
+	}
+	return ""
+}
+
+func (x *ListProfessorsQueryRequest) GetSortOrder() string {
+	if x != nil && x.SortOrder != nil {
+		return *x.SortOrder
+	}
+	return ""
+}
+
 type ListProfessorsQueryBySchoolRequest struct {
-	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5"`
+	PageID    int32   `form:"page_id" binding:"required,min=1"`
+	PageSize  int32   `form:"page_size" binding:"required,min=5,max=10"`
+	SortBy    *string `form:"sort_by"`
+	SortOrder *string `form:"sort_order"`
+}
+
+func (x *ListProfessorsQueryBySchoolRequest) GetSortBy() string {
+	if x != nil && x.SortBy != nil {
+		return *x.SortBy
+	}
+	return ""
+}
+
+func (x *ListProfessorsQueryBySchoolRequest) GetSortOrder() string {
+	if x != nil && x.SortOrder != nil {
+		return *x.SortOrder
+	}
+	return ""
 }
 
 type ListProfessorsURIBySchoolRequest struct {
@@ -46,8 +79,24 @@ type ListProfessorsURIBySchoolRequest struct {
 }
 
 type ListProfessorsQueryByFacultyRequest struct {
-	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5"`
+	PageID    int32   `form:"page_id" binding:"required,min=1"`
+	PageSize  int32   `form:"page_size" binding:"required,min=5,max=10"`
+	SortBy    *string `form:"sort_by"`
+	SortOrder *string `form:"sort_order"`
+}
+
+func (x *ListProfessorsQueryByFacultyRequest) GetSortBy() string {
+	if x != nil && x.SortBy != nil {
+		return *x.SortBy
+	}
+	return ""
+}
+
+func (x *ListProfessorsQueryByFacultyRequest) GetSortOrder() string {
+	if x != nil && x.SortOrder != nil {
+		return *x.SortOrder
+	}
+	return ""
 }
 
 type ListProfessorsURIByFacultyRequest struct {

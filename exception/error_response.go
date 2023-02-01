@@ -15,7 +15,6 @@ func ViolationsFieldValidation(violations []validation.BadRequest_FieldViolation
 
 func ViolationUniqueConstraint(errConstraint string) gin.H {
 	return gin.H{"message": "unique constraint violation", "details": errConstraint}
-
 }
 
 func ServerErrorResponse(err error) gin.H {

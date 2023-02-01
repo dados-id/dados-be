@@ -1,12 +1,13 @@
 -- name: CreateUser :one
 INSERT INTO users (
+  id,
   first_name,
   last_name,
-  school,
   expected_year_of_graduation,
-  email
+  email,
+  school_id
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 
 -- name: SaveProfessor :exec
@@ -25,8 +26,16 @@ AND
   user_id = $2;
 
 -- name: GetUser :one
-SELECT * FROM users
-WHERE id = $1;
+SELECT
+  U.id,
+  U.first_name,
+  U.last_name,
+  U.expected_year_of_graduation,
+  U.email,
+  S.name
+FROM users U
+  JOIN schools S ON S.id = U.school_id
+WHERE U.id = $1;
 
 -- name: UserListProfessorRatings :many
 SELECT
@@ -87,9 +96,6 @@ SELECT
   P.first_name,
   P.last_name,
   P.rating,
-  P.total_review,
-  P.would_take_again,
-  P.level_of_difficulty,
   F.name as faculty_name,
   S.name as school_name
 FROM user_save_professors USP
@@ -106,11 +112,13 @@ UPDATE users
 SET
   first_name = COALESCE(sqlc.narg(first_name), first_name),
   last_name = COALESCE(sqlc.narg(last_name), last_name),
-  school = COALESCE(sqlc.narg(school), school),
+  school_id = COALESCE(sqlc.narg(school_id), school_id),
   expected_year_of_graduation = COALESCE(sqlc.narg(expected_year_of_graduation), expected_year_of_graduation)
 WHERE
   id = sqlc.arg(id)
 RETURNING *;
 
--- name: CountUser :one
-SELECT COUNT(*) FROM users;
+-- name: RandomUserID :one
+SELECT id FROM users
+ORDER BY RANDOM()
+LIMIT 1;

@@ -18,14 +18,16 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	NDATA := 500
-	for i := 1; i <= 5; i++ {
+	NDATA := 5000
+	GOROUTINE := 5
+
+	for i := 1; i <= GOROUTINE; i++ {
 		wg.Add(1)
 		go createSchool(NDATA, *queries, &wg)
 	}
 	wg.Wait()
 
-	fmt.Printf("Successfully added %d data School to database\n", NDATA)
+	fmt.Printf("Successfully added %d data School to database\n", NDATA*GOROUTINE)
 }
 
 func createSchool(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
@@ -33,6 +35,7 @@ func createSchool(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 
 	for i := 1; i <= NDATA; i++ {
 		school := util.GetValidSchool()
+
 		arg := sqlc.CreateSchoolParams{
 			Name:     school.Name,
 			NickName: school.NickName,

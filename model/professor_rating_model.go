@@ -11,7 +11,7 @@ type ListProfessorRatingURIRequest struct {
 
 type ListProfessorRatingQueryRequest struct {
 	PageID     int32   `form:"page_id" binding:"required,min=1"`
-	PageSize   int32   `form:"page_size" binding:"required,min=5"`
+	PageSize   int32   `form:"page_size" binding:"required,min=5,max=10"`
 	CourseCode *string `form:"course_code"`
 	Rating     *int16  `form:"rating"`
 }
@@ -44,9 +44,8 @@ type CreateProfessorRatingJSONRequest struct {
 	Grade               string   `json:"grade"`
 	Tags                []string `json:"tags"`
 	Review              string   `json:"review"`
-	ProfessorID         int64    `json:"professorID"`
+	ProfessorID         int64    `json:"professorId"`
 	CourseCode          string   `json:"courseCode"`
-	UserID              int64    `json:"userID"`
 }
 
 type UpdateProfessorRatingJSONRequest struct {

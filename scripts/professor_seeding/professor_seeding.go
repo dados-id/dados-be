@@ -17,33 +17,33 @@ func main() {
 	database := config.NewPostgres(configuration.DBDriver, configuration.DBSource)
 	queries := sqlc.New(database)
 
-	totalRowSchool, err := queries.CountSchool(context.Background())
-	exception.FatalIfNeeded(err, "Error Count School")
-
-	totalRowFaculty, err := queries.CountFaculty(context.Background())
-	exception.FatalIfNeeded(err, "Error Count Faculty")
-
-	totalRowUser, err := queries.CountUser(context.Background())
-	exception.FatalIfNeeded(err, "Error Count User")
-
 	var wg sync.WaitGroup
 
-	NDATA := 500
-	for i := 1; i <= 5; i++ {
+	NDATA := 100
+	GOROUTINE := 5
+
+	for i := 1; i <= GOROUTINE; i++ {
 		wg.Add(1)
-		go createProfessor(NDATA, *queries, &wg, totalRowSchool, totalRowFaculty, totalRowUser)
+		go createProfessor(NDATA, *queries, &wg)
 	}
 	wg.Wait()
 
-	fmt.Printf("Successfully added %d data Professor to database\n", NDATA)
+	fmt.Printf("Successfully added %d data Professor to database\n", NDATA*GOROUTINE)
 }
 
-func createProfessor(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup, totalRowSchool, totalRowFaculty, totalRowUser int64) {
+func createProfessor(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for i := 1; i <= NDATA; i++ {
 		ctx := context.Background()
-		professor := util.GetValidProfessor(totalRowSchool, totalRowFaculty)
+
+		randomSchoolID, err := queries.RandomSchoolID(ctx)
+		exception.FatalIfNeeded(err, "Error Count School")
+
+		randomFacultyID, err := queries.RandomFacultyID(ctx)
+		exception.FatalIfNeeded(err, "Error Count Faculty")
+
+		professor := util.GetValidProfessor(randomSchoolID, randomFacultyID)
 
 		arg := sqlc.CreateProfessorParams{
 			FirstName: professor.FirstName,
@@ -58,9 +58,12 @@ func createProfessor(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup, totalR
 			continue
 		}
 
+		randomUserID, err := queries.RandomUserID(ctx)
+		exception.FatalIfNeeded(err, "Error Count User")
+
 		arg2 := sqlc.SaveProfessorParams{
 			ProfessorID: createdProfessor.ID,
-			UserID:      util.RandomInt(1, totalRowUser),
+			UserID:      randomUserID,
 		}
 
 		err = queries.SaveProfessor(ctx, arg2)
@@ -69,7 +72,7 @@ func createProfessor(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup, totalR
 			continue
 		}
 
-		randomCourseCode, err := queries.RandomCourseCode(context.Background())
+		randomCourseCode, err := queries.RandomCourseCode(ctx)
 		if err != nil {
 			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
 			continue

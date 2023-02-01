@@ -7,7 +7,7 @@ type SchoolRatingURIRequest struct {
 
 type ListSchoolRatingsQueryRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
 type ListSchoolRatingsURIRequest struct {
@@ -19,7 +19,6 @@ type CreateSchoolRatingURIRequest struct {
 }
 
 type CreateSchoolRatingJSONRequest struct {
-	UserID        int64  `json:"userID" binding:"required"`
 	Reputation    int16  `json:"reputation"`
 	Location      int16  `json:"location"`
 	Opportunities int16  `json:"opportunities"`
