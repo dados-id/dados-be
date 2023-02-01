@@ -83,7 +83,7 @@ LIMIT $1
 OFFSET $2;
 
 -- name: CountListProfessors :one
-SELECT COUNT(*)::int::int FROM professors;
+SELECT COUNT(*)::int FROM professors;
 
 -- name: ListProfessorsByName :many
 SELECT
