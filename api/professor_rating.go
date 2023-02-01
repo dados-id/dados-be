@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"strconv"
 
 	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
@@ -67,6 +68,18 @@ func (server *Server) listProfessorRatings(ctx *gin.Context) {
 			return
 		}
 
+		arg2 := db.CountListProfessorRatingsFilterByCourseParams{
+			ProfessorID: reqURI.ProfessorID,
+			CourseCode:  reqQueryParams.GetCourseCode(),
+		}
+
+		totalCount, err := server.query.CountListProfessorRatingsFilterByCourse(ctx, arg2)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 		ctx.JSON(http.StatusOK, professorRatings)
 		return
 	}
@@ -79,12 +92,25 @@ func (server *Server) listProfessorRatings(ctx *gin.Context) {
 			Limit:       reqQueryParams.PageSize,
 			Offset:      (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
 		}
+
 		professorRatings, err := server.query.ListProfessorRatingsFilterByRating(ctx, arg)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 			return
 		}
 
+		arg2 := db.CountListProfessorRatingsFilterByRatingParams{
+			ProfessorID: reqURI.ProfessorID,
+			Rating:      reqQueryParams.GetRating(),
+		}
+
+		totalCount, err := server.query.CountListProfessorRatingsFilterByRating(ctx, arg2)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 		ctx.JSON(http.StatusOK, professorRatings)
 		return
 	}
@@ -104,6 +130,13 @@ func (server *Server) listProfessorRatings(ctx *gin.Context) {
 		return
 	}
 
+	totalCount, err := server.query.CountListProfessorRatings(ctx, reqURI.ProfessorID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+		return
+	}
+
+	ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 	ctx.JSON(http.StatusOK, professorRatings)
 }
 

@@ -13,6 +13,52 @@ import (
 	"github.com/lib/pq"
 )
 
+const countListProfessorRatings = `-- name: CountListProfessorRatings :one
+SELECT COUNT(*)::int FROM professor_ratings PR
+  WHERE PR.professor_id = $1
+`
+
+func (q *Queries) CountListProfessorRatings(ctx context.Context, professorID int32) (int32, error) {
+	row := q.db.QueryRowContext(ctx, countListProfessorRatings, professorID)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const countListProfessorRatingsFilterByCourse = `-- name: CountListProfessorRatingsFilterByCourse :one
+SELECT COUNT(*)::int FROM professor_ratings PR
+  WHERE PR.professor_id = $1 AND PR.course_code = $2
+`
+
+type CountListProfessorRatingsFilterByCourseParams struct {
+	ProfessorID int32  `json:"professorID"`
+	CourseCode  string `json:"courseCode"`
+}
+
+func (q *Queries) CountListProfessorRatingsFilterByCourse(ctx context.Context, arg CountListProfessorRatingsFilterByCourseParams) (int32, error) {
+	row := q.db.QueryRowContext(ctx, countListProfessorRatingsFilterByCourse, arg.ProfessorID, arg.CourseCode)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const countListProfessorRatingsFilterByRating = `-- name: CountListProfessorRatingsFilterByRating :one
+SELECT COUNT(*)::int FROM professor_ratings PR
+  WHERE PR.professor_id = $1 AND PR.quality = $2::smallint
+`
+
+type CountListProfessorRatingsFilterByRatingParams struct {
+	ProfessorID int32 `json:"professorID"`
+	Rating      int16 `json:"rating"`
+}
+
+func (q *Queries) CountListProfessorRatingsFilterByRating(ctx context.Context, arg CountListProfessorRatingsFilterByRatingParams) (int32, error) {
+	row := q.db.QueryRowContext(ctx, countListProfessorRatingsFilterByRating, arg.ProfessorID, arg.Rating)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const createProfessorCourseAssociation = `-- name: CreateProfessorCourseAssociation :exec
 INSERT INTO professor_course_associations (
   course_code,

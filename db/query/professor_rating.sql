@@ -81,6 +81,10 @@ GROUP BY
 LIMIT $2
 OFFSET $3;
 
+-- name: CountListProfessorRatings :one
+SELECT COUNT(*)::int FROM professor_ratings PR
+  WHERE PR.professor_id = $1;
+
 -- name: ListProfessorRatingsFilterByCourse :many
 SELECT
   PR.id,
@@ -106,6 +110,10 @@ GROUP BY
 LIMIT $3
 OFFSET $4;
 
+-- name: CountListProfessorRatingsFilterByCourse :one
+SELECT COUNT(*)::int FROM professor_ratings PR
+  WHERE PR.professor_id = $1 AND PR.course_code = $2;
+
 -- name: ListProfessorRatingsFilterByRating :many
 SELECT
   PR.id,
@@ -130,6 +138,10 @@ GROUP BY
   PR.id
 LIMIT $2
 OFFSET $3;
+
+-- name: CountListProfessorRatingsFilterByRating :one
+SELECT COUNT(*)::int FROM professor_ratings PR
+  WHERE PR.professor_id = $1 AND PR.quality = @rating::smallint;
 
 -- name: UpdateProfessorRating :one
 UPDATE professor_ratings

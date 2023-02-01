@@ -67,6 +67,10 @@ WHERE school_id = $1
 LIMIT $2
 OFFSET $3;
 
+-- name: CountListSchoolRatings :one
+SELECT COUNT(*)::int FROM school_ratings
+  WHERE school_id = $1;
+
 -- name: UpdateSchoolRating :one
 UPDATE school_ratings
 SET

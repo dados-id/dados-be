@@ -35,6 +35,51 @@ func (m *MockQuerier) EXPECT() *MockQuerierMockRecorder {
 	return m.recorder
 }
 
+// CountListProfessorRatings mocks base method.
+func (m *MockQuerier) CountListProfessorRatings(arg0 context.Context, arg1 int32) (int32, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountListProfessorRatings", arg0, arg1)
+	ret0, _ := ret[0].(int32)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountListProfessorRatings indicates an expected call of CountListProfessorRatings.
+func (mr *MockQuerierMockRecorder) CountListProfessorRatings(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountListProfessorRatings", reflect.TypeOf((*MockQuerier)(nil).CountListProfessorRatings), arg0, arg1)
+}
+
+// CountListProfessorRatingsFilterByCourse mocks base method.
+func (m *MockQuerier) CountListProfessorRatingsFilterByCourse(arg0 context.Context, arg1 db.CountListProfessorRatingsFilterByCourseParams) (int32, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountListProfessorRatingsFilterByCourse", arg0, arg1)
+	ret0, _ := ret[0].(int32)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountListProfessorRatingsFilterByCourse indicates an expected call of CountListProfessorRatingsFilterByCourse.
+func (mr *MockQuerierMockRecorder) CountListProfessorRatingsFilterByCourse(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountListProfessorRatingsFilterByCourse", reflect.TypeOf((*MockQuerier)(nil).CountListProfessorRatingsFilterByCourse), arg0, arg1)
+}
+
+// CountListProfessorRatingsFilterByRating mocks base method.
+func (m *MockQuerier) CountListProfessorRatingsFilterByRating(arg0 context.Context, arg1 db.CountListProfessorRatingsFilterByRatingParams) (int32, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountListProfessorRatingsFilterByRating", arg0, arg1)
+	ret0, _ := ret[0].(int32)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountListProfessorRatingsFilterByRating indicates an expected call of CountListProfessorRatingsFilterByRating.
+func (mr *MockQuerierMockRecorder) CountListProfessorRatingsFilterByRating(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountListProfessorRatingsFilterByRating", reflect.TypeOf((*MockQuerier)(nil).CountListProfessorRatingsFilterByRating), arg0, arg1)
+}
+
 // CountListProfessors mocks base method.
 func (m *MockQuerier) CountListProfessors(arg0 context.Context) (int32, error) {
 	m.ctrl.T.Helper()
@@ -93,6 +138,21 @@ func (m *MockQuerier) CountListProfessorsBySchool(arg0 context.Context, arg1 int
 func (mr *MockQuerierMockRecorder) CountListProfessorsBySchool(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountListProfessorsBySchool", reflect.TypeOf((*MockQuerier)(nil).CountListProfessorsBySchool), arg0, arg1)
+}
+
+// CountListSchoolRatings mocks base method.
+func (m *MockQuerier) CountListSchoolRatings(arg0 context.Context, arg1 int32) (int32, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountListSchoolRatings", arg0, arg1)
+	ret0, _ := ret[0].(int32)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountListSchoolRatings indicates an expected call of CountListSchoolRatings.
+func (mr *MockQuerierMockRecorder) CountListSchoolRatings(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountListSchoolRatings", reflect.TypeOf((*MockQuerier)(nil).CountListSchoolRatings), arg0, arg1)
 }
 
 // CountListSchools mocks base method.

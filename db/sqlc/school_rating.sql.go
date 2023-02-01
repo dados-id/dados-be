@@ -11,6 +11,18 @@ import (
 	"time"
 )
 
+const countListSchoolRatings = `-- name: CountListSchoolRatings :one
+SELECT COUNT(*)::int FROM school_ratings
+  WHERE school_id = $1
+`
+
+func (q *Queries) CountListSchoolRatings(ctx context.Context, schoolID int32) (int32, error) {
+	row := q.db.QueryRowContext(ctx, countListSchoolRatings, schoolID)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const createSchoolFacultyAssociation = `-- name: CreateSchoolFacultyAssociation :exec
 INSERT INTO school_faculty_associations (
   faculty_id,
