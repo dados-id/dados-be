@@ -34,7 +34,7 @@ SELECT
   S.name as school_name
 FROM school_ratings SR
   JOIN schools S ON SR.school_id = S.id
-WHERE S.id = @school_id::bigint AND SR.id = @school_rating_id::bigint;
+WHERE S.id = @school_id::int AND SR.id = @school_rating_id::int;
 
 -- name: CreateSchoolFacultyAssociation :exec
 INSERT INTO school_faculty_associations (

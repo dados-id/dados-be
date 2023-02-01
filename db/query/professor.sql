@@ -234,7 +234,7 @@ UPDATE professors
 SET
   status = @status
 WHERE
-  id = @id::bigint
+  id = @id::int
 RETURNING *;
 
 -- name: RandomProfessorID :one

@@ -96,7 +96,7 @@ UPDATE correction_forms
 SET
   status = $1
 WHERE
-  id = $2::bigint
+  id = $2::int
 RETURNING id, problem, correct_info, email, status, request_date, verified_date, user_id
 `
 

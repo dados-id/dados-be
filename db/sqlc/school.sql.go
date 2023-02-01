@@ -299,7 +299,7 @@ UPDATE schools
 SET
   status = $1
 WHERE
-  id = $2::bigint
+  id = $2::int
 RETURNING id, name, nick_name, city, province, website, email, status, verified_date
 `
 

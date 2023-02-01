@@ -142,7 +142,7 @@ FROM professor_ratings PR
   JOIN faculties F ON P.faculty_id = F.id
   JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
 WHERE
-  P.id = $1::bigint AND PR.id = $2::bigint
+  P.id = $1::int AND PR.id = $2::int
 GROUP BY
   P.id, PR.id, S.name, F.name
 `

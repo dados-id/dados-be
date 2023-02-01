@@ -10,7 +10,7 @@ import (
 )
 
 const countListProfessors = `-- name: CountListProfessors :one
-SELECT COUNT(*)::int::int FROM professors
+SELECT COUNT(*)::int FROM professors
 `
 
 func (q *Queries) CountListProfessors(ctx context.Context) (int32, error) {
@@ -681,7 +681,7 @@ UPDATE professors
 SET
   status = $1
 WHERE
-  id = $2::bigint
+  id = $2::int
 RETURNING id, first_name, last_name, rating, total_review, would_take_again, level_of_difficulty, created_at, status, verified_date, faculty_id, school_id
 `
 

@@ -87,7 +87,7 @@ UPDATE report_forms
 SET
   status = $1
 WHERE
-  id = $2::bigint
+  id = $2::int
 RETURNING id, comment, status, request_date, verified_date, professor_rating_id, user_id
 `
 

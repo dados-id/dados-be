@@ -126,7 +126,7 @@ SELECT
   S.name as school_name
 FROM school_ratings SR
   JOIN schools S ON SR.school_id = S.id
-WHERE S.id = $1::bigint AND SR.id = $2::bigint
+WHERE S.id = $1::int AND SR.id = $2::int
 `
 
 type GetSchoolRatingParams struct {
