@@ -16,39 +16,39 @@ CREATE TABLE "users" (
   "email" varchar UNIQUE NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
 
-  "school_id" bigint
+  "school_id" int
 );
 
 CREATE TABLE "user_save_professors" (
-  "professor_id" bigint,
+  "professor_id" int,
   "user_id" varchar,
   PRIMARY KEY ("professor_id", "user_id")
 );
 
 CREATE TABLE "professors" (
-  "id" bigserial PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "first_name" varchar NOT NULL,
   "last_name" varchar NOT NULL,
   "rating" decimal(2,1) NOT NULL DEFAULT 0 CHECK (rating >= 0),
-  "total_review" int NOT NULL DEFAULT 0 CHECK (total_review >= 0),
+  "total_review" integer NOT NULL DEFAULT 0 CHECK (total_review >= 0),
   "would_take_again" smallint NOT NULL DEFAULT 0 CHECK (would_take_again >= 0),
   "level_of_difficulty" decimal(2,1) NOT NULL DEFAULT 0 CHECK (level_of_difficulty >= 0.0),
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "status" StatusRequest NOT NULL DEFAULT 'pending',
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
 
-  "faculty_id" bigint NOT NULL,
-  "school_id" bigint NOT NULL
+  "faculty_id" integer NOT NULL,
+  "school_id" integer NOT NULL
 );
 
 CREATE TABLE "professor_course_associations" (
-  "professor_id" bigint,
+  "professor_id" int,
   "course_code" varchar,
   PRIMARY KEY ("professor_id", "course_code")
 );
 
 CREATE TABLE "professor_ratings" (
-  "id" bigserial PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "quality" decimal(2,1) NOT NULL CHECK (quality >= 0.0 AND quality <= 5.0),
   "difficult" decimal(2,1) NOT NULL CHECK (difficult >= 0.0 AND difficult <= 5.0),
   "would_take_again" smallint NOT NULL CHECK (would_take_again >= 0 AND would_take_again <= 1),
@@ -57,21 +57,21 @@ CREATE TABLE "professor_ratings" (
   "attendance_mandatory" smallint NOT NULL CHECK (attendance_mandatory >= 0 AND attendance_mandatory <= 2),
   "grade" varchar NOT NULL,
   "review" varchar NOT NULL,
-  "up_vote" int NOT NULL DEFAULT 0,
-  "down_vote" int NOT NULL DEFAULT 0,
+  "up_vote" integer NOT NULL DEFAULT 0,
+  "down_vote" integer NOT NULL DEFAULT 0,
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "edited_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
   "status" StatusRequest NOT NULL DEFAULT 'pending',
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
 
-  "professor_id" bigint NOT NULL,
+  "professor_id" integer NOT NULL,
   "course_code" varchar NOT NULL,
   "user_id" varchar NOT NULL
 );
 
 CREATE TABLE "professor_rating_tags" (
   "tag_name" varchar,
-  "professor_rating_id" bigint,
+  "professor_rating_id" int,
   PRIMARY KEY ("tag_name", "professor_rating_id")
 );
 
@@ -85,18 +85,18 @@ CREATE TABLE "courses" (
 );
 
 CREATE TABLE "faculties" (
-  "id" bigserial PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" varchar NOT NULL
 );
 
 CREATE TABLE "school_faculty_associations" (
-  "faculty_id" bigint,
-  "school_id" bigint,
+  "faculty_id" int,
+  "school_id" int,
   PRIMARY KEY ("faculty_id", "school_id")
 );
 
 CREATE TABLE "schools" (
-  "id" bigserial PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "name" varchar UNIQUE NOT NULL,
   "nick_name" varchar[] NOT NULL,
   "city" varchar NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE "schools" (
 );
 
 CREATE TABLE "school_ratings" (
-  "id" bigserial PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "reputation" smallint NOT NULL CHECK (reputation >= 1 AND reputation <= 5),
   "location" smallint NOT NULL CHECK (location >= 1 AND location <= 5),
   "opportunities" smallint NOT NULL CHECK (opportunities >= 1 AND opportunities <= 5),
@@ -120,8 +120,8 @@ CREATE TABLE "school_ratings" (
   "happiness" smallint NOT NULL CHECK (happiness>= 1 AND happiness <= 5),
   "safety" smallint NOT NULL CHECK (safety >= 1 AND safety <= 5),
   "review" varchar NOT NULL,
-  "up_vote" int NOT NULL DEFAULT 0,
-  "down_vote" int NOT NULL DEFAULT 0,
+  "up_vote" integer NOT NULL DEFAULT 0,
+  "down_vote" integer NOT NULL DEFAULT 0,
   "overall_rating" decimal(2,1) NOT NULL CHECK (overall_rating >= 0.0),
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "edited_at" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
@@ -129,22 +129,22 @@ CREATE TABLE "school_ratings" (
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
 
   "user_id" varchar NOT NULL,
-  "school_id" bigint NOT NULL
+  "school_id" integer NOT NULL
 );
 
 CREATE TABLE "report_forms" (
-  "id" bigserial PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "comment" varchar NOT NULL,
   "status" StatusRequest NOT NULL DEFAULT 'pending',
   "request_date" timestamptz NOT NULL DEFAULT (now()),
   "verified_date" timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z',
 
-  "professor_rating_id" bigserial NOT NULL,
+  "professor_rating_id" serial NOT NULL,
   "user_id" varchar NOT NULL
 );
 
 CREATE TABLE "correction_forms" (
-  "id" bigserial PRIMARY KEY,
+  "id" serial PRIMARY KEY,
   "problem" varchar NOT NULL,
   "correct_info" varchar NOT NULL,
   "email" varchar NOT NULL,

@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"strconv"
 
 	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
@@ -117,6 +118,13 @@ func (server *Server) listProfessors(ctx *gin.Context) {
 			return
 		}
 
+		totalCount, err := server.query.CountListProfessorsByName(ctx, reqQueryParams.GetName())
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 		ctx.JSON(http.StatusOK, professors)
 		return
 	}
@@ -134,6 +142,13 @@ func (server *Server) listProfessors(ctx *gin.Context) {
 		return
 	}
 
+	totalCount, err := server.query.CountListProfessors(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+		return
+	}
+
+	ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 	ctx.JSON(http.StatusOK, professors)
 }
 
@@ -165,6 +180,13 @@ func (server *Server) listProfessorsBySchool(ctx *gin.Context) {
 		return
 	}
 
+	totalCount, err := server.query.CountListProfessorsBySchool(ctx, reqURI.SchoolID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+		return
+	}
+
+	ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 	ctx.JSON(http.StatusOK, professors)
 }
 
@@ -196,6 +218,13 @@ func (server *Server) listProfessorsByFaculty(ctx *gin.Context) {
 		return
 	}
 
+	totalCount, err := server.query.CountListProfessorsByFaculty(ctx, reqURI.FacultyID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+		return
+	}
+
+	ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 	ctx.JSON(http.StatusOK, professors)
 }
 

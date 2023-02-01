@@ -13,7 +13,7 @@ func ValidateCreateUserRequest(req *model.CreateUserRequest) (violations []BadRe
 		violations = append(violations, fieldViolation("lastName", err))
 	}
 
-	if err := validateExpectedYearOfGraduation(int(req.ExpectedYearOfGraduation)); err != nil {
+	if err := validateExpectedYearOfGraduation(int32(req.ExpectedYearOfGraduation)); err != nil {
 		violations = append(violations, fieldViolation("expectedYearOfGraduation", err))
 	}
 
@@ -42,7 +42,7 @@ func ValidateUpdateUserRequest(req *model.UpdateUserJSONRequest) (violations []B
 	}
 
 	if req.ExpectedYearOfGraduation != nil {
-		if err := validateExpectedYearOfGraduation(int(req.GetExpectedYearOfGraduation())); err != nil {
+		if err := validateExpectedYearOfGraduation(int32(req.GetExpectedYearOfGraduation())); err != nil {
 			violations = append(violations, fieldViolation("expectedYearOfGraduation", err))
 		}
 	}
@@ -60,15 +60,15 @@ func validateName(value string) error {
 	return validateString(value, 1, 64)
 }
 
-func validateExpectedYearOfGraduation(value int) error {
-	if err := validateIntNull(value); err != nil {
+func validateExpectedYearOfGraduation(value int32) error {
+	if err := validateInt32Null(value); err != nil {
 		return err
 	}
-	return validateInt(value, 2023, 9999)
+	return validateInt32(value, 2023, 9999)
 }
 
-func validateSchool(value int64) error {
-	if err := validateInt64Null(value); err != nil {
+func validateSchool(value int32) error {
+	if err := validateInt32Null(value); err != nil {
 		return err
 	}
 

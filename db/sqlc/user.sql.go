@@ -32,7 +32,7 @@ type CreateUserParams struct {
 	LastName                 string        `json:"lastName"`
 	ExpectedYearOfGraduation sql.NullInt16 `json:"expectedYearOfGraduation"`
 	Email                    string        `json:"email"`
-	SchoolID                 sql.NullInt64 `json:"schoolID"`
+	SchoolID                 sql.NullInt32 `json:"schoolID"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -116,7 +116,7 @@ INSERT INTO user_save_professors (
 `
 
 type SaveProfessorParams struct {
-	ProfessorID int64  `json:"professorID"`
+	ProfessorID int32  `json:"professorID"`
 	UserID      string `json:"userID"`
 }
 
@@ -134,7 +134,7 @@ AND
 `
 
 type UnsaveProfessorParams struct {
-	ProfessorID int64  `json:"professorID"`
+	ProfessorID int32  `json:"professorID"`
 	UserID      string `json:"userID"`
 }
 
@@ -158,7 +158,7 @@ RETURNING id, first_name, last_name, expected_year_of_graduation, email, created
 type UpdateUserParams struct {
 	FirstName                sql.NullString `json:"firstName"`
 	LastName                 sql.NullString `json:"lastName"`
-	SchoolID                 sql.NullInt64  `json:"schoolID"`
+	SchoolID                 sql.NullInt32  `json:"schoolID"`
 	ExpectedYearOfGraduation sql.NullInt16  `json:"expectedYearOfGraduation"`
 	ID                       string         `json:"id"`
 }
@@ -221,7 +221,7 @@ type UserListProfessorRatingsParams struct {
 }
 
 type UserListProfessorRatingsRow struct {
-	ID                  int64     `json:"id"`
+	ID                  int32     `json:"id"`
 	Quality             string    `json:"quality"`
 	Difficult           string    `json:"difficult"`
 	WouldTakeAgain      int16     `json:"wouldTakeAgain"`
@@ -302,7 +302,7 @@ type UserListSavedProfessorsParams struct {
 }
 
 type UserListSavedProfessorsRow struct {
-	ID          int64  `json:"id"`
+	ID          int32  `json:"id"`
 	FirstName   string `json:"firstName"`
 	LastName    string `json:"lastName"`
 	Rating      string `json:"rating"`
@@ -372,7 +372,7 @@ type UserListSchoolRatingsParams struct {
 }
 
 type UserListSchoolRatingsRow struct {
-	ID            int64     `json:"id"`
+	ID            int32     `json:"id"`
 	Reputation    int16     `json:"reputation"`
 	Location      int16     `json:"location"`
 	Opportunities int16     `json:"opportunities"`

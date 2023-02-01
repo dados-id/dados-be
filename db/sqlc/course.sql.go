@@ -36,7 +36,7 @@ SELECT C.code FROM professor_course_associations PCA
 WHERE PCA.professor_id = $1
 `
 
-func (q *Queries) ListCoursesByProfessorId(ctx context.Context, professorID int64) ([]string, error) {
+func (q *Queries) ListCoursesByProfessorId(ctx context.Context, professorID int32) ([]string, error) {
 	rows, err := q.db.QueryContext(ctx, listCoursesByProfessorId, professorID)
 	if err != nil {
 		return nil, err

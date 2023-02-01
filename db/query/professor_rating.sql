@@ -52,7 +52,7 @@ FROM professor_ratings PR
   JOIN faculties F ON P.faculty_id = F.id
   JOIN professor_rating_tags PRT ON PR.id = PRT.professor_rating_id
 WHERE
-  P.id = @professor_id::bigint AND PR.id = @professor_rating_id::bigint
+  P.id = @professor_id::int AND PR.id = @professor_rating_id::int
 GROUP BY
   P.id, PR.id, S.name, F.name;
 
@@ -81,6 +81,10 @@ GROUP BY
 LIMIT $2
 OFFSET $3;
 
+-- name: CountListProfessorRatings :one
+SELECT COUNT(*)::int FROM professor_ratings PR
+  WHERE PR.professor_id = $1;
+
 -- name: ListProfessorRatingsFilterByCourse :many
 SELECT
   PR.id,
@@ -106,6 +110,10 @@ GROUP BY
 LIMIT $3
 OFFSET $4;
 
+-- name: CountListProfessorRatingsFilterByCourse :one
+SELECT COUNT(*)::int FROM professor_ratings PR
+  WHERE PR.professor_id = $1 AND PR.course_code = $2;
+
 -- name: ListProfessorRatingsFilterByRating :many
 SELECT
   PR.id,
@@ -130,6 +138,10 @@ GROUP BY
   PR.id
 LIMIT $2
 OFFSET $3;
+
+-- name: CountListProfessorRatingsFilterByRating :one
+SELECT COUNT(*)::int FROM professor_ratings PR
+  WHERE PR.professor_id = $1 AND PR.quality = @rating::smallint;
 
 -- name: UpdateProfessorRating :one
 UPDATE professor_ratings

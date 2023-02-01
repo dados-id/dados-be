@@ -11,6 +11,35 @@ import (
 	"github.com/lib/pq"
 )
 
+const countListSchools = `-- name: CountListSchools :one
+SELECT COUNT(*)::int FROM schools
+`
+
+func (q *Queries) CountListSchools(ctx context.Context) (int32, error) {
+	row := q.db.QueryRowContext(ctx, countListSchools)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
+const countListSchoolsByName = `-- name: CountListSchoolsByName :one
+SELECT COUNT(*)::int FROM schools
+  WHERE $1::varchar ILIKE ANY(S.nick_name)
+  OR S.name ILIKE $2::varchar
+`
+
+type CountListSchoolsByNameParams struct {
+	NickName string `json:"nickName"`
+	Name     string `json:"name"`
+}
+
+func (q *Queries) CountListSchoolsByName(ctx context.Context, arg CountListSchoolsByNameParams) (int32, error) {
+	row := q.db.QueryRowContext(ctx, countListSchoolsByName, arg.NickName, arg.Name)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const createSchool = `-- name: CreateSchool :one
 INSERT INTO schools (
   name,
@@ -60,17 +89,17 @@ func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (Sch
 const getSchoolInfo = `-- name: GetSchoolInfo :one
 SELECT
   S.name,
-  COALESCE(ROUND(AVG(SR.reputation), 1), 0.0)::text as reputation,
-  COALESCE(ROUND(AVG(SR.location), 1), 0.0)::text as location,
-  COALESCE(ROUND(AVG(SR.opportunities), 1), 0.0)::text as opportunities,
-  COALESCE(ROUND(AVG(SR.facilities), 1), 0.0)::text as facilities,
-  COALESCE(ROUND(AVG(SR.internet), 1), 0.0)::text as internet,
-  COALESCE(ROUND(AVG(SR.food), 1), 0.0)::text as food,
-  COALESCE(ROUND(AVG(SR.clubs), 1), 0.0)::text as clubs,
-  COALESCE(ROUND(AVG(SR.social), 1), 0.0)::text as social,
-  COALESCE(ROUND(AVG(SR.happiness), 1), 0.0)::text as happiness,
-  COALESCE(ROUND(AVG(SR.safety), 1), 0.0)::text as safety,
-  COALESCE(ROUND(AVG(SR.overall_rating), 1), 0.0)::text as overall_rating
+  COALESCE(ROUND(AVG(SR.reputation), 1), 0.0)::varchar as reputation,
+  COALESCE(ROUND(AVG(SR.location), 1), 0.0)::varchar as location,
+  COALESCE(ROUND(AVG(SR.opportunities), 1), 0.0)::varchar as opportunities,
+  COALESCE(ROUND(AVG(SR.facilities), 1), 0.0)::varchar as facilities,
+  COALESCE(ROUND(AVG(SR.internet), 1), 0.0)::varchar as internet,
+  COALESCE(ROUND(AVG(SR.food), 1), 0.0)::varchar as food,
+  COALESCE(ROUND(AVG(SR.clubs), 1), 0.0)::varchar as clubs,
+  COALESCE(ROUND(AVG(SR.social), 1), 0.0)::varchar as social,
+  COALESCE(ROUND(AVG(SR.happiness), 1), 0.0)::varchar as happiness,
+  COALESCE(ROUND(AVG(SR.safety), 1), 0.0)::varchar as safety,
+  COALESCE(ROUND(AVG(SR.overall_rating), 1), 0.0)::varchar as overall_rating
 FROM schools S
   LEFT JOIN school_ratings SR ON S.id = SR.school_id
 WHERE
@@ -93,7 +122,7 @@ type GetSchoolInfoRow struct {
 	OverallRating string `json:"overallRating"`
 }
 
-func (q *Queries) GetSchoolInfo(ctx context.Context, id int64) (GetSchoolInfoRow, error) {
+func (q *Queries) GetSchoolInfo(ctx context.Context, id int32) (GetSchoolInfoRow, error) {
 	row := q.db.QueryRowContext(ctx, getSchoolInfo, id)
 	var i GetSchoolInfoRow
 	err := row.Scan(
@@ -141,7 +170,7 @@ type ListSchoolsParams struct {
 }
 
 type ListSchoolsRow struct {
-	ID       int64  `json:"id"`
+	ID       int32  `json:"id"`
 	Name     string `json:"name"`
 	City     string `json:"city"`
 	Province string `json:"province"`
@@ -182,19 +211,19 @@ func (q *Queries) ListSchools(ctx context.Context, arg ListSchoolsParams) ([]Lis
 
 const listSchoolsByName = `-- name: ListSchoolsByName :many
 SELECT
-  id,
-  name,
-  city,
-  province
-FROM schools
-WHERE $3::text ILIKE ANY(nick_name) OR name ILIKE $4::text
+  S.id,
+  S.name,
+  S.city,
+  S.province
+FROM schools S
+WHERE $3::varchar ILIKE ANY(S.nick_name) OR S.name ILIKE $4::varchar
 ORDER BY
   CASE
-    WHEN $5::varchar = 'name' AND $6::varchar = 'asc' THEN LOWER(name)
+    WHEN $5::varchar = 'name' AND $6::varchar = 'asc' THEN LOWER(S.name)
     ELSE NULL
   END,
   CASE
-    WHEN $5::varchar = 'name' AND $6::varchar = 'desc' THEN LOWER(name)
+    WHEN $5::varchar = 'name' AND $6::varchar = 'desc' THEN LOWER(S.name)
     ELSE NULL
   END DESC
 LIMIT $1
@@ -211,7 +240,7 @@ type ListSchoolsByNameParams struct {
 }
 
 type ListSchoolsByNameRow struct {
-	ID       int64  `json:"id"`
+	ID       int32  `json:"id"`
 	Name     string `json:"name"`
 	City     string `json:"city"`
 	Province string `json:"province"`
@@ -258,9 +287,9 @@ ORDER BY RANDOM()
 LIMIT 1
 `
 
-func (q *Queries) RandomSchoolID(ctx context.Context) (int64, error) {
+func (q *Queries) RandomSchoolID(ctx context.Context) (int32, error) {
 	row := q.db.QueryRowContext(ctx, randomSchoolID)
-	var id int64
+	var id int32
 	err := row.Scan(&id)
 	return id, err
 }
@@ -270,13 +299,13 @@ UPDATE schools
 SET
   status = $1
 WHERE
-  id = $2::bigint
+  id = $2::int
 RETURNING id, name, nick_name, city, province, website, email, status, verified_date
 `
 
 type UpdateSchoolStatusRequestParams struct {
 	Status Statusrequest `json:"status"`
-	ID     int64         `json:"id"`
+	ID     int32         `json:"id"`
 }
 
 func (q *Queries) UpdateSchoolStatusRequest(ctx context.Context, arg UpdateSchoolStatusRequestParams) (School, error) {

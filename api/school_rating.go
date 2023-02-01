@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"strconv"
 
 	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
@@ -64,6 +65,13 @@ func (server *Server) listSchoolRatings(ctx *gin.Context) {
 		return
 	}
 
+	totalCount, err := server.query.CountListSchoolRatings(ctx, reqURI.SchoolID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+		return
+	}
+
+	ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 	ctx.JSON(http.StatusOK, schoolRatings)
 }
 

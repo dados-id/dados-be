@@ -145,8 +145,8 @@ func (server *Server) updateUser(ctx *gin.Context) {
 			Int16: reqJSON.GetExpectedYearOfGraduation(),
 			Valid: reqJSON.ExpectedYearOfGraduation != nil,
 		},
-		SchoolID: sql.NullInt64{
-			Int64: reqJSON.GetSchoolID(),
+		SchoolID: sql.NullInt32{
+			Int32: reqJSON.GetSchoolID(),
 			Valid: reqJSON.SchoolID != nil,
 		},
 	}

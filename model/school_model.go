@@ -10,7 +10,7 @@ type CreateSchoolRequest struct {
 }
 
 type GetSchoolRequest struct {
-	SchoolID int64 `uri:"school_id" binding:"required,min=1"`
+	SchoolID int32 `uri:"school_id" binding:"required,min=1"`
 }
 
 type ListSchoolsQueryRequest struct {

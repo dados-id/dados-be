@@ -21,7 +21,7 @@ INSERT INTO report_forms (
 
 type CreateReportParams struct {
 	Comment           string `json:"comment"`
-	ProfessorRatingID int64  `json:"professorRatingID"`
+	ProfessorRatingID int32  `json:"professorRatingID"`
 	UserID            string `json:"userID"`
 }
 
@@ -87,13 +87,13 @@ UPDATE report_forms
 SET
   status = $1
 WHERE
-  id = $2::bigint
+  id = $2::int
 RETURNING id, comment, status, request_date, verified_date, professor_rating_id, user_id
 `
 
 type UpdateReportParams struct {
 	Status Statusrequest `json:"status"`
-	ID     int64         `json:"id"`
+	ID     int32         `json:"id"`
 }
 
 func (q *Queries) UpdateReport(ctx context.Context, arg UpdateReportParams) (ReportForm, error) {

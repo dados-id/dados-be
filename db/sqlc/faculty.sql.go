@@ -30,7 +30,7 @@ JOIN school_faculty_associations SFA ON SFA.faculty_id = F.id
 WHERE SFA.school_id = $1
 `
 
-func (q *Queries) ListFacultyBySchool(ctx context.Context, schoolID int64) ([]Faculty, error) {
+func (q *Queries) ListFacultyBySchool(ctx context.Context, schoolID int32) ([]Faculty, error) {
 	rows, err := q.db.QueryContext(ctx, listFacultyBySchool, schoolID)
 	if err != nil {
 		return nil, err
@@ -59,9 +59,9 @@ ORDER BY RANDOM()
 LIMIT 1
 `
 
-func (q *Queries) RandomFacultyID(ctx context.Context) (int64, error) {
+func (q *Queries) RandomFacultyID(ctx context.Context) (int32, error) {
 	row := q.db.QueryRowContext(ctx, randomFacultyID)
-	var id int64
+	var id int32
 	err := row.Scan(&id)
 	return id, err
 }

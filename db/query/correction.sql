@@ -18,5 +18,5 @@ UPDATE correction_forms
 SET
   status = @status
 WHERE
-  id = @id::bigint
+  id = @id::int
 RETURNING *;

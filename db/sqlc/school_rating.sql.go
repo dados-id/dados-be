@@ -11,6 +11,18 @@ import (
 	"time"
 )
 
+const countListSchoolRatings = `-- name: CountListSchoolRatings :one
+SELECT COUNT(*)::int FROM school_ratings
+  WHERE school_id = $1
+`
+
+func (q *Queries) CountListSchoolRatings(ctx context.Context, schoolID int32) (int32, error) {
+	row := q.db.QueryRowContext(ctx, countListSchoolRatings, schoolID)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const createSchoolFacultyAssociation = `-- name: CreateSchoolFacultyAssociation :exec
 INSERT INTO school_faculty_associations (
   faculty_id,
@@ -21,8 +33,8 @@ INSERT INTO school_faculty_associations (
 `
 
 type CreateSchoolFacultyAssociationParams struct {
-	FacultyID int64 `json:"facultyID"`
-	SchoolID  int64 `json:"schoolID"`
+	FacultyID int32 `json:"facultyID"`
+	SchoolID  int32 `json:"schoolID"`
 }
 
 func (q *Queries) CreateSchoolFacultyAssociation(ctx context.Context, arg CreateSchoolFacultyAssociationParams) error {
@@ -52,7 +64,7 @@ INSERT INTO school_ratings (
 
 type CreateSchoolRatingParams struct {
 	UserID        string `json:"userID"`
-	SchoolID      int64  `json:"schoolID"`
+	SchoolID      int32  `json:"schoolID"`
 	Reputation    int16  `json:"reputation"`
 	Location      int16  `json:"location"`
 	Opportunities int16  `json:"opportunities"`
@@ -126,16 +138,16 @@ SELECT
   S.name as school_name
 FROM school_ratings SR
   JOIN schools S ON SR.school_id = S.id
-WHERE S.id = $1::bigint AND SR.id = $2::bigint
+WHERE S.id = $1::int AND SR.id = $2::int
 `
 
 type GetSchoolRatingParams struct {
-	SchoolID       int64 `json:"schoolID"`
-	SchoolRatingID int64 `json:"schoolRatingID"`
+	SchoolID       int32 `json:"schoolID"`
+	SchoolRatingID int32 `json:"schoolRatingID"`
 }
 
 type GetSchoolRatingRow struct {
-	ID            int64  `json:"id"`
+	ID            int32  `json:"id"`
 	Reputation    int16  `json:"reputation"`
 	Location      int16  `json:"location"`
 	Opportunities int16  `json:"opportunities"`
@@ -196,13 +208,13 @@ OFFSET $3
 `
 
 type ListSchoolRatingsParams struct {
-	SchoolID int64 `json:"schoolID"`
+	SchoolID int32 `json:"schoolID"`
 	Limit    int32 `json:"limit"`
 	Offset   int32 `json:"offset"`
 }
 
 type ListSchoolRatingsRow struct {
-	ID            int64     `json:"id"`
+	ID            int32     `json:"id"`
 	Reputation    int16     `json:"reputation"`
 	Location      int16     `json:"location"`
 	Opportunities int16     `json:"opportunities"`
@@ -295,8 +307,8 @@ type UpdateSchoolRatingParams struct {
 	Review         sql.NullString `json:"review"`
 	UpVote         sql.NullInt32  `json:"upVote"`
 	DownVote       sql.NullInt32  `json:"downVote"`
-	SchoolRatingID int64          `json:"schoolRatingID"`
-	SchoolID       int64          `json:"schoolID"`
+	SchoolRatingID int32          `json:"schoolRatingID"`
+	SchoolID       int32          `json:"schoolID"`
 }
 
 func (q *Queries) UpdateSchoolRating(ctx context.Context, arg UpdateSchoolRatingParams) (SchoolRating, error) {

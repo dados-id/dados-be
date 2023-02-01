@@ -5,8 +5,8 @@ import db "github.com/dados-id/dados-be/db/sqlc"
 type CreateProfessorRequest struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
-	FacultyID int64  `json:"facultyID"`
-	SchoolID  int64  `json:"schoolID"`
+	FacultyID int32  `json:"facultyID"`
+	SchoolID  int32  `json:"schoolID"`
 }
 
 type UpdateProfessorStatusRequest struct {
@@ -14,7 +14,7 @@ type UpdateProfessorStatusRequest struct {
 }
 
 type GetProfessorRequest struct {
-	ProfessorID int64 `uri:"professor_id" binding:"required,min=1"`
+	ProfessorID int32 `uri:"professor_id" binding:"required,min=1"`
 }
 
 type GetProfessorInfoResponse struct {
@@ -75,7 +75,7 @@ func (x *ListProfessorsQueryBySchoolRequest) GetSortOrder() string {
 }
 
 type ListProfessorsURIBySchoolRequest struct {
-	SchoolID int64 `uri:"school_id" binding:"required,min=1"`
+	SchoolID int32 `uri:"school_id" binding:"required,min=1"`
 }
 
 type ListProfessorsQueryByFacultyRequest struct {
@@ -100,5 +100,5 @@ func (x *ListProfessorsQueryByFacultyRequest) GetSortOrder() string {
 }
 
 type ListProfessorsURIByFacultyRequest struct {
-	FacultyID int64 `uri:"faculty_id" binding:"required,min=1"`
+	FacultyID int32 `uri:"faculty_id" binding:"required,min=1"`
 }

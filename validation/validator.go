@@ -35,14 +35,7 @@ func validateStringNull(value string) error {
 	return nil
 }
 
-func validateIntNull(value int) error {
-	if value == 0 {
-		return fmt.Errorf("must not null value")
-	}
-	return nil
-}
-
-func validateInt64Null(value int64) error {
+func validateInt32Null(value int32) error {
 	if value == 0 {
 		return fmt.Errorf("must not null value")
 	}
@@ -67,10 +60,7 @@ func validateInt(value int, minValue, maxValue int) error {
 	return nil
 }
 
-func validateInt64(value int64, minValue, maxValue int64) error {
-	if err := validateInt64Null(value); err != nil {
-		return err
-	}
+func validateInt32(value int32, minValue, maxValue int32) error {
 	if value < minValue || value > maxValue {
 		return fmt.Errorf("value must between %d to %d", minValue, maxValue)
 	}

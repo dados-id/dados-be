@@ -96,13 +96,13 @@ UPDATE correction_forms
 SET
   status = $1
 WHERE
-  id = $2::bigint
+  id = $2::int
 RETURNING id, problem, correct_info, email, status, request_date, verified_date, user_id
 `
 
 type UpdateCorrectionParams struct {
 	Status Statusrequest `json:"status"`
-	ID     int64         `json:"id"`
+	ID     int32         `json:"id"`
 }
 
 func (q *Queries) UpdateCorrection(ctx context.Context, arg UpdateCorrectionParams) (CorrectionForm, error) {

@@ -1,12 +1,12 @@
 package model
 
 type ProfessorRatingRequest struct {
-	ProfessorID       int64 `uri:"professor_id" binding:"required,min=1"`
-	ProfessorRatingID int64 `uri:"professor_rating_id" binding:"required,min=1"`
+	ProfessorID       int32 `uri:"professor_id" binding:"required,min=1"`
+	ProfessorRatingID int32 `uri:"professor_rating_id" binding:"required,min=1"`
 }
 
 type ListProfessorRatingURIRequest struct {
-	ProfessorID int64 `uri:"professor_id" binding:"required,min=1"`
+	ProfessorID int32 `uri:"professor_id" binding:"required,min=1"`
 }
 
 type ListProfessorRatingQueryRequest struct {
@@ -31,7 +31,7 @@ func (x *ListProfessorRatingQueryRequest) GetRating() int16 {
 }
 
 type CreateProfessorRatingURIRequest struct {
-	ProfessorID int64 `uri:"professor_id" binding:"required,min=1"`
+	ProfessorID int32 `uri:"professor_id" binding:"required,min=1"`
 }
 
 type CreateProfessorRatingJSONRequest struct {
@@ -44,7 +44,7 @@ type CreateProfessorRatingJSONRequest struct {
 	Grade               string   `json:"grade"`
 	Tags                []string `json:"tags"`
 	Review              string   `json:"review"`
-	ProfessorID         int64    `json:"professorId"`
+	ProfessorID         int32    `json:"professorId"`
 	CourseCode          string   `json:"courseCode"`
 }
 
