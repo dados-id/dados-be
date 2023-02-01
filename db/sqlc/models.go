@@ -5,6 +5,7 @@
 package db
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"time"
@@ -61,7 +62,7 @@ type CorrectionForm struct {
 	Status       Statusrequest `json:"status"`
 	RequestDate  time.Time     `json:"requestDate"`
 	VerifiedDate time.Time     `json:"verifiedDate"`
-	UserID       int64         `json:"userID"`
+	UserID       string        `json:"userID"`
 }
 
 type Course struct {
@@ -136,7 +137,7 @@ type ProfessorRating struct {
 	VerifiedDate        time.Time     `json:"verifiedDate"`
 	ProfessorID         int64         `json:"professorID"`
 	CourseCode          string        `json:"courseCode"`
-	UserID              int64         `json:"userID"`
+	UserID              string        `json:"userID"`
 }
 
 type ProfessorRatingTag struct {
@@ -151,7 +152,7 @@ type ReportForm struct {
 	RequestDate       time.Time     `json:"requestDate"`
 	VerifiedDate      time.Time     `json:"verifiedDate"`
 	ProfessorRatingID int64         `json:"professorRatingID"`
-	UserID            int64         `json:"userID"`
+	UserID            string        `json:"userID"`
 }
 
 //
@@ -196,7 +197,7 @@ type SchoolRating struct {
 	EditedAt      time.Time     `json:"editedAt"`
 	Status        Statusrequest `json:"status"`
 	VerifiedDate  time.Time     `json:"verifiedDate"`
-	UserID        int64         `json:"userID"`
+	UserID        string        `json:"userID"`
 	SchoolID      int64         `json:"schoolID"`
 }
 
@@ -205,16 +206,16 @@ type Tag struct {
 }
 
 type User struct {
-	ID                       int64     `json:"id"`
-	FirstName                string    `json:"firstName"`
-	LastName                 string    `json:"lastName"`
-	School                   string    `json:"school"`
-	ExpectedYearOfGraduation int16     `json:"expectedYearOfGraduation"`
-	Email                    string    `json:"email"`
-	CreatedAt                time.Time `json:"createdAt"`
+	ID                       string        `json:"id"`
+	FirstName                string        `json:"firstName"`
+	LastName                 string        `json:"lastName"`
+	ExpectedYearOfGraduation sql.NullInt16 `json:"expectedYearOfGraduation"`
+	Email                    string        `json:"email"`
+	CreatedAt                time.Time     `json:"createdAt"`
+	SchoolID                 sql.NullInt64 `json:"schoolID"`
 }
 
 type UserSaveProfessor struct {
-	ProfessorID int64 `json:"professorID"`
-	UserID      int64 `json:"userID"`
+	ProfessorID int64  `json:"professorID"`
+	UserID      string `json:"userID"`
 }

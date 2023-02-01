@@ -28,6 +28,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
+	userID := tokenInfo.Claims["user_id"].(string)
 	name := tokenInfo.Claims["name"].(string)
 	email := tokenInfo.Claims["email"].(string)
 
@@ -37,14 +38,19 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	lastName := strings.Join(fullName[1:], " ")
 
 	arg := db.CreateUserParams{
-		FirstName:                firstName,
-		LastName:                 lastName,
-		School:                   "",
-		ExpectedYearOfGraduation: 0,
-		Email:                    email,
+		ID:        userID,
+		FirstName: firstName,
+		LastName:  lastName,
+		Email:     email,
 	}
 
-	user, err := server.query.CreateUser(ctx, arg)
+	user, err := server.query.GetUser(ctx, userID)
+	if err == nil {
+		ctx.JSON(http.StatusOK, user)
+		return
+	}
+
+	createdUser, err := server.query.CreateUser(ctx, arg)
 	if err != nil {
 		if errorConstraint, ok := exception.IsUniqueViolation(err); ok {
 			ctx.JSON(http.StatusForbidden, exception.ViolationUniqueConstraint(errorConstraint))
@@ -55,18 +61,13 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, user)
+	ctx.JSON(http.StatusOK, createdUser)
 }
 
 func (server *Server) getUser(ctx *gin.Context) {
-	var reqURI model.GetUserRequest
+	userID := ctx.MustGet(authorizationPayloadKey).(string)
 
-	if err := ctx.ShouldBindUri(&reqURI); err != nil {
-		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
-		return
-	}
-
-	user, err := server.query.GetUser(ctx, reqURI.ID)
+	user, err := server.query.GetUser(ctx, userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, exception.ErrorResponse(err))
@@ -95,11 +96,9 @@ func (server *Server) createUser(ctx *gin.Context) {
 	}
 
 	arg := db.CreateUserParams{
-		FirstName:                reqJSON.FirstName,
-		LastName:                 reqJSON.LastName,
-		School:                   reqJSON.School,
-		ExpectedYearOfGraduation: reqJSON.ExpectedYearOfGraduation,
-		Email:                    reqJSON.Email,
+		FirstName: reqJSON.FirstName,
+		LastName:  reqJSON.LastName,
+		Email:     reqJSON.Email,
 	}
 
 	user, err := server.query.CreateUser(ctx, arg)
@@ -117,13 +116,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 }
 
 func (server *Server) updateUser(ctx *gin.Context) {
-	var reqURI model.UpdateUserURIRequest
 	var reqJSON model.UpdateUserJSONRequest
-
-	if err := ctx.ShouldBindUri(&reqURI); err != nil {
-		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
-		return
-	}
 
 	if err := ctx.ShouldBindJSON(&reqJSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
@@ -136,8 +129,10 @@ func (server *Server) updateUser(ctx *gin.Context) {
 		return
 	}
 
+	userID := ctx.MustGet(authorizationPayloadKey).(string)
+
 	arg := db.UpdateUserParams{
-		ID: reqURI.ID,
+		ID: userID,
 		FirstName: sql.NullString{
 			String: reqJSON.GetFirstName(),
 			Valid:  reqJSON.FirstName != nil,
@@ -146,13 +141,13 @@ func (server *Server) updateUser(ctx *gin.Context) {
 			String: reqJSON.GetLastName(),
 			Valid:  reqJSON.LastName != nil,
 		},
-		School: sql.NullString{
-			String: reqJSON.GetSchool(),
-			Valid:  reqJSON.School != nil,
-		},
 		ExpectedYearOfGraduation: sql.NullInt16{
 			Int16: reqJSON.GetExpectedYearOfGraduation(),
 			Valid: reqJSON.ExpectedYearOfGraduation != nil,
+		},
+		SchoolID: sql.NullInt64{
+			Int64: reqJSON.GetSchoolID(),
+			Valid: reqJSON.SchoolID != nil,
 		},
 	}
 
@@ -166,21 +161,17 @@ func (server *Server) updateUser(ctx *gin.Context) {
 }
 
 func (server *Server) userListProfessorRatings(ctx *gin.Context) {
-	var reqURI model.UserListURIRequest
 	var reqQueryParams model.UserListQueryRequest
-
-	if err := ctx.ShouldBindUri(&reqURI); err != nil {
-		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
-		return
-	}
 
 	if err := ctx.ShouldBindQuery(&reqQueryParams); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
+	userID := ctx.MustGet(authorizationPayloadKey).(string)
+
 	arg := db.UserListProfessorRatingsParams{
-		UserID: reqURI.UserID,
+		UserID: userID,
 		Limit:  reqQueryParams.PageSize,
 		Offset: (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
 	}
@@ -195,21 +186,17 @@ func (server *Server) userListProfessorRatings(ctx *gin.Context) {
 }
 
 func (server *Server) userListSchoolRatings(ctx *gin.Context) {
-	var reqURI model.UserListURIRequest
 	var reqQueryParams model.UserListQueryRequest
-
-	if err := ctx.ShouldBindUri(&reqURI); err != nil {
-		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
-		return
-	}
 
 	if err := ctx.ShouldBindQuery(&reqQueryParams); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
+	userID := ctx.MustGet(authorizationPayloadKey).(string)
+
 	arg := db.UserListSchoolRatingsParams{
-		UserID: reqURI.UserID,
+		UserID: userID,
 		Limit:  reqQueryParams.PageSize,
 		Offset: (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
 	}
@@ -224,21 +211,17 @@ func (server *Server) userListSchoolRatings(ctx *gin.Context) {
 }
 
 func (server *Server) userListSavedProfessors(ctx *gin.Context) {
-	var reqURI model.UserListURIRequest
 	var reqQueryParams model.UserListQueryRequest
-
-	if err := ctx.ShouldBindUri(&reqURI); err != nil {
-		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
-		return
-	}
 
 	if err := ctx.ShouldBindQuery(&reqQueryParams); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
 		return
 	}
 
+	userID := ctx.MustGet(authorizationPayloadKey).(string)
+
 	arg := db.UserListSavedProfessorsParams{
-		UserID: reqURI.UserID,
+		UserID: userID,
 		Limit:  reqQueryParams.PageSize,
 		Offset: (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
 	}
@@ -259,8 +242,10 @@ func (server *Server) saveProfessor(ctx *gin.Context) {
 		return
 	}
 
+	userID := ctx.MustGet(authorizationPayloadKey).(string)
+
 	arg := db.SaveProfessorParams{
-		UserID:      reqURI.UserID,
+		UserID:      userID,
 		ProfessorID: reqURI.ProfessorID,
 	}
 
@@ -284,8 +269,10 @@ func (server *Server) unsaveProfessor(ctx *gin.Context) {
 		return
 	}
 
+	userID := ctx.MustGet(authorizationPayloadKey).(string)
+
 	arg := db.UnsaveProfessorParams{
-		UserID:      reqURI.UserID,
+		UserID:      userID,
 		ProfessorID: reqURI.ProfessorID,
 	}
 

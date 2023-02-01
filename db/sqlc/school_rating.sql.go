@@ -51,7 +51,7 @@ INSERT INTO school_ratings (
 `
 
 type CreateSchoolRatingParams struct {
-	UserID        int64  `json:"userID"`
+	UserID        string `json:"userID"`
 	SchoolID      int64  `json:"schoolID"`
 	Reputation    int16  `json:"reputation"`
 	Location      int16  `json:"location"`

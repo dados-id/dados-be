@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) getProfessorInfoAggregate(ctx *gin.Context) {
+func (server *Server) getProfessorInfo(ctx *gin.Context) {
 	var reqURI model.GetProfessorRequest
 
 	if err := ctx.ShouldBindUri(&reqURI); err != nil {
@@ -19,43 +19,40 @@ func (server *Server) getProfessorInfoAggregate(ctx *gin.Context) {
 		return
 	}
 
-	listTop5Tags, err := server.query.ListTop5Tags(ctx, reqURI.ProfessorID)
+	listTopTags, err := server.query.ListTopTags(ctx, reqURI.ProfessorID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, exception.ErrorResponse(err))
 			return
 		}
 
+		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+		return
+	}
+
+	listTopCoursesTaught, err := server.query.ListTopCoursesTaught(ctx, reqURI.ProfessorID)
+	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
 	courses, err := server.query.ListCoursesByProfessorId(ctx, reqURI.ProfessorID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, exception.ErrorResponse(err))
-			return
-		}
-
 		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
-	professorInfo, err := server.query.GetProfessorInfoAggregate(ctx, reqURI.ProfessorID)
+	professorInfo, err := server.query.GetProfessorInfo(ctx, reqURI.ProfessorID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, exception.ErrorResponse(err))
-			return
-		}
-
 		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
 	rsp := model.GetProfessorInfoResponse{
-		GetProfessorInfoAggregateRow: professorInfo,
-		Top5Tags:                     listTop5Tags,
-		Courses:                      courses,
+		GetProfessorInfoRow: professorInfo,
+		TopTags:             listTopTags,
+		TopCoursesTaught:    listTopCoursesTaught,
+		Courses:             courses,
 	}
 
 	ctx.JSON(http.StatusOK, rsp)
@@ -104,8 +101,17 @@ func (server *Server) listProfessors(ctx *gin.Context) {
 		return
 	}
 
+	// Search By Specific Name
 	if reqQueryParams.Name != nil {
-		professors, err := server.query.SearchProfessorsByName(ctx, "%"+reqQueryParams.GetName()+"%")
+		arg := db.ListProfessorsByNameParams{
+			Limit:     reqQueryParams.PageSize,
+			Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+			Name:      "%" + reqQueryParams.GetName() + "%",
+			SortBy:    reqQueryParams.GetSortBy(),
+			SortOrder: reqQueryParams.GetSortOrder(),
+		}
+
+		professors, err := server.query.ListProfessorsByName(ctx, arg)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 			return
@@ -116,8 +122,10 @@ func (server *Server) listProfessors(ctx *gin.Context) {
 	}
 
 	arg := db.ListProfessorsParams{
-		Limit:  reqQueryParams.PageSize,
-		Offset: (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+		Limit:     reqQueryParams.PageSize,
+		Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+		SortBy:    reqQueryParams.GetSortBy(),
+		SortOrder: reqQueryParams.GetSortOrder(),
 	}
 
 	professors, err := server.query.ListProfessors(ctx, arg)
@@ -144,9 +152,11 @@ func (server *Server) listProfessorsBySchool(ctx *gin.Context) {
 	}
 
 	arg := db.ListProfessorsBySchoolParams{
-		SchoolID: reqURI.SchoolID,
-		Limit:    reqQueryParams.PageSize,
-		Offset:   (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+		SchoolID:  reqURI.SchoolID,
+		Limit:     reqQueryParams.PageSize,
+		Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+		SortBy:    reqQueryParams.GetSortBy(),
+		SortOrder: reqQueryParams.GetSortOrder(),
 	}
 
 	professors, err := server.query.ListProfessorsBySchool(ctx, arg)
@@ -176,6 +186,8 @@ func (server *Server) listProfessorsByFaculty(ctx *gin.Context) {
 		FacultyID: reqURI.FacultyID,
 		Limit:     reqQueryParams.PageSize,
 		Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+		SortBy:    reqQueryParams.GetSortBy(),
+		SortOrder: reqQueryParams.GetSortOrder(),
 	}
 
 	professors, err := server.query.ListProfessorsByFaculty(ctx, arg)

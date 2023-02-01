@@ -1,26 +1,21 @@
 package util
 
 import (
-	"fmt"
+	"database/sql"
 
 	db "github.com/dados-id/dados-be/db/sqlc"
 )
 
-func GetValidUser() (user db.User) {
+func GetValidUser(randomSchoolID int64) (user db.User) {
 	user = db.User{
-		ID:                       RandomInt(1, 1000),
+		ID:                       RandomString(28),
 		FirstName:                randomName(),
 		LastName:                 randomName(),
-		School:                   randomSchool(),
-		ExpectedYearOfGraduation: int16(randomExpectedYearOfGraduation()),
+		ExpectedYearOfGraduation: sql.NullInt16{Int16: int16(randomExpectedYearOfGraduation()), Valid: true},
 		Email:                    randomEmail(),
+		SchoolID:                 sql.NullInt64{Int64: randomSchoolID, Valid: true},
 	}
 	return
-}
-
-// randomSchool generates a random school of user
-func randomSchool() string {
-	return fmt.Sprintf("univesity of %s", RandomString(20))
 }
 
 // randomExpectedYearOfGraduation generates a random ExpectedYearOfGraduation of transaction

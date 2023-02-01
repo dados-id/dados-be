@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) getSchoolInfoAggregate(ctx *gin.Context) {
+func (server *Server) getSchoolInfo(ctx *gin.Context) {
 	var reqURI model.GetSchoolRequest
 
 	if err := ctx.ShouldBindUri(&reqURI); err != nil {
@@ -19,7 +19,7 @@ func (server *Server) getSchoolInfoAggregate(ctx *gin.Context) {
 		return
 	}
 
-	schoolInfo, err := server.query.GetSchoolInfoAggregate(ctx, reqURI.SchoolID)
+	schoolInfo, err := server.query.GetSchoolInfo(ctx, reqURI.SchoolID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, exception.ErrorResponse(err))
@@ -41,14 +41,18 @@ func (server *Server) listSchools(ctx *gin.Context) {
 		return
 	}
 
-	// Search By Name
+	// Search By Specific Name
 	if reqQueryParams.Name != nil {
-		arg := db.SearchSchoolsByNameOrNickNameParams{
-			NameArr: reqQueryParams.GetName(),
-			Name:    "%" + reqQueryParams.GetName() + "%",
+		arg := db.ListSchoolsByNameParams{
+			Limit:     reqQueryParams.PageSize,
+			Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+			NickName:  reqQueryParams.GetName(),
+			Name:      "%" + reqQueryParams.GetName() + "%",
+			SortBy:    reqQueryParams.GetSortBy(),
+			SortOrder: reqQueryParams.GetSortOrder(),
 		}
 
-		schools, err := server.query.SearchSchoolsByNameOrNickName(ctx, arg)
+		schools, err := server.query.ListSchoolsByName(ctx, arg)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 			return
@@ -59,8 +63,10 @@ func (server *Server) listSchools(ctx *gin.Context) {
 	}
 
 	arg := db.ListSchoolsParams{
-		Limit:  reqQueryParams.PageSize,
-		Offset: (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+		Limit:     reqQueryParams.PageSize,
+		Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+		SortBy:    reqQueryParams.GetSortBy(),
+		SortOrder: reqQueryParams.GetSortOrder(),
 	}
 
 	schools, err := server.query.ListSchools(ctx, arg)

@@ -19,13 +19,15 @@ func main() {
 	var wg sync.WaitGroup
 
 	NDATA := 500
-	for i := 1; i <= 5; i++ {
+	GOROUTINE := 5
+
+	for i := 1; i <= GOROUTINE; i++ {
 		wg.Add(1)
 		go createFaculty(NDATA, *queries, &wg)
 	}
 	wg.Wait()
 
-	fmt.Printf("Successfully added %d data Faculty to database\n", NDATA)
+	fmt.Printf("Successfully added %d data Faculty to database\n", NDATA*GOROUTINE)
 }
 
 func createFaculty(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {

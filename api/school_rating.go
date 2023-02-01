@@ -87,8 +87,10 @@ func (server *Server) createSchoolRating(ctx *gin.Context) {
 		return
 	}
 
+	userID := ctx.MustGet(authorizationPayloadKey).(string)
+
 	arg := db.CreateSchoolRatingParams{
-		UserID:        reqJSON.UserID,
+		UserID:        userID,
 		SchoolID:      reqURI.SchoolID,
 		Reputation:    reqJSON.Reputation,
 		Location:      reqJSON.Location,

@@ -4,10 +4,10 @@ import (
 	db "github.com/dados-id/dados-be/db/sqlc"
 )
 
-func GetValidSchoolRating(totalRowUser, totalRowSchool int64) (SchoolRating db.SchoolRating) {
+func GetValidSchoolRating(randomUserID string, randomSchoolID int64) (SchoolRating db.SchoolRating) {
 	SchoolRating = db.SchoolRating{
-		UserID:        RandomInt(1, totalRowUser),
-		SchoolID:      RandomInt(1, totalRowSchool),
+		UserID:        randomUserID,
+		SchoolID:      randomSchoolID,
 		Reputation:    int16(RandomInt(1, 5)),
 		Location:      int16(RandomInt(1, 5)),
 		Opportunities: int16(RandomInt(1, 5)),

@@ -13,76 +13,97 @@ import (
 	"github.com/lib/pq"
 )
 
-const countUser = `-- name: CountUser :one
-SELECT COUNT(*) FROM users
-`
-
-func (q *Queries) CountUser(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countUser)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
+  id,
   first_name,
   last_name,
-  school,
   expected_year_of_graduation,
-  email
+  email,
+  school_id
 ) VALUES (
-  $1, $2, $3, $4, $5
-) RETURNING id, first_name, last_name, school, expected_year_of_graduation, email, created_at
+  $1, $2, $3, $4, $5, $6
+) RETURNING id, first_name, last_name, expected_year_of_graduation, email, created_at, school_id
 `
 
 type CreateUserParams struct {
-	FirstName                string `json:"firstName"`
-	LastName                 string `json:"lastName"`
-	School                   string `json:"school"`
-	ExpectedYearOfGraduation int16  `json:"expectedYearOfGraduation"`
-	Email                    string `json:"email"`
+	ID                       string        `json:"id"`
+	FirstName                string        `json:"firstName"`
+	LastName                 string        `json:"lastName"`
+	ExpectedYearOfGraduation sql.NullInt16 `json:"expectedYearOfGraduation"`
+	Email                    string        `json:"email"`
+	SchoolID                 sql.NullInt64 `json:"schoolID"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
+		arg.ID,
 		arg.FirstName,
 		arg.LastName,
-		arg.School,
 		arg.ExpectedYearOfGraduation,
 		arg.Email,
+		arg.SchoolID,
 	)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.FirstName,
 		&i.LastName,
-		&i.School,
 		&i.ExpectedYearOfGraduation,
 		&i.Email,
 		&i.CreatedAt,
+		&i.SchoolID,
 	)
 	return i, err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, first_name, last_name, school, expected_year_of_graduation, email, created_at FROM users
-WHERE id = $1
+SELECT
+  U.id,
+  U.first_name,
+  U.last_name,
+  U.expected_year_of_graduation,
+  U.email,
+  S.name
+FROM users U
+  JOIN schools S ON S.id = U.school_id
+WHERE U.id = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
+type GetUserRow struct {
+	ID                       string        `json:"id"`
+	FirstName                string        `json:"firstName"`
+	LastName                 string        `json:"lastName"`
+	ExpectedYearOfGraduation sql.NullInt16 `json:"expectedYearOfGraduation"`
+	Email                    string        `json:"email"`
+	Name                     string        `json:"name"`
+}
+
+func (q *Queries) GetUser(ctx context.Context, id string) (GetUserRow, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
-	var i User
+	var i GetUserRow
 	err := row.Scan(
 		&i.ID,
 		&i.FirstName,
 		&i.LastName,
-		&i.School,
 		&i.ExpectedYearOfGraduation,
 		&i.Email,
-		&i.CreatedAt,
+		&i.Name,
 	)
 	return i, err
+}
+
+const randomUserID = `-- name: RandomUserID :one
+SELECT id FROM users
+ORDER BY RANDOM()
+LIMIT 1
+`
+
+func (q *Queries) RandomUserID(ctx context.Context) (string, error) {
+	row := q.db.QueryRowContext(ctx, randomUserID)
+	var id string
+	err := row.Scan(&id)
+	return id, err
 }
 
 const saveProfessor = `-- name: SaveProfessor :exec
@@ -95,8 +116,8 @@ INSERT INTO user_save_professors (
 `
 
 type SaveProfessorParams struct {
-	ProfessorID int64 `json:"professorID"`
-	UserID      int64 `json:"userID"`
+	ProfessorID int64  `json:"professorID"`
+	UserID      string `json:"userID"`
 }
 
 func (q *Queries) SaveProfessor(ctx context.Context, arg SaveProfessorParams) error {
@@ -113,8 +134,8 @@ AND
 `
 
 type UnsaveProfessorParams struct {
-	ProfessorID int64 `json:"professorID"`
-	UserID      int64 `json:"userID"`
+	ProfessorID int64  `json:"professorID"`
+	UserID      string `json:"userID"`
 }
 
 func (q *Queries) UnsaveProfessor(ctx context.Context, arg UnsaveProfessorParams) error {
@@ -127,26 +148,26 @@ UPDATE users
 SET
   first_name = COALESCE($1, first_name),
   last_name = COALESCE($2, last_name),
-  school = COALESCE($3, school),
+  school_id = COALESCE($3, school_id),
   expected_year_of_graduation = COALESCE($4, expected_year_of_graduation)
 WHERE
   id = $5
-RETURNING id, first_name, last_name, school, expected_year_of_graduation, email, created_at
+RETURNING id, first_name, last_name, expected_year_of_graduation, email, created_at, school_id
 `
 
 type UpdateUserParams struct {
 	FirstName                sql.NullString `json:"firstName"`
 	LastName                 sql.NullString `json:"lastName"`
-	School                   sql.NullString `json:"school"`
+	SchoolID                 sql.NullInt64  `json:"schoolID"`
 	ExpectedYearOfGraduation sql.NullInt16  `json:"expectedYearOfGraduation"`
-	ID                       int64          `json:"id"`
+	ID                       string         `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, updateUser,
 		arg.FirstName,
 		arg.LastName,
-		arg.School,
+		arg.SchoolID,
 		arg.ExpectedYearOfGraduation,
 		arg.ID,
 	)
@@ -155,10 +176,10 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.ID,
 		&i.FirstName,
 		&i.LastName,
-		&i.School,
 		&i.ExpectedYearOfGraduation,
 		&i.Email,
 		&i.CreatedAt,
+		&i.SchoolID,
 	)
 	return i, err
 }
@@ -194,9 +215,9 @@ OFFSET $3
 `
 
 type UserListProfessorRatingsParams struct {
-	UserID int64 `json:"userID"`
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	UserID string `json:"userID"`
+	Limit  int32  `json:"limit"`
+	Offset int32  `json:"offset"`
 }
 
 type UserListProfessorRatingsRow struct {
@@ -262,9 +283,6 @@ SELECT
   P.first_name,
   P.last_name,
   P.rating,
-  P.total_review,
-  P.would_take_again,
-  P.level_of_difficulty,
   F.name as faculty_name,
   S.name as school_name
 FROM user_save_professors USP
@@ -278,21 +296,18 @@ OFFSET $3
 `
 
 type UserListSavedProfessorsParams struct {
-	UserID int64 `json:"userID"`
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	UserID string `json:"userID"`
+	Limit  int32  `json:"limit"`
+	Offset int32  `json:"offset"`
 }
 
 type UserListSavedProfessorsRow struct {
-	ID                int64  `json:"id"`
-	FirstName         string `json:"firstName"`
-	LastName          string `json:"lastName"`
-	Rating            string `json:"rating"`
-	TotalReview       int32  `json:"totalReview"`
-	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
-	LevelOfDifficulty string `json:"levelOfDifficulty"`
-	FacultyName       string `json:"facultyName"`
-	SchoolName        string `json:"schoolName"`
+	ID          int64  `json:"id"`
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	Rating      string `json:"rating"`
+	FacultyName string `json:"facultyName"`
+	SchoolName  string `json:"schoolName"`
 }
 
 func (q *Queries) UserListSavedProfessors(ctx context.Context, arg UserListSavedProfessorsParams) ([]UserListSavedProfessorsRow, error) {
@@ -309,9 +324,6 @@ func (q *Queries) UserListSavedProfessors(ctx context.Context, arg UserListSaved
 			&i.FirstName,
 			&i.LastName,
 			&i.Rating,
-			&i.TotalReview,
-			&i.WouldTakeAgain,
-			&i.LevelOfDifficulty,
 			&i.FacultyName,
 			&i.SchoolName,
 		); err != nil {
@@ -354,9 +366,9 @@ OFFSET $3
 `
 
 type UserListSchoolRatingsParams struct {
-	UserID int64 `json:"userID"`
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	UserID string `json:"userID"`
+	Limit  int32  `json:"limit"`
+	Offset int32  `json:"offset"`
 }
 
 type UserListSchoolRatingsRow struct {

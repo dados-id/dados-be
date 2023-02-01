@@ -46,7 +46,7 @@ func RandomBool() bool {
 	return RandomInt(0, 1) == 1
 }
 
-// randomName generates a random firstname or lastname of school
+// randomName generates a random name
 func randomName() string {
 	return RandomString(15)
 }

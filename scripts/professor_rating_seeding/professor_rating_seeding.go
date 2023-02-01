@@ -17,33 +17,36 @@ func main() {
 	database := config.NewPostgres(configuration.DBDriver, configuration.DBSource)
 	queries := sqlc.New(database)
 
-	totalRowUser, err := queries.CountUser(context.Background())
-	exception.FatalIfNeeded(err, "Error Get Count User")
-
-	totalRowProfessor, err := queries.CountProfessor(context.Background())
-	exception.FatalIfNeeded(err, "Error Get Count Professor")
-
-	randomCourseCode, err := queries.RandomCourseCode(context.Background())
-	exception.FatalIfNeeded(err, "Error Get Random Course Code")
-
 	var wg sync.WaitGroup
 
 	NDATA := 500
-	for i := 1; i <= 5; i++ {
+	GOROUTINE := 5
+
+	for i := 1; i <= GOROUTINE; i++ {
 		wg.Add(1)
-		go createProfessorRating(NDATA, *queries, &wg, totalRowUser, totalRowProfessor, randomCourseCode)
+		go createProfessorRating(NDATA, *queries, &wg)
 	}
 	wg.Wait()
 
-	fmt.Printf("Successfully added %d data ProfessorRating to database\n", NDATA)
+	fmt.Printf("Successfully added %d data ProfessorRating to database\n", NDATA*GOROUTINE)
 }
 
-func createProfessorRating(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup, totalRowUser, totalRowProfessor int64, courseCode string) {
+func createProfessorRating(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for i := 1; i <= NDATA; i++ {
 		ctx := context.Background()
-		professorRating := util.GetValidProfessorRating(totalRowUser, totalRowProfessor, courseCode)
+
+		randomUserID, err := queries.RandomUserID(context.Background())
+		exception.FatalIfNeeded(err, "Error Get Count User")
+
+		randomProfessorID, err := queries.RandomProfessorID(context.Background())
+		exception.FatalIfNeeded(err, "Error Get Count Professor")
+
+		randomCourseCode, err := queries.RandomCourseCode(context.Background())
+		exception.FatalIfNeeded(err, "Error Get Random Course Code")
+
+		professorRating := util.GetValidProfessorRating(randomUserID, randomProfessorID, randomCourseCode)
 
 		arg := sqlc.CreateProfessorRatingParams{
 			Quality:             professorRating.Quality,

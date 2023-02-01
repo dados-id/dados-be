@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"sync"
 
 	"github.com/dados-id/dados-be/config"
 	sqlc "github.com/dados-id/dados-be/db/sqlc"
+	"github.com/dados-id/dados-be/exception"
 	"github.com/dados-id/dados-be/util"
 	_ "github.com/lib/pq"
 )
@@ -19,28 +21,36 @@ func main() {
 	var wg sync.WaitGroup
 
 	NDATA := 500
-	for i := 1; i <= 5; i++ {
+	GOROUTINE := 5
+
+	for i := 1; i <= GOROUTINE; i++ {
 		wg.Add(1)
 		go createUser(NDATA, *queries, &wg)
 	}
 	wg.Wait()
 
-	fmt.Printf("Successfully added %d data User to database\n", NDATA)
+	fmt.Printf("Successfully added %d data User to database\n", NDATA*GOROUTINE)
 }
 
 func createUser(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for i := 1; i <= NDATA; i++ {
-		user := util.GetValidUser()
+		randomSchoolID, err := queries.RandomSchoolID(context.Background())
+		exception.FatalIfNeeded(err, "Error Count School")
+
+		user := util.GetValidUser(randomSchoolID)
+
 		arg := sqlc.CreateUserParams{
+			ID:                       user.ID,
 			FirstName:                user.FirstName,
 			LastName:                 user.LastName,
-			School:                   user.School,
 			ExpectedYearOfGraduation: user.ExpectedYearOfGraduation,
 			Email:                    user.Email,
+			SchoolID:                 sql.NullInt64{Int64: randomSchoolID, Valid: true},
 		}
-		_, err := queries.CreateUser(context.Background(), arg)
+
+		_, err = queries.CreateUser(context.Background(), arg)
 		if err != nil {
 			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
 			continue

@@ -9,17 +9,6 @@ import (
 	"context"
 )
 
-const countFaculty = `-- name: CountFaculty :one
-SELECT COUNT(*) FROM faculties
-`
-
-func (q *Queries) CountFaculty(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countFaculty)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
 const createFaculty = `-- name: CreateFaculty :one
 INSERT INTO faculties (
   name
@@ -33,4 +22,46 @@ func (q *Queries) CreateFaculty(ctx context.Context, name string) (Faculty, erro
 	var i Faculty
 	err := row.Scan(&i.ID, &i.Name)
 	return i, err
+}
+
+const listFacultyBySchool = `-- name: ListFacultyBySchool :many
+SELECT f.id, f.name FROM faculties F
+JOIN school_faculty_associations SFA ON SFA.faculty_id = F.id
+WHERE SFA.school_id = $1
+`
+
+func (q *Queries) ListFacultyBySchool(ctx context.Context, schoolID int64) ([]Faculty, error) {
+	rows, err := q.db.QueryContext(ctx, listFacultyBySchool, schoolID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Faculty{}
+	for rows.Next() {
+		var i Faculty
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const randomFacultyID = `-- name: RandomFacultyID :one
+SELECT id FROM faculties
+ORDER BY RANDOM()
+LIMIT 1
+`
+
+func (q *Queries) RandomFacultyID(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, randomFacultyID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }

@@ -6,8 +6,8 @@ import (
 	db "github.com/dados-id/dados-be/db/sqlc"
 )
 
-func GetValidSchool() (School db.School) {
-	School = db.School{
+func GetValidSchool() (school db.School) {
+	school = db.School{
 		Name:     randomName(),
 		NickName: []string{randomName(), randomName(), randomName()},
 		City:     randomName(),

@@ -127,6 +127,8 @@ func (server *Server) createProfessorRating(ctx *gin.Context) {
 		return
 	}
 
+	userID := ctx.MustGet(authorizationPayloadKey).(string)
+
 	arg := db.CreateProfessorRatingParams{
 		Quality:             reqJSON.Quality,
 		Difficult:           reqJSON.Difficult,
@@ -137,7 +139,7 @@ func (server *Server) createProfessorRating(ctx *gin.Context) {
 		Grade:               reqJSON.Grade,
 		Review:              reqJSON.Review,
 		CourseCode:          reqJSON.CourseCode,
-		UserID:              reqJSON.UserID,
+		UserID:              userID,
 		ProfessorID:         reqURI.ProfessorID,
 	}
 

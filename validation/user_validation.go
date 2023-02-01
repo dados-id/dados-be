@@ -1,8 +1,6 @@
 package validation
 
 import (
-	"fmt"
-
 	"github.com/dados-id/dados-be/model"
 )
 
@@ -21,6 +19,10 @@ func ValidateCreateUserRequest(req *model.CreateUserRequest) (violations []BadRe
 
 	if err := validateEmail(req.Email); err != nil {
 		violations = append(violations, fieldViolation("email", err))
+	}
+
+	if err := validateSchool(req.SchoolID); err != nil {
+		violations = append(violations, fieldViolation("school", err))
 	}
 
 	return violations
@@ -45,8 +47,8 @@ func ValidateUpdateUserRequest(req *model.UpdateUserJSONRequest) (violations []B
 		}
 	}
 
-	if req.School != nil {
-		if err := validateSchool(req.GetSchool()); err != nil {
+	if req.SchoolID != nil {
+		if err := validateSchool(req.GetSchoolID()); err != nil {
 			violations = append(violations, fieldViolation("school", err))
 		}
 	}
@@ -65,12 +67,10 @@ func validateExpectedYearOfGraduation(value int) error {
 	return validateInt(value, 2023, 9999)
 }
 
-func validateSchool(value string) error {
-	if err := validateString(value, 1, 64); err != nil {
+func validateSchool(value int64) error {
+	if err := validateInt64Null(value); err != nil {
 		return err
 	}
-	if !isValidSchool(value) {
-		return fmt.Errorf("must contain only letters or spaces")
-	}
+
 	return nil
 }

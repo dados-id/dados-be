@@ -41,12 +41,15 @@ func authMiddleware(firebaseClient auth.Client) gin.HandlerFunc {
 		}
 
 		accessToken := fields[1]
-		_, err := firebaseClient.VerifyIDToken(ctx, accessToken)
+		tokenInfo, err := firebaseClient.VerifyIDToken(ctx, accessToken)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, exception.ErrorResponse(err))
 			return
 		}
 
+		userID := tokenInfo.Claims["user_id"].(string)
+
+		ctx.Set(authorizationPayloadKey, userID)
 		ctx.Next()
 	}
 }

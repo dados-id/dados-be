@@ -7,19 +7,19 @@ type LoginUserRequest struct {
 type CreateUserRequest struct {
 	FirstName                string `json:"firstName"`
 	LastName                 string `json:"lastName"`
-	School                   string `json:"school"`
 	ExpectedYearOfGraduation int16  `json:"expectedYearOfGraduation"`
 	Email                    string `json:"email"`
+	SchoolID                 int64  `json:"schoolId"`
 }
 
 type GetUserRequest struct {
-	ID int64 `uri:"id" binding:"required,min=1"`
+	ID string `uri:"id" binding:"required,min=1"`
 }
 
 type UpdateUserJSONRequest struct {
 	FirstName                *string `json:"firstName"`
 	LastName                 *string `json:"lastName"`
-	School                   *string `json:"school"`
+	SchoolID                 *int64  `json:"schoolId"`
 	ExpectedYearOfGraduation *int16  `json:"expectedYearOfGraduation"`
 }
 
@@ -37,11 +37,11 @@ func (x *UpdateUserJSONRequest) GetLastName() string {
 	return ""
 }
 
-func (x *UpdateUserJSONRequest) GetSchool() string {
-	if x != nil && x.School != nil {
-		return *x.School
+func (x *UpdateUserJSONRequest) GetSchoolID() int64 {
+	if x != nil && x.SchoolID != nil {
+		return *x.SchoolID
 	}
-	return ""
+	return 0
 }
 
 func (x *UpdateUserJSONRequest) GetExpectedYearOfGraduation() int16 {
@@ -51,25 +51,15 @@ func (x *UpdateUserJSONRequest) GetExpectedYearOfGraduation() int16 {
 	return 0
 }
 
-type UpdateUserURIRequest struct {
-	ID int64 `uri:"id" binding:"required,min=1"`
-}
-
-type UserListURIRequest struct {
-	UserID int64 `uri:"id" binding:"required,min=1"`
-}
-
 type UserListQueryRequest struct {
 	PageID   int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
 type UnsaveProfessorURIRequest struct {
-	UserID      int64 `uri:"user_id" binding:"required,min=1"`
 	ProfessorID int64 `uri:"professor_id" binding:"required,min=1"`
 }
 
 type SaveProfessorURIRequest struct {
-	UserID      int64 `uri:"user_id" binding:"required,min=1"`
 	ProfessorID int64 `uri:"professor_id" binding:"required,min=1"`
 }

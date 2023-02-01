@@ -11,17 +11,6 @@ import (
 	"github.com/lib/pq"
 )
 
-const countSchool = `-- name: CountSchool :one
-SELECT COUNT(*) FROM schools
-`
-
-func (q *Queries) CountSchool(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countSchool)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
 const createSchool = `-- name: CreateSchool :one
 INSERT INTO schools (
   name,
@@ -68,7 +57,7 @@ func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (Sch
 	return i, err
 }
 
-const getSchoolInfoAggregate = `-- name: GetSchoolInfoAggregate :one
+const getSchoolInfo = `-- name: GetSchoolInfo :one
 SELECT
   S.name,
   COALESCE(ROUND(AVG(SR.reputation), 1), 0.0)::text as reputation,
@@ -89,7 +78,7 @@ WHERE
 GROUP BY S.id
 `
 
-type GetSchoolInfoAggregateRow struct {
+type GetSchoolInfoRow struct {
 	Name          string `json:"name"`
 	Reputation    string `json:"reputation"`
 	Location      string `json:"location"`
@@ -104,9 +93,9 @@ type GetSchoolInfoAggregateRow struct {
 	OverallRating string `json:"overallRating"`
 }
 
-func (q *Queries) GetSchoolInfoAggregate(ctx context.Context, id int64) (GetSchoolInfoAggregateRow, error) {
-	row := q.db.QueryRowContext(ctx, getSchoolInfoAggregate, id)
-	var i GetSchoolInfoAggregateRow
+func (q *Queries) GetSchoolInfo(ctx context.Context, id int64) (GetSchoolInfoRow, error) {
+	row := q.db.QueryRowContext(ctx, getSchoolInfo, id)
+	var i GetSchoolInfoRow
 	err := row.Scan(
 		&i.Name,
 		&i.Reputation,
@@ -127,24 +116,44 @@ func (q *Queries) GetSchoolInfoAggregate(ctx context.Context, id int64) (GetScho
 const listSchools = `-- name: ListSchools :many
 SELECT
   S.id,
-  S.name
+  S.name,
+  S.city,
+  S.province
 FROM schools S
+ORDER BY
+  CASE
+    WHEN $3::varchar = 'name' AND $4::varchar = 'asc' THEN LOWER(S.name)
+    ELSE NULL
+  END,
+  CASE
+    WHEN $3::varchar = 'name' AND $4::varchar = 'desc' THEN LOWER(S.name)
+    ELSE NULL
+  END DESC
 LIMIT $1
 OFFSET $2
 `
 
 type ListSchoolsParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit     int32  `json:"limit"`
+	Offset    int32  `json:"offset"`
+	SortBy    string `json:"sortBy"`
+	SortOrder string `json:"sortOrder"`
 }
 
 type ListSchoolsRow struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	City     string `json:"city"`
+	Province string `json:"province"`
 }
 
 func (q *Queries) ListSchools(ctx context.Context, arg ListSchoolsParams) ([]ListSchoolsRow, error) {
-	rows, err := q.db.QueryContext(ctx, listSchools, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listSchools,
+		arg.Limit,
+		arg.Offset,
+		arg.SortBy,
+		arg.SortOrder,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -152,53 +161,6 @@ func (q *Queries) ListSchools(ctx context.Context, arg ListSchoolsParams) ([]Lis
 	items := []ListSchoolsRow{}
 	for rows.Next() {
 		var i ListSchoolsRow
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const searchSchoolsByNameOrNickName = `-- name: SearchSchoolsByNameOrNickName :many
-SELECT
-  id,
-  name,
-  city,
-  province
-FROM schools
-WHERE $1::text ILIKE ANY(nick_name) OR name ILIKE $2::text
-ORDER BY id ASC
-LIMIT 5
-`
-
-type SearchSchoolsByNameOrNickNameParams struct {
-	NameArr string `json:"nameArr"`
-	Name    string `json:"name"`
-}
-
-type SearchSchoolsByNameOrNickNameRow struct {
-	ID       int64  `json:"id"`
-	Name     string `json:"name"`
-	City     string `json:"city"`
-	Province string `json:"province"`
-}
-
-func (q *Queries) SearchSchoolsByNameOrNickName(ctx context.Context, arg SearchSchoolsByNameOrNickNameParams) ([]SearchSchoolsByNameOrNickNameRow, error) {
-	rows, err := q.db.QueryContext(ctx, searchSchoolsByNameOrNickName, arg.NameArr, arg.Name)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []SearchSchoolsByNameOrNickNameRow{}
-	for rows.Next() {
-		var i SearchSchoolsByNameOrNickNameRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -216,6 +178,91 @@ func (q *Queries) SearchSchoolsByNameOrNickName(ctx context.Context, arg SearchS
 		return nil, err
 	}
 	return items, nil
+}
+
+const listSchoolsByName = `-- name: ListSchoolsByName :many
+SELECT
+  id,
+  name,
+  city,
+  province
+FROM schools
+WHERE $3::text ILIKE ANY(nick_name) OR name ILIKE $4::text
+ORDER BY
+  CASE
+    WHEN $5::varchar = 'name' AND $6::varchar = 'asc' THEN LOWER(name)
+    ELSE NULL
+  END,
+  CASE
+    WHEN $5::varchar = 'name' AND $6::varchar = 'desc' THEN LOWER(name)
+    ELSE NULL
+  END DESC
+LIMIT $1
+OFFSET $2
+`
+
+type ListSchoolsByNameParams struct {
+	Limit     int32  `json:"limit"`
+	Offset    int32  `json:"offset"`
+	NickName  string `json:"nickName"`
+	Name      string `json:"name"`
+	SortBy    string `json:"sortBy"`
+	SortOrder string `json:"sortOrder"`
+}
+
+type ListSchoolsByNameRow struct {
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	City     string `json:"city"`
+	Province string `json:"province"`
+}
+
+func (q *Queries) ListSchoolsByName(ctx context.Context, arg ListSchoolsByNameParams) ([]ListSchoolsByNameRow, error) {
+	rows, err := q.db.QueryContext(ctx, listSchoolsByName,
+		arg.Limit,
+		arg.Offset,
+		arg.NickName,
+		arg.Name,
+		arg.SortBy,
+		arg.SortOrder,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListSchoolsByNameRow{}
+	for rows.Next() {
+		var i ListSchoolsByNameRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.City,
+			&i.Province,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const randomSchoolID = `-- name: RandomSchoolID :one
+SELECT id FROM schools
+ORDER BY RANDOM()
+LIMIT 1
+`
+
+func (q *Queries) RandomSchoolID(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, randomSchoolID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const updateSchoolStatusRequest = `-- name: UpdateSchoolStatusRequest :one
