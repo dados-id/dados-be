@@ -73,7 +73,7 @@ LIMIT $1
 OFFSET $2;
 
 -- name: CountListSchoolsByName :one
-SELECT COUNT(*)::int FROM schools
+SELECT COUNT(*)::int FROM schools S
   WHERE @nick_name::varchar ILIKE ANY(S.nick_name)
   OR S.name ILIKE @name::varchar;
 

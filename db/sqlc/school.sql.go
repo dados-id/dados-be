@@ -23,7 +23,7 @@ func (q *Queries) CountListSchools(ctx context.Context) (int32, error) {
 }
 
 const countListSchoolsByName = `-- name: CountListSchoolsByName :one
-SELECT COUNT(*)::int FROM schools
+SELECT COUNT(*)::int FROM schools S
   WHERE $1::varchar ILIKE ANY(S.nick_name)
   OR S.name ILIKE $2::varchar
 `
