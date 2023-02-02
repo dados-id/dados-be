@@ -19,11 +19,11 @@ SELECT
   P.level_of_difficulty,
   F.name as faculty_name,
   S.name as school_name,
-  SUM(CASE PR.quality when 1 then 1 else 0 end)::int32 as terrible,
-  SUM(CASE PR.quality when 2 then 1 else 0 end)::int32 as poor,
-  SUM(CASE PR.quality when 3 then 1 else 0 end)::int32 as fair,
-  SUM(CASE PR.quality when 4 then 1 else 0 end)::int32 as good,
-  SUM(CASE PR.quality when 5 then 1 else 0 end)::int32 as excellent
+  SUM(CASE PR.quality when 1 then 1 else 0 end)::int as terrible,
+  SUM(CASE PR.quality when 2 then 1 else 0 end)::int as poor,
+  SUM(CASE PR.quality when 3 then 1 else 0 end)::int as fair,
+  SUM(CASE PR.quality when 4 then 1 else 0 end)::int as good,
+  SUM(CASE PR.quality when 5 then 1 else 0 end)::int as excellent
 FROM professors P
   LEFT JOIN professor_ratings PR ON P.id = PR.professor_id
   JOIN faculties F ON P.faculty_id = F.id
