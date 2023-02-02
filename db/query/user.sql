@@ -118,7 +118,7 @@ WHERE
   id = sqlc.arg(id)
 RETURNING *;
 
--- name: RandomUserID :one
+-- name: ListRandomUserID :many
 SELECT id FROM users
 ORDER BY RANDOM()
-LIMIT 1;
+LIMIT 3;

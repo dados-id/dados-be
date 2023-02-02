@@ -23,15 +23,31 @@ func (q *Queries) CreateTag(ctx context.Context, name string) (string, error) {
 	return name, err
 }
 
-const randomTag = `-- name: RandomTag :one
+const listRandomTag = `-- name: ListRandomTag :many
 SELECT name FROM tags
 ORDER BY RANDOM()
-LIMIT 1
+LIMIT 3
 `
 
-func (q *Queries) RandomTag(ctx context.Context) (string, error) {
-	row := q.db.QueryRowContext(ctx, randomTag)
-	var name string
-	err := row.Scan(&name)
-	return name, err
+func (q *Queries) ListRandomTag(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listRandomTag)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []string{}
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return nil, err
+		}
+		items = append(items, name)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

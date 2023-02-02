@@ -37,14 +37,17 @@ func createProfessorRating(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) 
 	for i := 1; i <= NDATA; i++ {
 		ctx := context.Background()
 
-		randomUserID, err := queries.RandomUserID(context.Background())
+		listRandomUserID, err := queries.ListRandomUserID(context.Background())
 		exception.FatalIfNeeded(err, "Error Get Count User")
 
 		randomProfessorID, err := queries.RandomProfessorID(context.Background())
 		exception.FatalIfNeeded(err, "Error Get Count Professor")
 
-		randomCourseCode, err := queries.RandomCourseCode(context.Background())
+		listCoursesByProfessorID, err := queries.ListCoursesByProfessorId(context.Background(), randomProfessorID)
 		exception.FatalIfNeeded(err, "Error Get Random Course Code")
+
+		randomCourseCode := util.RandomPickArrayStr(listCoursesByProfessorID)
+		randomUserID := util.RandomPickArrayStr(listRandomUserID)
 
 		professorRating := util.GetValidProfessorRating(randomUserID, randomProfessorID, randomCourseCode)
 
@@ -68,21 +71,23 @@ func createProfessorRating(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) 
 			continue
 		}
 
-		randomTag, err := queries.RandomTag(ctx)
+		listRandomTag, err := queries.ListRandomTag(ctx)
 		if err != nil {
 			fmt.Printf("Error seeded on the %dth data on Create Tag\n %s", i, err.Error())
 			continue
 		}
 
-		arg2 := sqlc.CreateProfessorRatingTagsParams{
-			TagName:           randomTag,
-			ProfessorRatingID: createdProfessorRating.ID,
-		}
+		for _, randomTag := range listRandomTag {
+			arg := sqlc.CreateProfessorRatingTagsParams{
+				TagName:           randomTag,
+				ProfessorRatingID: createdProfessorRating.ID,
+			}
 
-		err = queries.CreateProfessorRatingTags(ctx, arg2)
-		if err != nil {
-			fmt.Printf("Error seeded on the %dth data on ProfessorTag\n %s", i, err.Error())
-			continue
+			err = queries.CreateProfessorRatingTags(ctx, arg)
+			if err != nil {
+				fmt.Printf("Error seeded on the %dth data on ProfessorTag\n %s", i, err.Error())
+				continue
+			}
 		}
 
 		if i%100 == 0 {

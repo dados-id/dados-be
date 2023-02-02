@@ -52,41 +52,45 @@ func createProfessor(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 			SchoolID:  professor.SchoolID,
 		}
 
-		createdProfessor, err := queries.CreateProfessor(ctx, arg)
+		createdProfessorID, err := queries.CreateProfessor(ctx, arg)
 		if err != nil {
 			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
 			continue
 		}
 
-		randomUserID, err := queries.RandomUserID(ctx)
+		listRandomUserID, err := queries.ListRandomUserID(ctx)
 		exception.FatalIfNeeded(err, "Error Count User")
 
-		arg2 := sqlc.SaveProfessorParams{
-			ProfessorID: createdProfessor.ID,
-			UserID:      randomUserID,
+		for _, randomUserID := range listRandomUserID {
+			arg := sqlc.SaveProfessorParams{
+				ProfessorID: createdProfessorID,
+				UserID:      randomUserID,
+			}
+
+			err = queries.SaveProfessor(ctx, arg)
+			if err != nil {
+				fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
+				continue
+			}
 		}
 
-		err = queries.SaveProfessor(ctx, arg2)
+		listRandomCourseCode, err := queries.ListRandomCourseCode(ctx)
 		if err != nil {
 			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
 			continue
 		}
 
-		randomCourseCode, err := queries.RandomCourseCode(ctx)
-		if err != nil {
-			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
-			continue
-		}
+		for _, randomCourseCode := range listRandomCourseCode {
+			arg := sqlc.CreateProfessorCourseAssociationParams{
+				CourseCode:  randomCourseCode,
+				ProfessorID: createdProfessorID,
+			}
 
-		arg3 := sqlc.CreateProfessorCourseAssociationParams{
-			CourseCode:  randomCourseCode,
-			ProfessorID: createdProfessor.ID,
-		}
-
-		err = queries.CreateProfessorCourseAssociation(ctx, arg3)
-		if err != nil {
-			fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
-			continue
+			err = queries.CreateProfessorCourseAssociation(ctx, arg)
+			if err != nil {
+				fmt.Printf("Error seeded on the %dth data\n %s", i, err.Error())
+				continue
+			}
 		}
 
 		if i%100 == 0 {
