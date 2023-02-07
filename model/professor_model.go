@@ -101,4 +101,5 @@ func (x *ListProfessorsQueryByFacultyRequest) GetSortOrder() string {
 
 type ListProfessorsURIByFacultyRequest struct {
 	FacultyID int32 `uri:"faculty_id" binding:"required,min=1"`
+	SchoolID  int32 `uri:"school_id" binding:"required,min=1"`
 }

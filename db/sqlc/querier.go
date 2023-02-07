@@ -14,6 +14,7 @@ type Querier interface {
 	CountListProfessorRatingsFilterByRating(ctx context.Context, arg CountListProfessorRatingsFilterByRatingParams) (int32, error)
 	CountListProfessors(ctx context.Context) (int32, error)
 	CountListProfessorsByFaculty(ctx context.Context, facultyID int32) (int32, error)
+	CountListProfessorsByFacultyAndSchool(ctx context.Context, arg CountListProfessorsByFacultyAndSchoolParams) (int32, error)
 	CountListProfessorsByName(ctx context.Context, name string) (int32, error)
 	CountListProfessorsBySchool(ctx context.Context, schoolID int32) (int32, error)
 	CountListSchoolRatings(ctx context.Context, schoolID int32) (int32, error)

@@ -110,6 +110,21 @@ func (mr *MockQuerierMockRecorder) CountListProfessorsByFaculty(arg0, arg1 inter
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountListProfessorsByFaculty", reflect.TypeOf((*MockQuerier)(nil).CountListProfessorsByFaculty), arg0, arg1)
 }
 
+// CountListProfessorsByFacultyAndSchool mocks base method.
+func (m *MockQuerier) CountListProfessorsByFacultyAndSchool(arg0 context.Context, arg1 db.CountListProfessorsByFacultyAndSchoolParams) (int32, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountListProfessorsByFacultyAndSchool", arg0, arg1)
+	ret0, _ := ret[0].(int32)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountListProfessorsByFacultyAndSchool indicates an expected call of CountListProfessorsByFacultyAndSchool.
+func (mr *MockQuerierMockRecorder) CountListProfessorsByFacultyAndSchool(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountListProfessorsByFacultyAndSchool", reflect.TypeOf((*MockQuerier)(nil).CountListProfessorsByFacultyAndSchool), arg0, arg1)
+}
+
 // CountListProfessorsByName mocks base method.
 func (m *MockQuerier) CountListProfessorsByName(arg0 context.Context, arg1 string) (int32, error) {
 	m.ctrl.T.Helper()

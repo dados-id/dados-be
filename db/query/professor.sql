@@ -231,6 +231,10 @@ ORDER BY
 LIMIT $3
 OFFSET $4;
 
+-- name: CountListProfessorsByFacultyAndSchool :one
+SELECT COUNT(*)::int FROM professors
+  WHERE faculty_id = $1 AND school_id = $2;
+
 -- name: UpdateProfessorStatusRequest :one
 UPDATE professors
 SET

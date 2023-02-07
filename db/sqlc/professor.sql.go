@@ -32,6 +32,23 @@ func (q *Queries) CountListProfessorsByFaculty(ctx context.Context, facultyID in
 	return column_1, err
 }
 
+const countListProfessorsByFacultyAndSchool = `-- name: CountListProfessorsByFacultyAndSchool :one
+SELECT COUNT(*)::int FROM professors
+  WHERE faculty_id = $1 AND school_id = $2
+`
+
+type CountListProfessorsByFacultyAndSchoolParams struct {
+	FacultyID int32 `json:"facultyID"`
+	SchoolID  int32 `json:"schoolID"`
+}
+
+func (q *Queries) CountListProfessorsByFacultyAndSchool(ctx context.Context, arg CountListProfessorsByFacultyAndSchoolParams) (int32, error) {
+	row := q.db.QueryRowContext(ctx, countListProfessorsByFacultyAndSchool, arg.FacultyID, arg.SchoolID)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const countListProfessorsByName = `-- name: CountListProfessorsByName :one
 SELECT COUNT(*)::int FROM professors P
  WHERE LOWER(P.first_name) LIKE LOWER($1::varchar)

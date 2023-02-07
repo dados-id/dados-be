@@ -190,7 +190,7 @@ func (server *Server) listProfessorsBySchool(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, professors)
 }
 
-func (server *Server) listProfessorsByFaculty(ctx *gin.Context) {
+func (server *Server) listProfessorsBySchoolAndFaculty(ctx *gin.Context) {
 	var reqQueryParams model.ListProfessorsQueryByFacultyRequest
 	var reqURI model.ListProfessorsURIByFacultyRequest
 
@@ -204,21 +204,27 @@ func (server *Server) listProfessorsByFaculty(ctx *gin.Context) {
 		return
 	}
 
-	arg := db.ListProfessorsByFacultyParams{
+	arg := db.ListProfessorsByFacultyAndSchoolParams{
 		FacultyID: reqURI.FacultyID,
+		SchoolID:  reqURI.SchoolID,
 		Limit:     reqQueryParams.PageSize,
 		Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
 		SortBy:    reqQueryParams.GetSortBy(),
 		SortOrder: reqQueryParams.GetSortOrder(),
 	}
 
-	professors, err := server.query.ListProfessorsByFaculty(ctx, arg)
+	professors, err := server.query.ListProfessorsByFacultyAndSchool(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
-	totalCount, err := server.query.CountListProfessorsByFaculty(ctx, reqURI.FacultyID)
+	arg2 := db.CountListProfessorsByFacultyAndSchoolParams{
+		FacultyID: reqURI.FacultyID,
+		SchoolID:  reqURI.SchoolID,
+	}
+
+	totalCount, err := server.query.CountListProfessorsByFacultyAndSchool(ctx, arg2)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
