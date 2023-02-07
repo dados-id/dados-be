@@ -50,7 +50,7 @@ INSERT INTO schools (
   email
 ) VALUES (
   $1, $2, $3, $4, $5, $6
-) RETURNING id, name, nick_name, city, province, website, email, status, verified_date
+) RETURNING id
 `
 
 type CreateSchoolParams struct {
@@ -62,7 +62,7 @@ type CreateSchoolParams struct {
 	Email    string   `json:"email"`
 }
 
-func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (School, error) {
+func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (int32, error) {
 	row := q.db.QueryRowContext(ctx, createSchool,
 		arg.Name,
 		pq.Array(arg.NickName),
@@ -71,19 +71,28 @@ func (q *Queries) CreateSchool(ctx context.Context, arg CreateSchoolParams) (Sch
 		arg.Website,
 		arg.Email,
 	)
-	var i School
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		pq.Array(&i.NickName),
-		&i.City,
-		&i.Province,
-		&i.Website,
-		&i.Email,
-		&i.Status,
-		&i.VerifiedDate,
-	)
-	return i, err
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
+const createSchoolFacultyAssociation = `-- name: CreateSchoolFacultyAssociation :exec
+INSERT INTO school_faculty_associations (
+  faculty_id,
+  school_id
+) VALUES (
+  $1, $2
+)
+`
+
+type CreateSchoolFacultyAssociationParams struct {
+	FacultyID int32 `json:"facultyID"`
+	SchoolID  int32 `json:"schoolID"`
+}
+
+func (q *Queries) CreateSchoolFacultyAssociation(ctx context.Context, arg CreateSchoolFacultyAssociationParams) error {
+	_, err := q.db.ExecContext(ctx, createSchoolFacultyAssociation, arg.FacultyID, arg.SchoolID)
+	return err
 }
 
 const getSchoolInfo = `-- name: GetSchoolInfo :one
@@ -300,7 +309,7 @@ SET
   status = $1
 WHERE
   id = $2::int
-RETURNING id, name, nick_name, city, province, website, email, status, verified_date
+RETURNING id, name, nick_name, country, city, province, website, email, status, verified_date
 `
 
 type UpdateSchoolStatusRequestParams struct {
@@ -315,6 +324,7 @@ func (q *Queries) UpdateSchoolStatusRequest(ctx context.Context, arg UpdateSchoo
 		&i.ID,
 		&i.Name,
 		pq.Array(&i.NickName),
+		&i.Country,
 		&i.City,
 		&i.Province,
 		&i.Website,

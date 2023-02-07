@@ -36,14 +36,6 @@ FROM school_ratings SR
   JOIN schools S ON SR.school_id = S.id
 WHERE S.id = @school_id::int AND SR.id = @school_rating_id::int;
 
--- name: CreateSchoolFacultyAssociation :exec
-INSERT INTO school_faculty_associations (
-  faculty_id,
-  school_id
-) VALUES (
-  $1, $2
-);
-
 -- name: ListSchoolRatings :many
 SELECT
   id,

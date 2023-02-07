@@ -53,6 +53,35 @@ func (q *Queries) ListFacultyBySchool(ctx context.Context, schoolID int32) ([]Fa
 	return items, nil
 }
 
+const listRandomFacultyID = `-- name: ListRandomFacultyID :many
+SELECT id FROM faculties
+ORDER BY RANDOM()
+LIMIT 3
+`
+
+func (q *Queries) ListRandomFacultyID(ctx context.Context) ([]int32, error) {
+	rows, err := q.db.QueryContext(ctx, listRandomFacultyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []int32{}
+	for rows.Next() {
+		var id int32
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const randomFacultyID = `-- name: RandomFacultyID :one
 SELECT id FROM faculties
 ORDER BY RANDOM()

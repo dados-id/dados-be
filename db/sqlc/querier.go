@@ -27,7 +27,7 @@ type Querier interface {
 	CreateProfessorRating(ctx context.Context, arg CreateProfessorRatingParams) (ProfessorRating, error)
 	CreateProfessorRatingTags(ctx context.Context, arg CreateProfessorRatingTagsParams) error
 	CreateReport(ctx context.Context, arg CreateReportParams) (ReportForm, error)
-	CreateSchool(ctx context.Context, arg CreateSchoolParams) (School, error)
+	CreateSchool(ctx context.Context, arg CreateSchoolParams) (int32, error)
 	CreateSchoolFacultyAssociation(ctx context.Context, arg CreateSchoolFacultyAssociationParams) error
 	CreateSchoolRating(ctx context.Context, arg CreateSchoolRatingParams) (SchoolRating, error)
 	CreateTag(ctx context.Context, name string) (string, error)
@@ -49,6 +49,7 @@ type Querier interface {
 	ListProfessorsByName(ctx context.Context, arg ListProfessorsByNameParams) ([]ListProfessorsByNameRow, error)
 	ListProfessorsBySchool(ctx context.Context, arg ListProfessorsBySchoolParams) ([]ListProfessorsBySchoolRow, error)
 	ListRandomCourseCode(ctx context.Context) ([]string, error)
+	ListRandomFacultyID(ctx context.Context) ([]int32, error)
 	ListRandomTag(ctx context.Context) ([]string, error)
 	ListRandomUserID(ctx context.Context) ([]string, error)
 	ListReport(ctx context.Context, arg ListReportParams) ([]ReportForm, error)

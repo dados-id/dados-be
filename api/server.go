@@ -84,6 +84,9 @@ func (server *Server) setupRouter() {
 		professorRatingRoutes.GET("professors/:professor_id/ratings", server.listProfessorRatings)
 		professorRatingRoutes.POST("professors/:professor_id/ratings", server.createProfessorRating)
 		professorRatingRoutes.PUT("professors/:professor_id/ratings/:professor_rating_id", server.updateProfessorRating)
+
+		facultyRoutes := authRoutes.Group("/")
+		facultyRoutes.GET("schools/:school_id/faculties", server.listFaculties)
 	}
 
 	server.router = router

@@ -304,10 +304,10 @@ func (mr *MockQuerierMockRecorder) CreateReport(arg0, arg1 interface{}) *gomock.
 }
 
 // CreateSchool mocks base method.
-func (m *MockQuerier) CreateSchool(arg0 context.Context, arg1 db.CreateSchoolParams) (db.School, error) {
+func (m *MockQuerier) CreateSchool(arg0 context.Context, arg1 db.CreateSchoolParams) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateSchool", arg0, arg1)
-	ret0, _ := ret[0].(db.School)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -630,6 +630,21 @@ func (m *MockQuerier) ListRandomCourseCode(arg0 context.Context) ([]string, erro
 func (mr *MockQuerierMockRecorder) ListRandomCourseCode(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRandomCourseCode", reflect.TypeOf((*MockQuerier)(nil).ListRandomCourseCode), arg0)
+}
+
+// ListRandomFacultyID mocks base method.
+func (m *MockQuerier) ListRandomFacultyID(arg0 context.Context) ([]int32, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListRandomFacultyID", arg0)
+	ret0, _ := ret[0].([]int32)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListRandomFacultyID indicates an expected call of ListRandomFacultyID.
+func (mr *MockQuerierMockRecorder) ListRandomFacultyID(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRandomFacultyID", reflect.TypeOf((*MockQuerier)(nil).ListRandomFacultyID), arg0)
 }
 
 // ListRandomTag mocks base method.

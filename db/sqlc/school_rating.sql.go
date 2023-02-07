@@ -23,25 +23,6 @@ func (q *Queries) CountListSchoolRatings(ctx context.Context, schoolID int32) (i
 	return column_1, err
 }
 
-const createSchoolFacultyAssociation = `-- name: CreateSchoolFacultyAssociation :exec
-INSERT INTO school_faculty_associations (
-  faculty_id,
-  school_id
-) VALUES (
-  $1, $2
-)
-`
-
-type CreateSchoolFacultyAssociationParams struct {
-	FacultyID int32 `json:"facultyID"`
-	SchoolID  int32 `json:"schoolID"`
-}
-
-func (q *Queries) CreateSchoolFacultyAssociation(ctx context.Context, arg CreateSchoolFacultyAssociationParams) error {
-	_, err := q.db.ExecContext(ctx, createSchoolFacultyAssociation, arg.FacultyID, arg.SchoolID)
-	return err
-}
-
 const createSchoolRating = `-- name: CreateSchoolRating :one
 INSERT INTO school_ratings (
   user_id,
