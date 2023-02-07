@@ -35,11 +35,13 @@ func createSchoolRating(NDATA int, queries sqlc.Queries, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for i := 1; i <= NDATA; i++ {
-		randomUserID, err := queries.RandomUserID(context.Background())
+		listRandomUserID, err := queries.ListRandomUserID(context.Background())
 		exception.FatalIfNeeded(err, "Error Count User")
 
 		randomSchoolID, err := queries.RandomSchoolID(context.Background())
 		exception.FatalIfNeeded(err, "Error Count School")
+
+		randomUserID := util.RandomPickArrayStr(listRandomUserID)
 
 		schoolRating := util.GetValidSchoolRating(randomUserID, randomSchoolID)
 

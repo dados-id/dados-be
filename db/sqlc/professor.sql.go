@@ -66,7 +66,7 @@ INSERT INTO professors (
   school_id
 ) VALUES (
   $1, $2, $3, $4
-) RETURNING id, first_name, last_name, rating, total_review, would_take_again, level_of_difficulty, created_at, status, verified_date, faculty_id, school_id
+) RETURNING id
 `
 
 type CreateProfessorParams struct {
@@ -76,29 +76,16 @@ type CreateProfessorParams struct {
 	SchoolID  int32  `json:"schoolID"`
 }
 
-func (q *Queries) CreateProfessor(ctx context.Context, arg CreateProfessorParams) (Professor, error) {
+func (q *Queries) CreateProfessor(ctx context.Context, arg CreateProfessorParams) (int32, error) {
 	row := q.db.QueryRowContext(ctx, createProfessor,
 		arg.FirstName,
 		arg.LastName,
 		arg.FacultyID,
 		arg.SchoolID,
 	)
-	var i Professor
-	err := row.Scan(
-		&i.ID,
-		&i.FirstName,
-		&i.LastName,
-		&i.Rating,
-		&i.TotalReview,
-		&i.WouldTakeAgain,
-		&i.LevelOfDifficulty,
-		&i.CreatedAt,
-		&i.Status,
-		&i.VerifiedDate,
-		&i.FacultyID,
-		&i.SchoolID,
-	)
-	return i, err
+	var id int32
+	err := row.Scan(&id)
+	return id, err
 }
 
 const getProfessorInfo = `-- name: GetProfessorInfo :one
@@ -110,7 +97,9 @@ SELECT
   P.rating,
   P.would_take_again,
   P.level_of_difficulty,
+  F.id as faculty_id,
   F.name as faculty_name,
+  S.id as school_id,
   S.name as school_name,
   SUM(CASE PR.quality when 1 then 1 else 0 end)::int as terrible,
   SUM(CASE PR.quality when 2 then 1 else 0 end)::int as poor,
@@ -134,7 +123,9 @@ type GetProfessorInfoRow struct {
 	Rating            string `json:"rating"`
 	WouldTakeAgain    int16  `json:"wouldTakeAgain"`
 	LevelOfDifficulty string `json:"levelOfDifficulty"`
+	FacultyID         int32  `json:"facultyID"`
 	FacultyName       string `json:"facultyName"`
+	SchoolID          int32  `json:"schoolID"`
 	SchoolName        string `json:"schoolName"`
 	Terrible          int32  `json:"terrible"`
 	Poor              int32  `json:"poor"`
@@ -154,7 +145,9 @@ func (q *Queries) GetProfessorInfo(ctx context.Context, id int32) (GetProfessorI
 		&i.Rating,
 		&i.WouldTakeAgain,
 		&i.LevelOfDifficulty,
+		&i.FacultyID,
 		&i.FacultyName,
+		&i.SchoolID,
 		&i.SchoolName,
 		&i.Terrible,
 		&i.Poor,
@@ -682,7 +675,7 @@ SET
   status = $1
 WHERE
   id = $2::int
-RETURNING id, first_name, last_name, rating, total_review, would_take_again, level_of_difficulty, created_at, status, verified_date, faculty_id, school_id
+RETURNING status
 `
 
 type UpdateProfessorStatusRequestParams struct {
@@ -690,22 +683,9 @@ type UpdateProfessorStatusRequestParams struct {
 	ID     int32         `json:"id"`
 }
 
-func (q *Queries) UpdateProfessorStatusRequest(ctx context.Context, arg UpdateProfessorStatusRequestParams) (Professor, error) {
+func (q *Queries) UpdateProfessorStatusRequest(ctx context.Context, arg UpdateProfessorStatusRequestParams) (Statusrequest, error) {
 	row := q.db.QueryRowContext(ctx, updateProfessorStatusRequest, arg.Status, arg.ID)
-	var i Professor
-	err := row.Scan(
-		&i.ID,
-		&i.FirstName,
-		&i.LastName,
-		&i.Rating,
-		&i.TotalReview,
-		&i.WouldTakeAgain,
-		&i.LevelOfDifficulty,
-		&i.CreatedAt,
-		&i.Status,
-		&i.VerifiedDate,
-		&i.FacultyID,
-		&i.SchoolID,
-	)
-	return i, err
+	var status Statusrequest
+	err := row.Scan(&status)
+	return status, err
 }

@@ -88,5 +88,5 @@ func validateStatusRequest(value string) error {
 }
 
 func validateReview(value string) error {
-	return validateString(value, 1, 256)
+	return validateString(value, 1, 512)
 }

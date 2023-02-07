@@ -11,7 +11,7 @@ SELECT C.code FROM professor_course_associations PCA
   JOIN courses C ON PCA.course_code = C.code
 WHERE PCA.professor_id = $1;
 
--- name: RandomCourseCode :one
+-- name: ListRandomCourseCode :many
 SELECT code FROM courses
 ORDER BY RANDOM()
-LIMIT 1;
+LIMIT 3;

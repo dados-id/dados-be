@@ -118,7 +118,7 @@ func (server *Server) listProfessors(ctx *gin.Context) {
 			return
 		}
 
-		totalCount, err := server.query.CountListProfessorsByName(ctx, reqQueryParams.GetName())
+		totalCount, err := server.query.CountListProfessorsByName(ctx, "%"+reqQueryParams.GetName()+"%")
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 			return

@@ -1,33 +1,33 @@
 package api
 
-import (
-	"bytes"
-	"encoding/json"
-	"io"
-	"testing"
-	"time"
+// import (
+// 	"bytes"
+// 	"encoding/json"
+// 	"io"
+// 	"testing"
+// 	"time"
 
-	db "github.com/dados-id/dados-be/db/sqlc"
-	"github.com/stretchr/testify/require"
-)
+// 	db "github.com/dados-id/dados-be/db/sqlc"
+// 	"github.com/stretchr/testify/require"
+// )
 
-func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.User) {
-	data, err := io.ReadAll(body)
-	require.NoError(t, err)
+// // func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.User) {
+// // 	data, err := io.ReadAll(body)
+// // 	require.NoError(t, err)
 
-	var gotUser db.User
-	err = json.Unmarshal(data, &gotUser)
+// // 	var gotUser db.User
+// // 	err = json.Unmarshal(data, &gotUser)
 
-	require.NoError(t, err)
-	require.Equal(t, user, gotUser)
-	require.Equal(t, user.ID, gotUser.ID)
-	require.Equal(t, user.FirstName, gotUser.FirstName)
-	require.Equal(t, user.LastName, gotUser.LastName)
-	require.Equal(t, user.ExpectedYearOfGraduation, gotUser.ExpectedYearOfGraduation)
-	require.Equal(t, user.SchoolID, gotUser.SchoolID)
-	require.Equal(t, user.Email, gotUser.Email)
-	require.WithinDuration(t, user.CreatedAt, gotUser.CreatedAt, time.Second)
-}
+// // 	require.NoError(t, err)
+// // 	require.Equal(t, user, gotUser)
+// // 	require.Equal(t, user.ID, gotUser.ID)
+// // 	require.Equal(t, user.FirstName, gotUser.FirstName)
+// // 	require.Equal(t, user.LastName, gotUser.LastName)
+// // 	require.Equal(t, user.ExpectedYearOfGraduation, gotUser.ExpectedYearOfGraduation)
+// // 	require.Equal(t, user.SchoolID, gotUser.SchoolID)
+// // 	require.Equal(t, user.Email, gotUser.Email)
+// // 	require.WithinDuration(t, user.CreatedAt, gotUser.CreatedAt, time.Second)
+// // }
 
 // func TestGetUserAPI(t *testing.T) {
 // 	school := util.GetValidSchool()

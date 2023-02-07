@@ -14,3 +14,8 @@ WHERE SFA.school_id = $1;
 SELECT id FROM faculties
 ORDER BY RANDOM()
 LIMIT 1;
+
+-- name: ListRandomFacultyID :many
+SELECT id FROM faculties
+ORDER BY RANDOM()
+LIMIT 3;

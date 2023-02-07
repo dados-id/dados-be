@@ -99,6 +99,7 @@ CREATE TABLE "schools" (
   "id" serial PRIMARY KEY,
   "name" varchar UNIQUE NOT NULL,
   "nick_name" varchar[] NOT NULL,
+  "country" varchar NOT NULL DEFAULT 'Indonesia',
   "city" varchar NOT NULL,
   "province" varchar NOT NULL,
   "website" varchar NOT NULL,

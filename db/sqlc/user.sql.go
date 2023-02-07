@@ -93,17 +93,33 @@ func (q *Queries) GetUser(ctx context.Context, id string) (GetUserRow, error) {
 	return i, err
 }
 
-const randomUserID = `-- name: RandomUserID :one
+const listRandomUserID = `-- name: ListRandomUserID :many
 SELECT id FROM users
 ORDER BY RANDOM()
-LIMIT 1
+LIMIT 3
 `
 
-func (q *Queries) RandomUserID(ctx context.Context) (string, error) {
-	row := q.db.QueryRowContext(ctx, randomUserID)
-	var id string
-	err := row.Scan(&id)
-	return id, err
+func (q *Queries) ListRandomUserID(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listRandomUserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []string{}
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const saveProfessor = `-- name: SaveProfessor :exec

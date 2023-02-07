@@ -164,6 +164,7 @@ type School struct {
 	ID           int32         `json:"id"`
 	Name         string        `json:"name"`
 	NickName     []string      `json:"nickName"`
+	Country      string        `json:"country"`
 	City         string        `json:"city"`
 	Province     string        `json:"province"`
 	Website      string        `json:"website"`

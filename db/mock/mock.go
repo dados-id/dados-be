@@ -231,10 +231,10 @@ func (mr *MockQuerierMockRecorder) CreateFaculty(arg0, arg1 interface{}) *gomock
 }
 
 // CreateProfessor mocks base method.
-func (m *MockQuerier) CreateProfessor(arg0 context.Context, arg1 db.CreateProfessorParams) (db.Professor, error) {
+func (m *MockQuerier) CreateProfessor(arg0 context.Context, arg1 db.CreateProfessorParams) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateProfessor", arg0, arg1)
-	ret0, _ := ret[0].(db.Professor)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -304,10 +304,10 @@ func (mr *MockQuerierMockRecorder) CreateReport(arg0, arg1 interface{}) *gomock.
 }
 
 // CreateSchool mocks base method.
-func (m *MockQuerier) CreateSchool(arg0 context.Context, arg1 db.CreateSchoolParams) (db.School, error) {
+func (m *MockQuerier) CreateSchool(arg0 context.Context, arg1 db.CreateSchoolParams) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateSchool", arg0, arg1)
-	ret0, _ := ret[0].(db.School)
+	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -617,6 +617,66 @@ func (mr *MockQuerierMockRecorder) ListProfessorsBySchool(arg0, arg1 interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListProfessorsBySchool", reflect.TypeOf((*MockQuerier)(nil).ListProfessorsBySchool), arg0, arg1)
 }
 
+// ListRandomCourseCode mocks base method.
+func (m *MockQuerier) ListRandomCourseCode(arg0 context.Context) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListRandomCourseCode", arg0)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListRandomCourseCode indicates an expected call of ListRandomCourseCode.
+func (mr *MockQuerierMockRecorder) ListRandomCourseCode(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRandomCourseCode", reflect.TypeOf((*MockQuerier)(nil).ListRandomCourseCode), arg0)
+}
+
+// ListRandomFacultyID mocks base method.
+func (m *MockQuerier) ListRandomFacultyID(arg0 context.Context) ([]int32, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListRandomFacultyID", arg0)
+	ret0, _ := ret[0].([]int32)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListRandomFacultyID indicates an expected call of ListRandomFacultyID.
+func (mr *MockQuerierMockRecorder) ListRandomFacultyID(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRandomFacultyID", reflect.TypeOf((*MockQuerier)(nil).ListRandomFacultyID), arg0)
+}
+
+// ListRandomTag mocks base method.
+func (m *MockQuerier) ListRandomTag(arg0 context.Context) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListRandomTag", arg0)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListRandomTag indicates an expected call of ListRandomTag.
+func (mr *MockQuerierMockRecorder) ListRandomTag(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRandomTag", reflect.TypeOf((*MockQuerier)(nil).ListRandomTag), arg0)
+}
+
+// ListRandomUserID mocks base method.
+func (m *MockQuerier) ListRandomUserID(arg0 context.Context) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListRandomUserID", arg0)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListRandomUserID indicates an expected call of ListRandomUserID.
+func (mr *MockQuerierMockRecorder) ListRandomUserID(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListRandomUserID", reflect.TypeOf((*MockQuerier)(nil).ListRandomUserID), arg0)
+}
+
 // ListReport mocks base method.
 func (m *MockQuerier) ListReport(arg0 context.Context, arg1 db.ListReportParams) ([]db.ReportForm, error) {
 	m.ctrl.T.Helper()
@@ -707,21 +767,6 @@ func (mr *MockQuerierMockRecorder) ListTopTags(arg0, arg1 interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTopTags", reflect.TypeOf((*MockQuerier)(nil).ListTopTags), arg0, arg1)
 }
 
-// RandomCourseCode mocks base method.
-func (m *MockQuerier) RandomCourseCode(arg0 context.Context) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RandomCourseCode", arg0)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// RandomCourseCode indicates an expected call of RandomCourseCode.
-func (mr *MockQuerierMockRecorder) RandomCourseCode(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RandomCourseCode", reflect.TypeOf((*MockQuerier)(nil).RandomCourseCode), arg0)
-}
-
 // RandomFacultyID mocks base method.
 func (m *MockQuerier) RandomFacultyID(arg0 context.Context) (int32, error) {
 	m.ctrl.T.Helper()
@@ -765,36 +810,6 @@ func (m *MockQuerier) RandomSchoolID(arg0 context.Context) (int32, error) {
 func (mr *MockQuerierMockRecorder) RandomSchoolID(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RandomSchoolID", reflect.TypeOf((*MockQuerier)(nil).RandomSchoolID), arg0)
-}
-
-// RandomTag mocks base method.
-func (m *MockQuerier) RandomTag(arg0 context.Context) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RandomTag", arg0)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// RandomTag indicates an expected call of RandomTag.
-func (mr *MockQuerierMockRecorder) RandomTag(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RandomTag", reflect.TypeOf((*MockQuerier)(nil).RandomTag), arg0)
-}
-
-// RandomUserID mocks base method.
-func (m *MockQuerier) RandomUserID(arg0 context.Context) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RandomUserID", arg0)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// RandomUserID indicates an expected call of RandomUserID.
-func (mr *MockQuerierMockRecorder) RandomUserID(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RandomUserID", reflect.TypeOf((*MockQuerier)(nil).RandomUserID), arg0)
 }
 
 // SaveProfessor mocks base method.
@@ -856,10 +871,10 @@ func (mr *MockQuerierMockRecorder) UpdateProfessorRating(arg0, arg1 interface{})
 }
 
 // UpdateProfessorStatusRequest mocks base method.
-func (m *MockQuerier) UpdateProfessorStatusRequest(arg0 context.Context, arg1 db.UpdateProfessorStatusRequestParams) (db.Professor, error) {
+func (m *MockQuerier) UpdateProfessorStatusRequest(arg0 context.Context, arg1 db.UpdateProfessorStatusRequestParams) (db.Statusrequest, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateProfessorStatusRequest", arg0, arg1)
-	ret0, _ := ret[0].(db.Professor)
+	ret0, _ := ret[0].(db.Statusrequest)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

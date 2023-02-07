@@ -6,7 +6,7 @@ INSERT INTO professors (
   school_id
 ) VALUES (
   $1, $2, $3, $4
-) RETURNING *;
+) RETURNING id;
 
 -- name: GetProfessorInfo :one
 SELECT
@@ -17,7 +17,9 @@ SELECT
   P.rating,
   P.would_take_again,
   P.level_of_difficulty,
+  F.id as faculty_id,
   F.name as faculty_name,
+  S.id as school_id,
   S.name as school_name,
   SUM(CASE PR.quality when 1 then 1 else 0 end)::int as terrible,
   SUM(CASE PR.quality when 2 then 1 else 0 end)::int as poor,
@@ -235,7 +237,7 @@ SET
   status = @status
 WHERE
   id = @id::int
-RETURNING *;
+RETURNING status;
 
 -- name: RandomProfessorID :one
 SELECT id FROM professors

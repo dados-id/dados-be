@@ -8,7 +8,15 @@ INSERT INTO schools (
   email
 ) VALUES (
   $1, $2, $3, $4, $5, $6
-) RETURNING *;
+) RETURNING id;
+
+-- name: CreateSchoolFacultyAssociation :exec
+INSERT INTO school_faculty_associations (
+  faculty_id,
+  school_id
+) VALUES (
+  $1, $2
+);
 
 -- name: GetSchoolInfo :one
 SELECT

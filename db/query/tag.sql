@@ -5,7 +5,7 @@ INSERT INTO tags (
   $1
 ) RETURNING *;
 
--- name: RandomTag :one
+-- name: ListRandomTag :many
 SELECT name FROM tags
 ORDER BY RANDOM()
-LIMIT 1;
+LIMIT 3;

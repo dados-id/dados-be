@@ -59,15 +59,31 @@ func (q *Queries) ListCoursesByProfessorId(ctx context.Context, professorID int3
 	return items, nil
 }
 
-const randomCourseCode = `-- name: RandomCourseCode :one
+const listRandomCourseCode = `-- name: ListRandomCourseCode :many
 SELECT code FROM courses
 ORDER BY RANDOM()
-LIMIT 1
+LIMIT 3
 `
 
-func (q *Queries) RandomCourseCode(ctx context.Context) (string, error) {
-	row := q.db.QueryRowContext(ctx, randomCourseCode)
-	var code string
-	err := row.Scan(&code)
-	return code, err
+func (q *Queries) ListRandomCourseCode(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listRandomCourseCode)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []string{}
+	for rows.Next() {
+		var code string
+		if err := rows.Scan(&code); err != nil {
+			return nil, err
+		}
+		items = append(items, code)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
