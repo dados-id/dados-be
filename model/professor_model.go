@@ -56,8 +56,16 @@ func (x *ListProfessorsQueryRequest) GetSortOrder() string {
 type ListProfessorsQueryBySchoolRequest struct {
 	PageID    int32   `form:"page_id" binding:"required,min=1"`
 	PageSize  int32   `form:"page_size" binding:"required,min=5,max=10"`
+	Name      *string `form:"name"`
 	SortBy    *string `form:"sort_by"`
 	SortOrder *string `form:"sort_order"`
+}
+
+func (x *ListProfessorsQueryBySchoolRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
 }
 
 func (x *ListProfessorsQueryBySchoolRequest) GetSortBy() string {

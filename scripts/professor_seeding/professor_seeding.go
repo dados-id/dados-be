@@ -19,7 +19,7 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	NDATA := 100
+	NDATA := 500
 	GOROUTINE := 5
 
 	for i := 1; i <= GOROUTINE; i++ {

@@ -163,6 +163,50 @@ OFFSET $3;
 SELECT COUNT(*)::int FROM professors
   WHERE school_id = $1;
 
+-- name: ListProfessorsBySchoolAndName :many
+SELECT
+  P.id,
+  P.first_name,
+  P.last_name,
+  P.rating,
+  F.name as faculty_name,
+  S.name as school_name
+FROM professors P
+  JOIN faculties F ON P.faculty_id = F.id
+  JOIN schools S ON P.school_id = S.id
+WHERE P.school_id = $1 AND (
+  LOWER(P.first_name) LIKE LOWER(@name::varchar)
+  OR LOWER(P.last_name) LIKE LOWER(@name::varchar)
+  OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER(@name::varchar)
+)
+ORDER BY
+  CASE
+    WHEN @sort_by::varchar = 'name' AND @sort_order::varchar = 'asc' THEN LOWER(concat(P.first_name, ' ', P.last_name))
+    ELSE NULL
+  END,
+  CASE
+    WHEN @sort_by::varchar = 'name' AND @sort_order::varchar = 'desc' THEN LOWER(concat(P.first_name, ' ', P.last_name))
+    ELSE NULL
+  END DESC,
+  CASE
+    WHEN @sort_by::varchar = 'rating' AND @sort_order::varchar = 'asc' THEN P.rating
+    ELSE NULL
+  END,
+  CASE
+    WHEN @sort_by::varchar = 'rating' AND @sort_order::varchar = 'desc' THEN P.rating
+    ELSE NULL
+  END DESC
+LIMIT $2
+OFFSET $3;
+
+-- name: CountListProfessorsBySchoolAndName :one
+SELECT COUNT(*)::int FROM professors P
+  WHERE P.school_id = $1 AND (
+  LOWER(P.first_name) LIKE LOWER(@name::varchar)
+  OR LOWER(P.last_name) LIKE LOWER(@name::varchar)
+  OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER(@name::varchar)
+);
+
 -- name: ListProfessorsByFaculty :many
 SELECT
   P.id,

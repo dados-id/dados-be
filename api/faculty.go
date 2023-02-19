@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) listFaculties(ctx *gin.Context) {
+func (server *Server) listFacultiesBySchool(ctx *gin.Context) {
 	var reqURI model.ListFacultyURIRequest
 
 	if err := ctx.ShouldBindUri(&reqURI); err != nil {

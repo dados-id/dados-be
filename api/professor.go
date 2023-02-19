@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -163,6 +164,41 @@ func (server *Server) listProfessorsBySchool(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindUri(&reqURI); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
+		return
+	}
+
+	// Search By Specific Name
+
+	if reqQueryParams.Name != nil {
+		fmt.Println(">>>> WOYYY")
+		arg := db.ListProfessorsBySchoolAndNameParams{
+			SchoolID:  reqURI.SchoolID,
+			Limit:     reqQueryParams.PageSize,
+			Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+			Name:      "%" + reqQueryParams.GetName() + "%",
+			SortBy:    reqQueryParams.GetSortBy(),
+			SortOrder: reqQueryParams.GetSortOrder(),
+		}
+
+		professors, err := server.query.ListProfessorsBySchoolAndName(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		arg2 := db.CountListProfessorsBySchoolAndNameParams{
+			SchoolID: reqURI.SchoolID,
+			Name:     "%" + reqQueryParams.GetName() + "%",
+		}
+
+		totalCount, err := server.query.CountListProfessorsBySchoolAndName(ctx, arg2)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
+		ctx.JSON(http.StatusOK, professors)
 		return
 	}
 
