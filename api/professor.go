@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -168,9 +167,7 @@ func (server *Server) listProfessorsBySchool(ctx *gin.Context) {
 	}
 
 	// Search By Specific Name
-
 	if reqQueryParams.Name != nil {
-		fmt.Println(">>>> WOYYY")
 		arg := db.ListProfessorsBySchoolAndNameParams{
 			SchoolID:  reqURI.SchoolID,
 			Limit:     reqQueryParams.PageSize,
@@ -237,6 +234,41 @@ func (server *Server) listProfessorsBySchoolAndFaculty(ctx *gin.Context) {
 
 	if err := ctx.ShouldBindUri(&reqURI); err != nil {
 		ctx.JSON(http.StatusBadRequest, exception.ErrorResponse(err))
+		return
+	}
+
+	// Search By Specific Name
+	if reqQueryParams.Name != nil {
+		arg := db.ListProfessorsBySchoolAndNameAndFacultyParams{
+			SchoolID:  reqURI.SchoolID,
+			FacultyID: reqURI.FacultyID,
+			Limit:     reqQueryParams.PageSize,
+			Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+			Name:      "%" + reqQueryParams.GetName() + "%",
+			SortBy:    reqQueryParams.GetSortBy(),
+			SortOrder: reqQueryParams.GetSortOrder(),
+		}
+
+		professors, err := server.query.ListProfessorsBySchoolAndNameAndFaculty(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		arg2 := db.CountListProfessorsBySchoolAndNameAndFacultyParams{
+			SchoolID:  reqURI.SchoolID,
+			FacultyID: reqURI.FacultyID,
+			Name:      "%" + reqQueryParams.GetName() + "%",
+		}
+
+		totalCount, err := server.query.CountListProfessorsBySchoolAndNameAndFaculty(ctx, arg2)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
+		ctx.JSON(http.StatusOK, professors)
 		return
 	}
 

@@ -279,6 +279,50 @@ OFFSET $4;
 SELECT COUNT(*)::int FROM professors
   WHERE faculty_id = $1 AND school_id = $2;
 
+-- name: ListProfessorsBySchoolAndNameAndFaculty :many
+SELECT
+  P.id,
+  P.first_name,
+  P.last_name,
+  P.rating,
+  F.name as faculty_name,
+  S.name as school_name
+FROM professors P
+  JOIN faculties F ON P.faculty_id = F.id
+  JOIN schools S ON P.school_id = S.id
+WHERE P.faculty_id = $1 AND P.school_id = $2 AND (
+  LOWER(P.first_name) LIKE LOWER(@name::varchar)
+  OR LOWER(P.last_name) LIKE LOWER(@name::varchar)
+  OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER(@name::varchar)
+)
+ORDER BY
+  CASE
+    WHEN @sort_by::varchar = 'name' AND @sort_order::varchar = 'asc' THEN LOWER(concat(P.first_name, ' ', P.last_name))
+    ELSE NULL
+  END,
+  CASE
+    WHEN @sort_by::varchar = 'name' AND @sort_order::varchar = 'desc' THEN LOWER(concat(P.first_name, ' ', P.last_name))
+    ELSE NULL
+  END DESC,
+  CASE
+    WHEN @sort_by::varchar = 'rating' AND @sort_order::varchar = 'asc' THEN P.rating
+    ELSE NULL
+  END,
+  CASE
+    WHEN @sort_by::varchar = 'rating' AND @sort_order::varchar = 'desc' THEN P.rating
+    ELSE NULL
+  END DESC
+LIMIT $3
+OFFSET $4;
+
+-- name: CountListProfessorsBySchoolAndNameAndFaculty :one
+SELECT COUNT(*)::int FROM professors P
+  WHERE faculty_id = $1 AND school_id = $2 AND (
+  LOWER(P.first_name) LIKE LOWER(@name::varchar)
+  OR LOWER(P.last_name) LIKE LOWER(@name::varchar)
+  OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER(@name::varchar)
+);
+
 -- name: UpdateProfessorStatusRequest :one
 UPDATE professors
 SET

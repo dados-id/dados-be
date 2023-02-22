@@ -96,6 +96,28 @@ func (q *Queries) CountListProfessorsBySchoolAndName(ctx context.Context, arg Co
 	return column_1, err
 }
 
+const countListProfessorsBySchoolAndNameAndFaculty = `-- name: CountListProfessorsBySchoolAndNameAndFaculty :one
+SELECT COUNT(*)::int FROM professors P
+  WHERE faculty_id = $1 AND school_id = $2 AND (
+  LOWER(P.first_name) LIKE LOWER($3::varchar)
+  OR LOWER(P.last_name) LIKE LOWER($3::varchar)
+  OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER($3::varchar)
+)
+`
+
+type CountListProfessorsBySchoolAndNameAndFacultyParams struct {
+	FacultyID int32  `json:"facultyID"`
+	SchoolID  int32  `json:"schoolID"`
+	Name      string `json:"name"`
+}
+
+func (q *Queries) CountListProfessorsBySchoolAndNameAndFaculty(ctx context.Context, arg CountListProfessorsBySchoolAndNameAndFacultyParams) (int32, error) {
+	row := q.db.QueryRowContext(ctx, countListProfessorsBySchoolAndNameAndFaculty, arg.FacultyID, arg.SchoolID, arg.Name)
+	var column_1 int32
+	err := row.Scan(&column_1)
+	return column_1, err
+}
+
 const createProfessor = `-- name: CreateProfessor :one
 INSERT INTO professors (
   first_name,
@@ -698,6 +720,100 @@ func (q *Queries) ListProfessorsBySchoolAndName(ctx context.Context, arg ListPro
 	items := []ListProfessorsBySchoolAndNameRow{}
 	for rows.Next() {
 		var i ListProfessorsBySchoolAndNameRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Rating,
+			&i.FacultyName,
+			&i.SchoolName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listProfessorsBySchoolAndNameAndFaculty = `-- name: ListProfessorsBySchoolAndNameAndFaculty :many
+SELECT
+  P.id,
+  P.first_name,
+  P.last_name,
+  P.rating,
+  F.name as faculty_name,
+  S.name as school_name
+FROM professors P
+  JOIN faculties F ON P.faculty_id = F.id
+  JOIN schools S ON P.school_id = S.id
+WHERE P.faculty_id = $1 AND P.school_id = $2 AND (
+  LOWER(P.first_name) LIKE LOWER($5::varchar)
+  OR LOWER(P.last_name) LIKE LOWER($5::varchar)
+  OR LOWER(concat(P.first_name, ' ', P.last_name)) LIKE LOWER($5::varchar)
+)
+ORDER BY
+  CASE
+    WHEN $6::varchar = 'name' AND $7::varchar = 'asc' THEN LOWER(concat(P.first_name, ' ', P.last_name))
+    ELSE NULL
+  END,
+  CASE
+    WHEN $6::varchar = 'name' AND $7::varchar = 'desc' THEN LOWER(concat(P.first_name, ' ', P.last_name))
+    ELSE NULL
+  END DESC,
+  CASE
+    WHEN $6::varchar = 'rating' AND $7::varchar = 'asc' THEN P.rating
+    ELSE NULL
+  END,
+  CASE
+    WHEN $6::varchar = 'rating' AND $7::varchar = 'desc' THEN P.rating
+    ELSE NULL
+  END DESC
+LIMIT $3
+OFFSET $4
+`
+
+type ListProfessorsBySchoolAndNameAndFacultyParams struct {
+	FacultyID int32  `json:"facultyID"`
+	SchoolID  int32  `json:"schoolID"`
+	Limit     int32  `json:"limit"`
+	Offset    int32  `json:"offset"`
+	Name      string `json:"name"`
+	SortBy    string `json:"sortBy"`
+	SortOrder string `json:"sortOrder"`
+}
+
+type ListProfessorsBySchoolAndNameAndFacultyRow struct {
+	ID          int32  `json:"id"`
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	Rating      string `json:"rating"`
+	FacultyName string `json:"facultyName"`
+	SchoolName  string `json:"schoolName"`
+}
+
+func (q *Queries) ListProfessorsBySchoolAndNameAndFaculty(ctx context.Context, arg ListProfessorsBySchoolAndNameAndFacultyParams) ([]ListProfessorsBySchoolAndNameAndFacultyRow, error) {
+	rows, err := q.db.QueryContext(ctx, listProfessorsBySchoolAndNameAndFaculty,
+		arg.FacultyID,
+		arg.SchoolID,
+		arg.Limit,
+		arg.Offset,
+		arg.Name,
+		arg.SortBy,
+		arg.SortOrder,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListProfessorsBySchoolAndNameAndFacultyRow{}
+	for rows.Next() {
+		var i ListProfessorsBySchoolAndNameAndFacultyRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.FirstName,
