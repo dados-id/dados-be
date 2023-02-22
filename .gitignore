@@ -16,6 +16,7 @@
 # vendor/
 
 # secret file
-.env
+*.env
 doc
 tmp
+*.json
