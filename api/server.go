@@ -6,6 +6,7 @@ import (
 	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
 	"github.com/dados-id/dados-be/util"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,7 +38,8 @@ func (server *Server) setupRouter() {
 	router := gin.New()
 	router.Use(util.HttpLogger())
 	router.Use(gin.Recovery())
-
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:3000", "http://localhost:3001"}}))
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
