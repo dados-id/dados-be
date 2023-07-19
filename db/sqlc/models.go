@@ -75,6 +75,12 @@ type Faculty struct {
 	Name string `json:"name"`
 }
 
+type FacultySchool struct {
+	ID   int32  `json:"id"`
+	Name string `json:"name"`
+	SchoolID int32 `json:"schoolID"`
+}
+
 //	List of derived attribute:
 //	1. 5 distribusi nilai (from quality)
 type Professor struct {
