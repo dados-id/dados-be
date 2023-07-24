@@ -797,6 +797,21 @@ func (mr *MockQuerierMockRecorder) ListSchools(arg0, arg1 interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSchools", reflect.TypeOf((*MockQuerier)(nil).ListSchools), arg0, arg1)
 }
 
+// ListSchoolsAll mocks base method.
+func (m *MockQuerier) ListSchoolsAll(arg0 context.Context, arg1 db.ListSchoolsAllParams) ([]db.ListSchoolsAllRow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListSchoolsAll", arg0, arg1)
+	ret0, _ := ret[0].([]db.ListSchoolsAllRow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListSchoolsAll indicates an expected call of ListSchoolsAll.
+func (mr *MockQuerierMockRecorder) ListSchoolsAll(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSchoolsAll", reflect.TypeOf((*MockQuerier)(nil).ListSchoolsAll), arg0, arg1)
+}
+
 // ListSchoolsByName mocks base method.
 func (m *MockQuerier) ListSchoolsByName(arg0 context.Context, arg1 db.ListSchoolsByNameParams) ([]db.ListSchoolsByNameRow, error) {
 	m.ctrl.T.Helper()

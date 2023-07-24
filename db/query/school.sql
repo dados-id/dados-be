@@ -80,6 +80,25 @@ ORDER BY
 LIMIT $1
 OFFSET $2;
 
+-- name: ListSchoolsAll :many
+SELECT
+  S.id,
+  S.name,
+  S.city,
+  S.province
+FROM schools S
+ORDER BY
+  CASE
+    WHEN @sort_by::varchar = 'name' AND @sort_order::varchar = 'asc' THEN LOWER(S.name)
+    ELSE NULL
+  END,
+  CASE
+    WHEN @sort_by::varchar = 'name' AND @sort_order::varchar = 'desc' THEN LOWER(S.name)
+    ELSE NULL
+  END DESC;
+
+
+
 -- name: CountListSchoolsByName :one
 SELECT COUNT(*)::int FROM schools S
   WHERE @nick_name::varchar ILIKE ANY(S.nick_name)

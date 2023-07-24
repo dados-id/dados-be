@@ -28,6 +28,11 @@ func (server *Server) listFacultiesBySchool(ctx *gin.Context) {
 }
 
 func (server *Server) createFaculty(ctx *gin.Context) {
+	type FacultySchool struct {
+		ID       int32  `json:"id"`
+		Name     string `json:"name"`
+		SchoolID int32  `json:"schoolID"`
+	}
 	var reqJSON model.CreateFacultyRequest
 
 	if err := ctx.ShouldBindJSON(&reqJSON); err != nil {
@@ -67,7 +72,7 @@ func (server *Server) createFaculty(ctx *gin.Context) {
 		return
 	}
 
-	data := db.FacultySchool{
+	data := FacultySchool{
 		ID:       faculty.ID,
 		Name:     faculty.Name,
 		SchoolID: reqJSON.SchoolID,
