@@ -75,27 +75,44 @@ func (server *Server) listSchools(ctx *gin.Context) {
 		return
 	}
 
-	arg := db.ListSchoolsParams{
-		Limit:     reqQueryParams.PageSize,
-		Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+	if reqQueryParams.PageSize != 0 && reqQueryParams.PageID != 0 {
+		arg := db.ListSchoolsParams{
+			Limit:     reqQueryParams.PageSize,
+			Offset:    (reqQueryParams.PageID - 1) * reqQueryParams.PageSize,
+			SortBy:    reqQueryParams.GetSortBy(),
+			SortOrder: reqQueryParams.GetSortOrder(),
+		}
+
+		schools, err := server.query.ListSchools(ctx, arg)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		totalCount, err := server.query.CountListSchools(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
+			return
+		}
+
+		ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
+		ctx.JSON(http.StatusOK, schools)
+		return
+	}
+
+	arg := db.ListSchoolsAllParams{
 		SortBy:    reqQueryParams.GetSortBy(),
 		SortOrder: reqQueryParams.GetSortOrder(),
 	}
 
-	schools, err := server.query.ListSchools(ctx, arg)
+	schools, err := server.query.ListSchoolsAll(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
 		return
 	}
 
-	totalCount, err := server.query.CountListSchools(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, exception.ServerErrorResponse(err))
-		return
-	}
-
-	ctx.Header("x-total-count", strconv.Itoa(int(totalCount)))
 	ctx.JSON(http.StatusOK, schools)
+
 }
 
 func (server *Server) createSchool(ctx *gin.Context) {

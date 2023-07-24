@@ -60,6 +60,7 @@ type Querier interface {
 	ListReport(ctx context.Context, arg ListReportParams) ([]ReportForm, error)
 	ListSchoolRatings(ctx context.Context, arg ListSchoolRatingsParams) ([]ListSchoolRatingsRow, error)
 	ListSchools(ctx context.Context, arg ListSchoolsParams) ([]ListSchoolsRow, error)
+	// ListSchoolsAll(ctx context.Context, arg ListSchoolsAllParams)([]ListSchoolsRow, error)
 	ListSchoolsByName(ctx context.Context, arg ListSchoolsByNameParams) ([]ListSchoolsByNameRow, error)
 	ListTopCoursesTaught(ctx context.Context, professorID int32) ([]string, error)
 	ListTopTags(ctx context.Context, professorID int32) ([]string, error)
@@ -78,6 +79,8 @@ type Querier interface {
 	UserListProfessorRatings(ctx context.Context, arg UserListProfessorRatingsParams) ([]UserListProfessorRatingsRow, error)
 	UserListSavedProfessors(ctx context.Context, arg UserListSavedProfessorsParams) ([]UserListSavedProfessorsRow, error)
 	UserListSchoolRatings(ctx context.Context, arg UserListSchoolRatingsParams) ([]UserListSchoolRatingsRow, error)
+	ListSchoolsAll(ctx context.Context, arg ListSchoolsAllParams)([]ListSchoolsRow, error)
+
 }
 
 var _ Querier = (*Queries)(nil)

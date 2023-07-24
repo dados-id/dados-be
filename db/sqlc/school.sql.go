@@ -171,12 +171,36 @@ LIMIT $1
 OFFSET $2
 `
 
+const listSchoolsAll = `-- name: ListSchoolsAll :many
+SELECT
+  S.id,
+  S.name,
+  S.city,
+  S.province
+FROM schools S
+ORDER BY
+  CASE
+    WHEN $1::varchar = 'name' AND $2::varchar = 'asc' THEN LOWER(S.name)
+    ELSE NULL
+  END,
+  CASE
+    WHEN $1::varchar = 'name' AND $2::varchar = 'desc' THEN LOWER(S.name)
+    ELSE NULL
+  END DESC
+`
+
 type ListSchoolsParams struct {
 	Limit     int32  `json:"limit"`
 	Offset    int32  `json:"offset"`
 	SortBy    string `json:"sortBy"`
 	SortOrder string `json:"sortOrder"`
 }
+
+type ListSchoolsAllParams struct {
+	SortBy    string `json:"sortBy"`
+	SortOrder string `json:"sortOrder"`
+}
+
 
 type ListSchoolsRow struct {
 	ID       int32  `json:"id"`
@@ -189,6 +213,37 @@ func (q *Queries) ListSchools(ctx context.Context, arg ListSchoolsParams) ([]Lis
 	rows, err := q.db.QueryContext(ctx, listSchools,
 		arg.Limit,
 		arg.Offset,
+		arg.SortBy,
+		arg.SortOrder,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListSchoolsRow{}
+	for rows.Next() {
+		var i ListSchoolsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.City,
+			&i.Province,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+func (q *Queries) ListSchoolsAll(ctx context.Context, arg ListSchoolsAllParams) ([]ListSchoolsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listSchoolsAll,
 		arg.SortBy,
 		arg.SortOrder,
 	)
