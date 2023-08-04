@@ -7,7 +7,7 @@ db_schema:
 	dbml2sql --postgres -o doc/schema.sql doc/database.dbml
 
 postgres:
-	docker run --name dados-container -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:14.0-alpine
+	docker run --name dados-container -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:15.0-alpine
 
 createdb:
 	docker exec -it dados-container createdb --username=root --owner=root dados

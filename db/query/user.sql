@@ -34,7 +34,7 @@ SELECT
   U.email,
   S.name
 FROM users U
-  JOIN schools S ON S.id = U.school_id
+  LEFT JOIN schools S ON S.id = U.school_id
 WHERE U.id = $1;
 
 -- name: UserListProfessorRatings :many

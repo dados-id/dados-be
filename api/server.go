@@ -65,7 +65,7 @@ func (server *Server) setupRouter() {
 	router.POST("/users/login", server.loginUser)
 	router.POST("/users", server.createUser)
 
-	authRoutes := router.Group("/")
+	authRoutes := router.Group("/", authMiddleware(server.firebaseClient))
 	authRoutes.Use()
 	{
 		userRoutes := authRoutes.Group("/")
