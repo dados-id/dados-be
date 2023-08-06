@@ -9,6 +9,10 @@ func ErrorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }
 
+func ErrorResponseMessage(err string) gin.H {
+	return gin.H{"error": err}
+}
+
 func ViolationsFieldValidation(violations []validation.BadRequest_FieldViolation) gin.H {
 	return gin.H{"message": "invalid parameters", "details": violations}
 }

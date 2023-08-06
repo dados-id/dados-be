@@ -106,6 +106,9 @@ func (server *Server) setupRouter() {
 		facultyRoutes := authRoutes.Group("/")
 		facultyRoutes.GET("schools/:school_id/faculties", server.listFacultiesBySchool)
 		facultyRoutes.POST("/faculty", server.createFaculty)
+
+		courseRoutes := authRoutes.Group("/")
+		courseRoutes.GET("/professors/:professor_id/courses", server.listCoursesByProfessorId)
 	}
 
 	server.router = router
