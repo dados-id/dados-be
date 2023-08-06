@@ -1,21 +1,49 @@
 package api
 
 import (
+	"firebase.google.com/go/auth"
 	"github.com/dados-id/dados-be/config"
+	db "github.com/dados-id/dados-be/db/sqlc"
 	"github.com/dados-id/dados-be/exception"
+	"github.com/dados-id/dados-be/util"
 	"github.com/gin-gonic/gin"
 )
 
 // Server serves HTTP requests.
 type Server struct {
-	config config.Config
-	router *gin.Engine
+	config         config.Config
+	query          db.Querier
+	firebaseClient auth.Client
+	router         *gin.Engine
+}
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Credentials", "true")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Header("Access-Control-Allow-Methods", "POST,HEAD,PATCH, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
 
 // NewServer creates a new HTTP server and set up routing.
-func NewServer(config config.Config) (*Server, error) {
+func NewServer(configuration config.Config, query db.Querier, firebaseClient auth.Client) (*Server, error) {
 	server := &Server{
-		config: config,
+		config:         configuration,
+		query:          query,
+		firebaseClient: firebaseClient,
+	}
+
+	if server.config.Environment != "development" {
+		gin.SetMode(gin.ReleaseMode)
 	}
 
 	server.setupRouter()
@@ -23,12 +51,9 @@ func NewServer(config config.Config) (*Server, error) {
 }
 
 func (server *Server) setupRouter() {
-	if server.config.Environment != "development" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
 	router := gin.New()
-	router.Use(HttpLogger())
+	router.Use(CORSMiddleware())
+	router.Use(util.HttpLogger())
 	router.Use(gin.Recovery())
 
 	router.GET("/ping", func(c *gin.Context) {
@@ -36,6 +61,55 @@ func (server *Server) setupRouter() {
 			"message": "pong",
 		})
 	})
+
+	router.POST("/users/login", server.loginUser)
+	router.POST("/users", server.createUser)
+
+	authRoutes := router.Group("/", authMiddleware(server.firebaseClient))
+	authRoutes.Use()
+	{
+		userRoutes := authRoutes.Group("/")
+		userRoutes.GET("/users", server.getUser)
+		userRoutes.PUT("/users", server.updateUser)
+		userRoutes.GET("/users/professor_ratings", server.userListProfessorRatings)
+		userRoutes.GET("/users/school_ratings", server.userListSchoolRatings)
+		userRoutes.GET("/users/saved_professors", server.userListSavedProfessors)
+		userRoutes.DELETE("/users/professors/:professor_id", server.unsaveProfessor)
+		userRoutes.POST("/users/professors/:professor_id", server.saveProfessor)
+
+		schoolRoutes := authRoutes.Group("/")
+		schoolRoutes.POST("/schools", server.createSchool)
+		schoolRoutes.GET("/schools/:school_id", server.getSchoolInfo)
+		schoolRoutes.GET("/schools", server.listSchools)
+		schoolRoutes.PUT("/schools/:school_id", server.updateSchoolStatusRequest)
+
+		schoolRatingRoutes := authRoutes.Group("/")
+		schoolRatingRoutes.GET("/schools/:school_id/ratings/:school_rating_id", server.getSchoolRating)
+		schoolRatingRoutes.GET("schools/:school_id/ratings", server.listSchoolRatings)
+		schoolRatingRoutes.POST("schools/:school_id/ratings", server.createSchoolRating)
+		schoolRatingRoutes.PUT("schools/:school_id/ratings/:school_rating_id", server.updateSchoolRating)
+
+		professorRoutes := authRoutes.Group("/")
+		professorRoutes.POST("/professors", server.createProfessor)
+		professorRoutes.GET("/professors/:professor_id", server.getProfessorInfo)
+		professorRoutes.GET("/professors", server.listProfessors)
+		professorRoutes.GET("schools/:school_id/professors", server.listProfessorsBySchool)
+		professorRoutes.GET("schools/:school_id/faculties/:faculty_id/professors", server.listProfessorsBySchoolAndFaculty)
+		professorRoutes.PUT("/professors/:professor_id", server.updateProfessorStatusRequest)
+
+		professorRatingRoutes := authRoutes.Group("/")
+		professorRatingRoutes.GET("/professors/:professor_id/ratings/:professor_rating_id", server.getProfessorRating)
+		professorRatingRoutes.GET("professors/:professor_id/ratings", server.listProfessorRatings)
+		professorRatingRoutes.POST("professors/:professor_id/ratings", server.createProfessorRating)
+		professorRatingRoutes.PUT("professors/:professor_id/ratings/:professor_rating_id", server.updateProfessorRating)
+
+		facultyRoutes := authRoutes.Group("/")
+		facultyRoutes.GET("schools/:school_id/faculties", server.listFacultiesBySchool)
+		facultyRoutes.POST("/faculty", server.createFaculty)
+
+		courseRoutes := authRoutes.Group("/")
+		courseRoutes.GET("/professors/:professor_id/courses", server.listCoursesByProfessorId)
+	}
 
 	server.router = router
 }
@@ -45,8 +119,8 @@ func (server *Server) start(address string) error {
 	return server.router.Run(address)
 }
 
-func RunGinServer(configuration config.Config) {
-	server, err := NewServer(configuration)
+func RunGinServer(configuration config.Config, query db.Querier, firebaseClient auth.Client) {
+	server, err := NewServer(configuration, query, firebaseClient)
 	exception.FatalIfNeeded(err, "cannot create server")
 
 	err = server.start(configuration.HTTPServerAddress)
